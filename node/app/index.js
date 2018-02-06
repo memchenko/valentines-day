@@ -46,9 +46,16 @@ io.on('connection', (socket) => {
 		console.log(clients);
 	});
 
-  	socket.emit('send valentine', { hello: 'world' });
-
   	socket.on('new valentine', (data) => {
-   		console.log(data);
+  		const valentineManager = new ValentineManager();
+
+  		valentineManager.saveMessage(data, Valentine, (isOk) => {
+  			if (!isOk) {
+  				socket.emit('error', 'Can\'t save the message');
+  				return;
+  			}
+
+  			io.sockets.emit('send valentine', data);
+  		});
   	});
 });
