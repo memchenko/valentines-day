@@ -39,6 +39,10 @@ app.all('*', (req, res) => {
 
 server.listen(PORT, () => {
 	console.log('The server started at port: ', PORT);
+
+	const valentineManager = new ValentineManager();
+
+	valentineManager.getAudio('Misha', 'Test', 'blablablablabla');
 });
 
 io.on('connection', (socket) => {
