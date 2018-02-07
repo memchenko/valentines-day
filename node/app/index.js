@@ -42,7 +42,7 @@ server.listen(PORT, () => {
 
 	const valentineManager = new ValentineManager();
 
-	valentineManager.getAudio('Misha', 'Test', 'blablablablabla');
+	valentineManager.getAudio('Миша', 'тест', 'бла-бла-бла-бла');
 });
 
 io.on('connection', (socket) => {
