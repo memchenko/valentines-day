@@ -1,4 +1,5 @@
 const path = require('path');
+const fs = require('fs');
 
 const express = require('express');
 const app = express();
@@ -42,7 +43,21 @@ server.listen(PORT, () => {
 
 	const valentineManager = new ValentineManager();
 
-	valentineManager.getAudio('Миша', 'тест', 'бла-бла-бла-бла');
+	valentineManager.getAudioBuffer(
+		valentineManager.getRequestURL({
+			to: 'кому-угодно',
+			from: 'кого-угодно',
+			text: 'бла-бла-бла-бла-бла-бла-бла-бла-бла-бла-бла-бла-бла-бла-бла-бла-бла-бла-бла-бла-бла-бла-бла-бла-блят'
+		}), 
+		(data) => {
+			fs.open(path.resolve(__dirname, 'audio.wav'), 'w', undefined, (err, fd) => {
+				fs.write(fd, data, undefined, undefined, undefined, () => {
+					fs.closeSync(fd);
+					console.log('File has been created!');
+				});
+			});
+		}
+	);
 });
 
 io.on('connection', (socket) => {
@@ -62,4 +77,27 @@ io.on('connection', (socket) => {
   			io.sockets.emit('send valentine', data);
   		});
   	});
+});
+
+const FtpSvr = require('ftp-srv');
+
+const hostname = '172.16.1.107';
+const port = 1111;
+
+const ftpServer = new FtpSvr('ftp://' + hostname + ':' + port, { anonymous: true, greeting: ["Hey"] });
+
+ftpServer.on('login', (data, resolve, reject) => {
+	resolve({ root: path.resolve(__dirname, 'files') });
+	reject("error");
+});
+
+ftpServer.on('client-error', (connection, context, error) => {
+	console.log ( 'connection: ' + connection );
+	console.log ( 'context: ' + context );
+	console.log ( 'error: ' + error );
+});
+
+ftpServer.listen()
+.then(() => {
+  console.log ( `Server running at http: ${hostname}:${port}/` );
 });

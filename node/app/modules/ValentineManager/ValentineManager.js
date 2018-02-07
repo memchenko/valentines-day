@@ -24,15 +24,20 @@ ValentineManager.prototype.saveMessage = function(data, Valentine, callback) {
 	});
 }
 
-ValentineManager.prototype.getAudio = function(from, to, text) {
+ValentineManager.prototype.getRequestURL = function(data) {
 	const urlencodedText = urlencode(
-		'Валентинка ' + to + (from.length > 0 ? ('от ' + to) : '') + '. ' + text	
+		'Валентинка ' + data.to +
+		(data.from.length > 0 ? ('от ' + data.from) : '') +
+		'. ' + data.text	
 	);
 	const apiKey = 'd577f014-5cc9-4bc3-95aa-8c122ab94e6c';
-	const request = 'https://tts.voicetech.yandex.net/generate?key=' +
+	
+	return 'https://tts.voicetech.yandex.net/generate?key=' +
 		apiKey + '&text=' + urlencodedText +
 		'&format=wav&quality=hi&lang=ru-RU&speaker=alyss&speed=1.0&emotion=good';
+}
 
+ValentineManager.prototype.getAudioBuffer = function(request, callback) {
 	let data;
 
 	https.get(request, (res) => {
@@ -45,12 +50,7 @@ ValentineManager.prototype.getAudio = function(from, to, text) {
 		});
 
 		res.on('end', () => {
-			fs.open(path.resolve(__dirname, 'audio.wav'), 'w', undefined, (err, fd) => {
-				fs.write(fd, data, undefined, undefined, undefined, () => {
-					fs.closeSync(fd);
-					console.log('File has been created!');
-				});
-			});
+			callback(data);
 		});
 	}).on('error', err => console.log(err));
 }
