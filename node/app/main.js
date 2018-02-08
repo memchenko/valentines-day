@@ -8,12 +8,12 @@ const app = express();
 const server = require('http').Server(app);
 const io = require('socket.io')(server);
 
-const PORT = require('./constants/constants.js').PORT;
+const HTTP_PORT = require('./constants/constants.js').HTTP_PORT;
 
 const TransformerTTS = require('./modules/TransformerTTS/TransformerTTS.js');
-const Valentines = require('./db.Valentines.js');
+const Valentines = require('./db/Valentines.js');
 
-const init = require('./init.js');
+const init = require('./init-config.js');
 
 const valentines = new Valentines();
 const eventEmitter = new EventEmitter();
@@ -35,8 +35,8 @@ app.all('*', (req, res) => {
 	res.status(404).send('The requested page doesn\'t exist');
 });
 
-server.listen(PORT, () => {
-	console.log('The server started at port: ', PORT);
+server.listen(HTTP_PORT, () => {
+	console.log('The server started at port: ', HTTP_PORT);
 
 	init(eventEmitter);
 });

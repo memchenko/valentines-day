@@ -7,33 +7,38 @@ const TransformerTTS = require('../../modules/TransformerTTS/TransformerTTS.js')
 
 const transformerTTS = new TransformerTTS();
 
-const fileCounter = 0;
+let fileCounter = 0;
 
 process.on('message', (data) => {
+	console.log('I got message');
 	fileCounter += 1;
 	
-	const filename = fileCounter + '. ' + data.to;
+	const filename = fileCounter + '. ' + data.to + '.wav';
+	let file;
+	let audioBuffer;
 
 	const url = transformerTTS.getRequestURL(data);
-	const audioBuffer = transformerTTS.getAudioBuffer(url, createFileAndEmitFilename);
 
-	const file = transformerTTS.createFile(filename, audioBuffer);
+	async function getBufferAndWriteFile() {
+		try {
+			audioBuffer = await transformerTTS.getAudioBuffer(url);
 
-	file
-		.then(() => {
-			http.get(DEVICE_IP + '?filename=' + filename, (res) => {
-				try {
+			await transformerTTS.createFile(filename, audioBuffer);
+		} catch(err) {
+			console.error(err);
+		}		
 
-					if (res.statusCode !== 200) throw new Error('filename hasn\'t been sent');
+		http.get(DEVICE_ENDPOINT + '?filename=' + filename, (res) => {
 
-					console.log('filename has been sent');
+			try {
+				if (res.statusCode !== 200) throw new Error('filename hasn\'t been sent');
 
-				} catch(err) {
-					console.error(err.message);
-				}
-			});			
-		})
-		.catch((err) => {
-			console.log(err);
-		});
+				console.log('filename has been sent');
+			} catch(err) {
+				console.error(err.message);
+			}
+		});	
+	}
+
+	getBufferAndWriteFile();
 });

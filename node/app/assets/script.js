@@ -1,6 +1,7 @@
 (function() {
 	fetch('http://172.16.1.107:3000/valentines', {
-		mode: "GET"
+		mode: "GET",
+		cors: "same-origin"
 	})
 	.then(data => data.json())
 	.then(json => console.dir(json));

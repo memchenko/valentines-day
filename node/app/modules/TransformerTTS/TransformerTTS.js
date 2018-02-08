@@ -21,22 +21,24 @@ TransformerTTS.prototype.getRequestURL = function(data) {
 		'&format=wav&quality=hi&lang=ru-RU&speaker=alyss&speed=1.0&emotion=good';
 }
 
-TransformerTTS.prototype.getAudioBuffer = function(request, callback) {
+TransformerTTS.prototype.getAudioBuffer = function(request) {
 	let buffer;
 
-	https.get(request, (res) => {
-		res.on('data', (chunk) => {
-			if (!Buffer.isBuffer(buffer)) {
-				buffer = chunk;
-			} else {
-				buffer = Buffer.concat([buffer, chunk], buffer.length + chunk.length);
-			}
-		});
+	return new Promise((resolve, reject) => {
+		https.get(request, (res) => {
+			res.on('data', (chunk) => {
+				if (!Buffer.isBuffer(buffer)) {
+					buffer = chunk;
+				} else {
+					buffer = Buffer.concat([buffer, chunk], buffer.length + chunk.length);
+				}
+			});
 
-		res.on('end', () => {
-			callback(buffer);
-		});
-	}).on('error', err => console.log(err));
+			res.on('end', () => {
+				resolve(buffer);
+			});
+		}).on('error', err => reject(err));
+	});	
 }
 
 TransformerTTS.prototype.createFile = function(filename, data) {
