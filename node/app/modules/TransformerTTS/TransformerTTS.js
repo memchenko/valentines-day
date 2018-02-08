@@ -14,7 +14,7 @@ TransformerTTS.prototype.getRequestURL = function(data) {
 	const urlencodedText = urlencode(
 		'Валентинка ' + data.to +
 		(data.from.length > 0 ? ('от ' + data.from) : '') +
-		'. ' + data.text	
+		'. ' + data.message	
 	);
 	
 	return this.url + '?key=' + this.apiKey + '&text=' + urlencodedText +

@@ -6,5 +6,5 @@ module.exports = {
 	FTP_PORT: 1111,
 	FILES_DIR: path.resolve(__dirname, '../files'),
 
-	DEVICE_ENDPOINT: '172.16.1.107:3131'
+	DEVICE_ENDPOINT: 'http://localhost:3131'
 };

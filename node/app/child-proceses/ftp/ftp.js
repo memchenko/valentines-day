@@ -1,11 +1,14 @@
+const fs = require('fs');
+const path = require('path');
+
 const FtpSvr = require('ftp-srv');
 
 const constants = require('../../constants/constants.js');
 
 const HOSTNAME = constants.HOST;
-const PORT = constants.FTP_PORT;
+const FTP_PORT = constants.FTP_PORT;
 
-const ftpServer = new FtpSvr('ftp://' + HOSTNAME + ':' + PORT, { anonymous: true, greeting: ["Hey"] });
+const ftpServer = new FtpSvr(`ftp://${HOSTNAME}:${FTP_PORT}`, { anonymous: true, greeting: ["Hey"] });
 
 ftpServer.on('login', (data, resolve, reject) => {
 	resolve({ root: path.resolve(__dirname, '../../files') });
@@ -20,5 +23,5 @@ ftpServer.on('client-error', (connection, context, error) => {
 
 ftpServer.listen()
 	.then(() => {
-	  console.log ( `Server running at http: ${HOSTNAME}:${PORT}/` );
+	  console.log ( `Server running at http: ${HOSTNAME}:${FTP_PORT}/` );
 	});

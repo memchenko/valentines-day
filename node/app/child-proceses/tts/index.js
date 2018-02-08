@@ -1,6 +1,8 @@
 const EventEmitter = require('events');
 const http = require('http');
 
+const urlencode = require('urlencode');
+
 const DEVICE_ENDPOINT = require('../../constants/constants.js').DEVICE_ENDPOINT;
 
 const TransformerTTS = require('../../modules/TransformerTTS/TransformerTTS.js');
@@ -13,7 +15,7 @@ process.on('message', (data) => {
 	console.log('I got message');
 	fileCounter += 1;
 	
-	const filename = fileCounter + '. ' + data.to + '.wav';
+	let filename = fileCounter + '. ' + data.to + '.wav';
 	let file;
 	let audioBuffer;
 
@@ -28,12 +30,13 @@ process.on('message', (data) => {
 			console.error(err);
 		}		
 
-		http.get(DEVICE_ENDPOINT + '?filename=' + filename, (res) => {
+		filename = urlencode(filename);
 
+		http.get(DEVICE_ENDPOINT + '?filename=' + filename, (res) => {
 			try {
 				if (res.statusCode !== 200) throw new Error('filename hasn\'t been sent');
 
-				console.log('filename has been sent');
+				console.log('filename has been sent to: ', DEVICE_ENDPOINT + '?filename=' + filename);
 			} catch(err) {
 				console.error(err.message);
 			}

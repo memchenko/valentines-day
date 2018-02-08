@@ -1,14 +1,18 @@
+const EventEmitter = require('events');
+
+const urlencode = require('urlencode');
 const express = require('express');
 const app = express();
-
-const EventEmitter = require('events');
 
 const PORT = 3131;
 
 const eventEmitter = new EventEmitter();
 
-app.get('/filename', (req, res) => {
-	eventEmitter.emit('got filename', req.query.filename);
+const ftpClient = require('./ftp-client.js')(eventEmitter);
+const speakFile = require('./speakFile.js')(eventEmitter);
+
+app.get('/', (req, res) => {
+	eventEmitter.emit('got filename', urlencode.decode(req.query.filename));
 
 	res.status(200).send('ok');
 });
