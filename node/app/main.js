@@ -1,5 +1,6 @@
 const path = require('path');
 const fs = require('fs');
+const EventEmitter = require('events');
 
 const express = require('express');
 const app = express();
@@ -12,7 +13,10 @@ const PORT = require('./constants/constants.js').PORT;
 const TransformerTTS = require('./modules/TransformerTTS/TransformerTTS.js');
 const Valentines = require('./db.Valentines.js');
 
+const init = require('./init.js');
+
 const valentines = new Valentines();
+const eventEmitter = new EventEmitter();
 
 app.use(express.static(path.resolve(__dirname, './assets')));
 
@@ -34,8 +38,7 @@ app.all('*', (req, res) => {
 server.listen(PORT, () => {
 	console.log('The server started at port: ', PORT);
 
-	// for tts process
-	// for ftp-server process
+	init(eventEmitter);
 });
 
 io.on('connection', (socket) => {
@@ -44,6 +47,8 @@ io.on('connection', (socket) => {
 	});
 
   	socket.on('new valentine', (data) => {
+  		eventEmitter.emit('new data', data);
+
   		valentines.saveValentine(data, (err) => {
   			if (err) {
   				socket.emit('error', 'Could\'t save the valentine');
