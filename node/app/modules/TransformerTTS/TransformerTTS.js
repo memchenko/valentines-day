@@ -18,7 +18,7 @@ TransformerTTS.prototype.getRequestURL = function(data) {
 	);
 	
 	return this.url + '?key=' + this.apiKey + '&text=' + urlencodedText +
-		'&format=wav&quality=hi&lang=ru-RU&speaker=alyss&speed=1.0&emotion=good';
+		'&format=wav&quality=hi&lang=ru-RU&speaker=alyss&speed=0.7&emotion=good';
 }
 
 TransformerTTS.prototype.getAudioBuffer = function(request) {
