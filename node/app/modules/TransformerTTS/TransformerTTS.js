@@ -39,15 +39,27 @@ TransformerTTS.prototype.getAudioBuffer = function(request, callback) {
 	}).on('error', err => console.log(err));
 }
 
-TransformerTTS.prototype.createFile = function(filename) {
-	return function(buffer) {
+TransformerTTS.prototype.createFile = function(filename, data) {
+	return new Promise((resolve, reject) => {
 		fs.open(path.resolve(FILES_DIR, filename), 'w', undefined, (err, fd) => {
-			fs.write(fd, data, undefined, undefined, undefined, () => {
+			if (err) {
+				reject(err);
+				return;
+			}
+
+			fs.write(fd, data, undefined, undefined, undefined, (err, bytesWritten, buffer) => {
+				if (err) {
+					reject(err);
+					return;
+				}
+
 				fs.closeSync(fd);
 				console.log('File has been created!');
+
+				resolve();
 			});
 		});
-	};	
+	});
 }
 
 module.exports = TransformerTTS;
