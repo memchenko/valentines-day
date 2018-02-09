@@ -4,8 +4,8 @@ const path = require('path');
 let ttsProcess;
 let ftpProcess
 
-const ttsPath = path.resolve(__dirname, './child-proceses/tts/index.js');
-const ftpPath = path.resolve(__dirname, './child-proceses/ftp/ftp.js');
+const ttsPath = path.resolve(__dirname, './child-processes/tts/index.js');
+const ftpPath = path.resolve(__dirname, './child-processes/ftp/index.js');
 
 module.exports = function(eventEmitter) {
 	ttsProcess = child_process.fork(ttsPath);

@@ -3,7 +3,7 @@ const http = require('http');
 
 const urlencode = require('urlencode');
 
-const DEVICE_ENDPOINT = require('../../constants/constants.js').DEVICE_ENDPOINT;
+const DEVICE_ENDPOINT = require('../../../constants/constants.js').DEVICE_ENDPOINT;
 
 const TransformerTTS = require('../../modules/TransformerTTS/TransformerTTS.js');
 

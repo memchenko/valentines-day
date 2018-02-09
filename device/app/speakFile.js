@@ -11,6 +11,7 @@ let queue = [];
 async function playNextAfterCurrent(filename) {
 	await queue[0];
 	queue.unshift(playFile(filename));
+	queue.pop();
 }
 
 function addToQueue(filename) {
@@ -36,7 +37,6 @@ function playFile(filename) {
 		// pipe the WAVE file to the Reader instance 
 		file.pipe(reader);
 		file.on('end', () => {
-			queue.pop();
 			resolve();
 		});
 	});	
