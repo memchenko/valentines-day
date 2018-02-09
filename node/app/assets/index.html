@@ -1,28 +1,43 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<meta charset="UTF-8">
+	<meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	
 	<title>Valentine's Day</title>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
+	
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+	<link rel="stylesheet" href="./styles.css">	
 </head>
 <body>
-	<div>
-		<label for="from">От кого</label>
-		<input id="from" type="text">
-	</div>
-	<div>
-		<label for="to">Кому</label>
-		<input id="to" type="text">
-	</div>
-	<div>
-		<label for="message">Сообщение</label>
-		<textarea id="message"></textarea>
-	</div>
-	<div>
-		<button id="submit">Отправить</button>
-	</div>
+	
+	<section class="form">
+		<form class="row">
+			<div class="col-3 form-group">
+				<label for="from">От кого</label>
+				<input id="from" class="form-control" type="text" placeholder="Введите свое имя">
+			</div>
+			<div class="col-3 form-group">
+				<label for="to">Кому</label>
+				<input id="to" class="form-control" type="text" placeholder="Введите получателя">
+			</div>
+			<div class="col-4 form-group">
+				<label for="message">Сообщение</label>
+				<textarea style="resize: none" id="message" class="form-control" rows="1" placeholder="Введите сообщение" aria-describedby="messageHelp"></textarea>
+				<small id="messageHelp" class="form-text text-muted">Осталось: 100 символов</small>
+			</div>
+			<div class="col-2 form-group form__btn-container">
+				<button id="submit" class="btn btn-primary btn-block form__btn">Отправить</button>
+			</div>
+		</form>
+	</section>
 
 	<div id="output"></div>
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
+	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>	
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 	<script src="./script.js"></script>
 </body>
 </html>
