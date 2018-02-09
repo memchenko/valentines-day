@@ -8,7 +8,7 @@ const app = express();
 const server = require('http').Server(app);
 const io = require('socket.io')(server);
 
-const HTTP_PORT = require('../constants/constants.js').HTTP_PORT;
+const HTTP_PORT = require('../../constants/constants.js').HTTP_PORT;
 
 const TransformerTTS = require('./modules/TransformerTTS/TransformerTTS.js');
 const Valentines = require('./db/Valentines.js');
@@ -42,10 +42,6 @@ server.listen(HTTP_PORT, () => {
 });
 
 io.on('connection', (socket) => {
-	io.clients((err, clients) => {
-		console.log(clients);
-	});
-
   	socket.on('new valentine', (data) => {
   		eventEmitter.emit('new data', data);
 

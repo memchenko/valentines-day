@@ -15,6 +15,5 @@ module.exports = function(eventEmitter) {
 };
 
 function sendToTTSProcess(data) {
-	console.log('I got new data');
 	ttsProcess.send(data);
 }

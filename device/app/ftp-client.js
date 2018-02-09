@@ -5,82 +5,82 @@ const FtpClient = require('ftp');
 
 const CONSTANTS = require('../../constants/constants');
 const FTP_HOST = CONSTANTS.HOST;
-const FTP_PORT = CONSTANTS.PORT;
+const FTP_PORT = CONSTANTS.FTP_PORT;
 const FILES_DIR = CONSTANTS.DEVICE_FILES_DIR;
-
-const client = new FtpClient();
 
 let eventEmitter;
 
 let queue = [];
 
-async function copyNextAfterCurrent(filename) {
-	await queue[0];
-	queue.unshift(init(filename));
-	queue.pop();
-}
+function addToQueue(filename) {
+	// console.log(filename, ' to be created...');
 
-function addFileToQueue(filename) {
-	if (queue.length === 0) {
-		queue[0] = init(filename);
-	} else {
-		copyNextAfterCurrent(filename);
-	}
+	queue.push(() => {
+		createFile(filename);
+	});
+
+	if (queue.length === 1) queue[0]();
 }
 
 function createFile(filename) {
-	return new Promise((resolve, reject) => {
-		fs.open(path.resolve(DEVICE_FILES_DIR, filename), 'w', undefined, (err, fd) => {
-			if (err) {
-				reject(err);
-				return;
-			}
-			fs.closeSync(fd);
-			resolve();
-		});
+	// console.log('...creating file: ', filename);
+
+	const filePath = path.resolve(FILES_DIR, filename);
+
+	fs.open(filePath, 'w', undefined, (err, fd) => {
+		if (err) {
+			return;
+		}
+		fs.closeSync(fd);
+
+		eventEmitter.emit('ftp-client: file created', filename);
 	});
 }
 
-async function copyFile(filename, resolve, reject) {
-	try {
-		await createFile(filename);
-	} catch(err) {
-		console.error(error);
-		return;
-	}
+function copyFile(filename) {
+	const client = new FtpClient();
+	// console.log('...copying file: ', filename);
 
 	client.on('ready', () => {
 		client.get(filename, (err, stream) => {
 			if (err) {
-				reject(err);
 				return;
 			}
 
 			stream.once('close', () => {
-				client.end();
-				resolve();
-				eventEmitter.emit('copied file', filename);
+				client.destroy();
+
+				// console.log('Close ', filename);
+
+				eventEmitter.emit('ftp-client: file copied', filename);
+				eventEmitter.emit('ftp-client: ready for next');
 			});
-			stream.pipe(fs.createWriteStream(path.resolve(DEVICE_FILES_DIR, filename)));
+
+			stream.pipe(fs.createWriteStream(path.resolve(FILES_DIR, filename)));
 		});
   	});
 
   	client.connect({
   		host: FTP_HOST,
   		port: FTP_PORT
-  	});
+  	});	
 }
 
-function init(filename) {
-	return new Promise((resolve, reject) => {
-		copyFile(filename, resolve, reject);
-	});		
+function execNext() {
+	// console.log('*** exec next ***');
+
+	queue = queue.slice(1);
+
+	if (queue[0] && typeof queue[0] === 'function') queue[0]();
 }
 
 module.exports = function(_eventEmitter) {
 	eventEmitter = _eventEmitter;
 
-	if (!fs.existSync(FILES_DIR)) fs.mkdirSync(FILES_DIR);
+	if (!fs.existsSync(FILES_DIR)) fs.mkdirSync(FILES_DIR);
 
-	eventEmitter.on('got filename', addFileToQueue);
+	eventEmitter.on('got filename', addToQueue);
+	
+	eventEmitter.on('ftp-client: ready for next', execNext);
+	eventEmitter.on('ftp-client: file created', copyFile);
 };

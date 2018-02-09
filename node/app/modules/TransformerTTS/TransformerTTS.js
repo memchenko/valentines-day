@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const urlencode = require('urlencode');
 
-const FILES_DIR = require('../../../constants/constants.js').SERVER_FILES_DIR;
+const FILES_DIR = require('../../../../constants/constants.js').SERVER_FILES_DIR;
 
 function TransformerTTS() {
 	this.url = 'https://tts.voicetech.yandex.net/generate';
@@ -56,7 +56,6 @@ TransformerTTS.prototype.createFile = function(filename, data) {
 				}
 
 				fs.closeSync(fd);
-				console.log('File has been created!');
 
 				resolve();
 			});

@@ -1,5 +1,7 @@
 (function() {
-	fetch('http://192.168.0.92:3000/valentines', {
+	const host = window.location.host;
+
+	fetch('http://' + host + '/valentines', {
 		mode: "GET",
 		cors: "same-origin"
 	})
@@ -8,7 +10,9 @@
 }());
 
 (function() {
-	var socket = io.connect('http://192.168.0.92:3000');
+	const host = window.location.host;
+
+	const socket = io.connect('http://' + host);
 
 	const FROM_INPUT = document.querySelector('#from');
 	const TO_INPUT = document.querySelector('#to');

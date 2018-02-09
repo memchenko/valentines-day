@@ -3,7 +3,7 @@ const path = require('path');
 
 const FtpSvr = require('ftp-srv');
 
-const CONSTANTS = require('../../../constants/constants.js');
+const CONSTANTS = require('../../../../constants/constants.js');
 
 const HOSTNAME = CONSTANTS.HOST;
 const FTP_PORT = CONSTANTS.FTP_PORT;
@@ -24,7 +24,7 @@ ftpServer.on('client-error', (connection, context, error) => {
 
 ftpServer.listen()
 	.then(() => {
-		if (!fs.existSync(FILES_DIR)) fs.mkdirSync(FILES_DIR);
+		if (!fs.existsSync(FILES_DIR)) fs.mkdirSync(FILES_DIR);
 
 	  	console.log ( `Server running at http: ${HOSTNAME}:${FTP_PORT}/` );
 	});
