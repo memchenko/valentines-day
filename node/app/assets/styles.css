@@ -1,12 +1,129 @@
 section {
 	width: 100%;
-	padding: 10px;
 	box-sizing: border-box;
-
 	overflow-x: hidden;
 }
 
-.form__btn-container {
+.no-padding {
+	padding: 0;
+}
+
+.no-margin {
+	margin: 0;
+}
+
+.form {
+	padding: 10px 25px;
+	margin-top: 15px;
+	border-bottom: 1px solid rgba(0, 0, 0, .125);
+}
+
+.main {
+	height: calc(100vh - 106px);
+	width: 100%;
+	overflow-x: hidden;
+}
+
+.main__row {
+	height: 100%;
+	margin: 0;
+}
+
+.messages-block {
+	height: 100%;
+	border-right: 1px solid rgba(0, 0, 0, .125);
+	overflow-y: scroll;
+}
+
+.canvas-container {	
+	box-sizing: border-box;
+	height: 100%;
+	overflow-y: scroll;
+}
+
+.canvas-wrapper {
+	width: 600px;
+	margin: 30px auto;
+	position: relative
+}
+
+.canvas {
+	display: block;
+
+	cursor: url('./images/edit.svg'), auto;
+
+	background-color: white;
+}
+
+.add-space-btn {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+
+	width: 40px;
+	height: 40px;
+	padding: 0;
+	border-radius: 20px;
+	border: none;
+
+	color: white;
+
+	cursor: pointer;
+
+	position: absolute;
+	right: 30px;
+	bottom: -20px;
+}
+
+.add-space-btn__icon {
+	font-size: 30px;
+}
+
+#visibility {
+	display: inline-block;
+	margin-right: 20px;
+}
+
+.features__visibility-btn {
 	display: flex;
 	align-items: center;
+	justify-content: center;
+
+	position: sticky;
+}
+
+.message {
+	display: flex;
+	flex-direction: row;
+
+	width: 100%;
+	padding: 10px;
+	box-sizing: border-box;
+	border-bottom: 1px solid rgba(0, 0, 0, .125);
+}
+
+.message__header {
+	display: flex;
+	align-items: center;
+
+	margin-bottom: 10px;
+}
+
+.message__content {
+	width: 100%;
+	padding: 0 10px;
+	box-sizing: border-box;
+}
+
+.notifications {
+	position: fixed;
+	bottom: 0;
+	left: 0;
+
+	width: 100%;
+}
+
+.notifications__wrapper {
+	width: 600px;
+	margin: 0 auto;
 }

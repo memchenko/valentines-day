@@ -7,32 +7,121 @@
 	<title>Valentine's Day</title>
 	
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+	<link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet">
 	<link rel="stylesheet" href="./styles.css">	
 </head>
 <body>
 	
 	<section class="form">
 		<form class="row">
-			<div class="col-3 form-group">
-				<label for="from">От кого</label>
-				<input id="from" class="form-control" type="text" placeholder="Введите свое имя">
+			<div class="col-2 form-group">
+				<input id="from" class="form-control form-control-sm" type="text" placeholder="Введите свое имя">
+			</div>
+			<div class="col-2 form-group">
+				<input id="to" class="form-control form-control-sm" type="text" placeholder="Введите получателя" required>
 			</div>
 			<div class="col-3 form-group">
-				<label for="to">Кому</label>
-				<input id="to" class="form-control" type="text" placeholder="Введите получателя">
+				<textarea style="resize: none" id="message" class="form-control form-control-sm" rows="1" placeholder="Введите сообщение" aria-describedby="messageHelp" required></textarea>
+				<small id="messageHelp" class="form-text text-muted">Осталось: <span id="remain">100</span> символов</small>
 			</div>
-			<div class="col-4 form-group">
-				<label for="message">Сообщение</label>
-				<textarea style="resize: none" id="message" class="form-control" rows="1" placeholder="Введите сообщение" aria-describedby="messageHelp"></textarea>
-				<small id="messageHelp" class="form-text text-muted">Осталось: 100 символов</small>
+			<div class="col-2 form-group">
+				<select class="form-control form-control-sm" data-toggle="tooltip" data-placement="top" title="Выберите приставку">
+			    	<option>Валентинка</option>
+		    		<option>Секрет</option>
+			    	<option>Шутка</option>
+			    	<option>Гадость</option>
+				</select>
 			</div>
-			<div class="col-2 form-group form__btn-container">
-				<button id="submit" class="btn btn-primary btn-block form__btn">Отправить</button>
+			<div class="col-1 form-group">
+				<select class="form-control form-control-sm" data-toggle="tooltip" data-placement="top" title="Выберите голос диктора">
+			    	<option>Алиса</option>
+			    	<option>Джейн</option>
+			    	<option>Оксана</option>
+			    	<option>Захар</option>
+			    	<option>Ермил</option>
+				</select>
+			</div>
+			<div class="col-2 form-group">
+				<button id="submit" class="btn btn-sm btn-primary btn-block">Отправить</button>
 			</div>
 		</form>
 	</section>
 
-	<div id="output"></div>
+	<div class="main">
+		<div class="row main__row">
+			<div class="col-4 no-padding no-margin">
+				<section class="messages-block">
+					<div class="row features no-margin">
+						<button type="button" class="btn btn-block btn-sm btn-light features__visibility-btn" data-toggle="tooltip" data-placement="bottom" title="Кто-то смотрит на ваш экран? Эта кнопка скроет вводимый вами текст">
+							<i id="visibility" class="material-icons">visibility</i>
+							<span>Невидимка</span>
+						</button>
+					</div>
+					<div class="row no-margin messages">
+						<div class="message">
+							<div class="message__icon-container">
+								<i class="material-icons text-danger">favorite_border</i>
+							</div>
+							<div class="message__content">
+								<div class="message__header">
+									<span class="font-weight-bold message__title">Валентине от Валентина</span>
+								</div>
+								<div class="message__text text-muted">
+									С днем святого Валентина!
+								</div>
+							</div>							
+						</div>
+						<div class="message">
+							<div class="message__icon-container">
+								<i class="material-icons text-danger">favorite_border</i>
+							</div>
+							<div class="message__content">
+								<div class="message__header">
+									<span class="font-weight-bold message__title">Валентине от Валентина</span>
+								</div>
+								<div class="message__text text-muted">
+									Второе сообщение! Оно больше. Здесь просто текст, текст, текст, текст, текст, текст, текст, текст, текст, текст, текст, текст
+								</div>
+							</div>							
+						</div>
+					</div>
+					<div class="row no-margin">
+						<button type="button" class="btn btn-link btn-block btn-sm">
+							Загрузить еще...
+						</button>
+					</div>
+				</section>
+			</div>
+			<div class="col-8 no-padding no-margin">
+				<section class="canvas-container bg-light">
+					<div class="canvas-wrapper">
+						<canvas height="300" width="600" class="canvas" id="canvas"></canvas>					
+						<button type="button" id="add-space-btn" class="add-space-btn bg-success" data-toggle="tooltip" data-placement="top" title="Добавить пространство для рисования">
+							<i class="material-icons add-space-btn__icon">add</i>
+						</button>
+					</div>					
+				</section>
+			</div>
+		</div>		
+	</div>
+
+	<div class="notifications">
+		<div class="notifications__wrapper">
+			<div class="alert alert-warning alert-dismissible fade show" role="alert">
+			  <strong>Holy guacamole!</strong> You should check in on some of those fields below.
+			  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+			    <span aria-hidden="true">&times;</span>
+			  </button>
+			</div>
+			<div class="alert alert-warning alert-dismissible fade show" role="alert">
+			  <strong>Holy guacamole!</strong> You should check in on some of those fields below.
+			  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+			    <span aria-hidden="true">&times;</span>
+			  </button>
+			</div>
+		</div>
+	</div>
 
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
 	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
