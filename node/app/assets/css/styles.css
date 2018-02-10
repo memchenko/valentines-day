@@ -50,7 +50,7 @@ section {
 .canvas {
 	display: block;
 
-	cursor: url('./images/edit.svg'), auto;
+	cursor: url('../images/edit.svg'), auto;
 
 	background-color: white;
 }
@@ -100,6 +100,8 @@ section {
 	padding: 10px;
 	box-sizing: border-box;
 	border-bottom: 1px solid rgba(0, 0, 0, .125);
+
+	position: relative;
 }
 
 .message__header {
@@ -126,4 +128,43 @@ section {
 .notifications__wrapper {
 	width: 600px;
 	margin: 0 auto;
+}
+
+.message__like-btn {
+	display: flex;
+	align-items: center;
+
+	background-color: none;
+	border: none;
+	padding: 5px 5px 0 0;
+	margin: 0;
+
+	background-color: transparent;
+
+	position: absolute;
+	top: 0;
+	right: 0;
+
+	cursor: pointer;
+}
+
+.message__like-amount {
+	display: inline-block;
+	margin-right: 4px;
+
+	font-size: 14px;
+	color: #e2e6ea;
+}
+
+.message__like-heart {
+	font-size: 16px;
+	color: #e2e6ea;
+}
+
+.message__like-amount--liked {
+	color: #a2a6aa;
+}
+
+.message__like-heart--liked {
+	color: #a2a6aa;
 }

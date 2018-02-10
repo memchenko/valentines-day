@@ -9,7 +9,7 @@
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 	<link href="https://fonts.googleapis.com/icon?family=Material+Icons"
       rel="stylesheet">
-	<link rel="stylesheet" href="./styles.css">	
+	<link rel="stylesheet" href="./css/styles.css">	
 </head>
 <body>
 	
@@ -26,7 +26,7 @@
 				<small id="messageHelp" class="form-text text-muted">Осталось: <span id="remain">100</span> символов</small>
 			</div>
 			<div class="col-2 form-group">
-				<select class="form-control form-control-sm" data-toggle="tooltip" data-placement="top" title="Выберите приставку">
+				<select id="label" class="form-control form-control-sm" data-toggle="tooltip" data-placement="top" title="Выберите приставку">
 			    	<option>Валентинка</option>
 		    		<option>Секрет</option>
 			    	<option>Шутка</option>
@@ -34,7 +34,7 @@
 				</select>
 			</div>
 			<div class="col-1 form-group">
-				<select class="form-control form-control-sm" data-toggle="tooltip" data-placement="top" title="Выберите голос диктора">
+				<select id="speaker" class="form-control form-control-sm" data-toggle="tooltip" data-placement="top" title="Выберите голос диктора">
 			    	<option>Алиса</option>
 			    	<option>Джейн</option>
 			    	<option>Оксана</option>
@@ -53,12 +53,12 @@
 			<div class="col-4 no-padding no-margin">
 				<section class="messages-block">
 					<div class="row features no-margin">
-						<button type="button" class="btn btn-block btn-sm btn-light features__visibility-btn" data-toggle="tooltip" data-placement="bottom" title="Кто-то смотрит на ваш экран? Эта кнопка скроет вводимый вами текст">
+						<button id="invisibility" type="button" class="btn btn-block btn-sm btn-light features__visibility-btn" data-toggle="tooltip" data-placement="bottom" title="Кто-то смотрит на ваш экран? Эта кнопка скроет вводимый вами текст">
 							<i id="visibility" class="material-icons">visibility</i>
 							<span>Невидимка</span>
 						</button>
 					</div>
-					<div class="row no-margin messages">
+					<div id="messages" class="row no-margin messages">
 						<div class="message">
 							<div class="message__icon-container">
 								<i class="material-icons text-danger">favorite_border</i>
@@ -70,7 +70,11 @@
 								<div class="message__text text-muted">
 									С днем святого Валентина!
 								</div>
-							</div>							
+							</div>
+							<button class="message__like-btn">
+								<span class="message__like-amount">31</span>
+								<i class="material-icons message__like-heart">favorite</i>
+							</button>
 						</div>
 						<div class="message">
 							<div class="message__icon-container">
@@ -83,11 +87,15 @@
 								<div class="message__text text-muted">
 									Второе сообщение! Оно больше. Здесь просто текст, текст, текст, текст, текст, текст, текст, текст, текст, текст, текст, текст
 								</div>
-							</div>							
+							</div>
+							<button class="message__like-btn">
+								<span class="message__like-amount message__like-amount--liked">31</span>
+								<i class="material-icons message__like-heart message__like-heart--liked">favorite</i>
+							</button>						
 						</div>
 					</div>
 					<div class="row no-margin">
-						<button type="button" class="btn btn-link btn-block btn-sm">
+						<button id="load-more-btn" type="button" class="btn btn-link btn-block btn-sm">
 							Загрузить еще...
 						</button>
 					</div>
@@ -107,7 +115,7 @@
 	</div>
 
 	<div class="notifications">
-		<div class="notifications__wrapper">
+		<div id="notifications" class="notifications__wrapper">
 			<div class="alert alert-warning alert-dismissible fade show" role="alert">
 			  <strong>Holy guacamole!</strong> You should check in on some of those fields below.
 			  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
@@ -127,6 +135,6 @@
 	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>	
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-	<script src="./script.js"></script>
+	<script src="./js/main.js"></script>
 </body>
 </html>

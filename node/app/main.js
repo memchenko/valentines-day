@@ -47,10 +47,11 @@ io.on('connection', (socket) => {
 
   		valentines.saveValentine(data, (err) => {
   			if (err) {
-  				socket.emit('error', 'Could\'t save the valentine');
+  				socket.emit('error valentine', 'Could\'t save the valentine');
   				return;
   			}
 
+			socket.emit('ok valentine');
   			io.sockets.emit('send valentine', data);
   		});
   	});
