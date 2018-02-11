@@ -1,5 +1,6 @@
 $(document).ready(() => {
 	const CONSTS = window.APP.CONSTS;
+	const SOCKET = CONSTS.MESSAGES_SOCKET;
 	const uiManager = new window.APP.CONSTRUCTORS.UIManager();
 
 	CONSTS.MESSAGE_INPUT.addEventListener('keyup', () => {
@@ -11,13 +12,11 @@ $(document).ready(() => {
 	});
 
 	CONSTS.SUBMIT_BUTTON.addEventListener('click', () => {
-		if (CONSTS.STATE.isSendingMessage === true) return;
-
-		CONSTS.STATE.isSendingMessage = true;
+		window.APP.STATE.isSendingMessage = true;
 
 		uiManager.makeSubmitBtnWaiting();
-
-		CONSTS.SOCKET.emit('new valentine', {
+		
+		SOCKET.emit('client: put message', {
 			from: CONSTS.FROM_INPUT.value,
 			to: CONSTS.TO_INPUT.value,
 			message: CONSTS.MESSAGE_INPUT.value,
@@ -26,17 +25,15 @@ $(document).ready(() => {
 		});
 	});
 
-	CONSTS.SOCKET.on('error valentine', () => {
-		CONSTS.STATE.isSendingMessage = false;
+	SOCKET.on('server: message error', () => {
+		window.APP.STATE.isSendingMessage = false;
 
 		uiManager.resetSubmitBtn();
 	});
 
-	CONSTS.SOCKET.on('ok valentine', () => {
-		CONSTS.STATE.isSendingMessage = false;
+	SOCKET.on('server: message ok', () => {
+		window.APP.STATE.isSendingMessage = false;
 
 		uiManager.resetSubmitBtn().clearForm().resetMessageRemainder();
 	});
-
-
 });

@@ -8,11 +8,11 @@ $(document).ready(() => {
 	UIManager.prototype.addNotification = function(_type, text, _className) {
 		const className = _className || 'alert-light';
 		const type = _type || '';
-		const NOTIFICATION_ID = 'notification-' + notificationCoutner;
+		const NOTIFICATION_ID = 'notification-' + notificationsCounter;
 
 		notificationsCounter += 1;
 
-		$(CONSTS.NOTIFICATIONS_WRAPPER.id).prepend(
+		$('#' + CONSTS.NOTIFICATIONS_WRAPPER.id).prepend(
 			'<div id="' + NOTIFICATION_ID + '" class="alert ' + className + ' alert-dismissible fade show" role="alert">' +
 			  '<strong>' + type + ':</strong> ' + text +
 			  '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' +
@@ -30,7 +30,7 @@ $(document).ready(() => {
 
 	UIManager.prototype.getLabel = function(label) {
 		switch (label) {
-			case 'валентинка': return { text: 'favourite_border', className: 'text-danger' };
+			case 'валентинка': return { text: 'favorite_border', className: 'text-danger' };
 			case 'секрет': return { text: 'hearing', className: 'text-info' };
 			case 'шутка': return { text: 'mood', className: 'text-warning' };
 			case 'гадость': return { text: 'gesture', className: 'text-success' };
@@ -40,13 +40,15 @@ $(document).ready(() => {
 	}
 
 	UIManager.prototype.prependMessage = function(data) {
-		const FROM = data.from.length > 0 ? ' от ' + data.from : '';
+		const FROM = data.from !== 'N/A' ? ' от ' + data.from : '';
 		const TO = data.to;
 		const MESSAGE = data.message;
 		const LABEL = this.getLabel(data.label.toLowerCase());
-		const ID = data._id;
+		const ID = 'message-' + CONSTS.MESSAGES_NUMBER;
 
-		$(CONSTS.MESSAGES_CONTAINER).prepend(
+		CONSTS.MESSAGES_NUMBER += 1;
+
+		$('#' + CONSTS.MESSAGES_CONTAINER.id).prepend(
 			'<div id="' + ID + '" class="message message--new">' +
 				'<div class="message__icon-container">' +
 					'<i class="material-icons ' + LABEL.className + '">' + LABEL.text + '</i>' +
@@ -64,15 +66,21 @@ $(document).ready(() => {
 			'</div>'
 		);
 
+		setTimeout(() => {
+			$('#' + ID).removeClass('message--new');
+		}, 500);
+
 		return this;
 	};
 
 	UIManager.prototype.appendMessage = function(data) {
-		const FROM = data.from.length > 0 ? ' от ' + data.from : '';
+		const FROM = data.from !== 'N/A' ? ' от ' + data.from : '';
 		const LABEL = this.getLabel(data.label.toLowerCase());
-		const ID = data._id;
+		const ID = 'message-' + CONSTS.MESSAGES_NUMBER;
 
-		$(CONSTS.MESSAGES_CONTAINER).prepend(
+		CONSTS.MESSAGES_NUMBER += 1;
+
+		$('#' + CONSTS.MESSAGES_CONTAINER.id).prepend(
 			'<div id="' + ID + '" class="message message--new">' +
 				'<div class="message__icon-container">' +
 					'<i class="material-icons ' + LABEL.className + '">' + LABEL.text + '</i>' +
@@ -90,14 +98,14 @@ $(document).ready(() => {
 			'</div>'
 		);
 
-		/*$('#' + ID).find('.message__like-btn').click(() => {
-			
-		});*/
+		setTimeout(() => {
+			$('#' + ID).removeClass('message--new');
+		}, 500);
 
 		return this;
 	};
 
-	UIManager.prototype.extendCanvas = function(height) {
+	UIManager.prototype.setCanvasHeight = function(height) {
 		CONSTS.APP.CONSTS.CANVAS.height += height;
 
 		return this;
@@ -116,9 +124,9 @@ $(document).ready(() => {
 	UIManager.prototype.clearForm = function() {
 		CONSTS.FROM_INPUT.value = '';
 		CONSTS.TO_INPUT.value = '';
-		CONSTS.MESSAGE_INPUT = '';
-		CONSTS.LABEL_SELECT = 'Валентинка';
-		CONSTS.SPEAKER_SELECT = 'Алиса';
+		CONSTS.MESSAGE_INPUT.value = '';
+		CONSTS.LABEL_SELECT.value = 'Валентинка';
+		CONSTS.SPEAKER_SELECT.value = 'Алиса';
 
 		return this;
 	};

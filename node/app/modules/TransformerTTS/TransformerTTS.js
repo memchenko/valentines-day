@@ -8,17 +8,45 @@ const FILES_DIR = require('../../../../constants/constants.js').SERVER_FILES_DIR
 function TransformerTTS() {
 	this.url = 'https://tts.voicetech.yandex.net/generate';
 	this.apiKey = 'd577f014-5cc9-4bc3-95aa-8c122ab94e6c';
+
+	this.labels = ['Валентинка', 'Шутка', 'Гадость', 'Секрет', 'Идея'];
+	this.speakers = [
+		{ 'Алиса': 'alyss' },
+		{ 'Джейн': 'jane' },
+		{ 'Оксана': 'oksana' },
+		{ 'Ермил': 'ermil' },
+		{ 'Захар': 'zahar' }
+	];
 }
+
+TransformerTTS.prototype.getLabel = function(label) {
+	if (this.labels.some(el => el === label)) return label;
+
+	return 'Сообщение';
+};
+
+TransformerTTS.prototype.getSpeaker = function(speaker) {
+	if (this.speakers.some((el) => {
+		if (el[speaker]) {
+			speaker = el[speaker];
+			return true;
+		}
+		return false;
+	})) return speaker;
+
+	return 'alyss';
+};
 
 TransformerTTS.prototype.getRequestURL = function(data) {
 	const urlencodedText = urlencode(
-		'Валентинка ' + data.to +
+		this.getLabel(data.label) + ' ' + data.to +
 		(data.from.length > 0 ? ('от ' + data.from) : '') +
 		'. ' + data.message	
 	);
 	
 	return this.url + '?key=' + this.apiKey + '&text=' + urlencodedText +
-		'&format=wav&quality=hi&lang=ru-RU&speaker=alyss&speed=0.7&emotion=good';
+		'&format=wav&quality=hi&lang=ru-RU&speaker=' + this.getSpeaker(data.speaker) +
+		'&speed=0.7&emotion=good';
 }
 
 TransformerTTS.prototype.getAudioBuffer = function(request) {

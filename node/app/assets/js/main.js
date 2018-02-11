@@ -3,7 +3,10 @@ $(document).ready(() => {
 	APP.CONSTS = CONSTS = APP.CONSTS || {};
 	APP.STATE = STATE = APP.STATE || {};
 
-	CONSTS.HOST = window.location.host;
+	CONSTS.HOSTNAME = window.location.hostname;
+	CONSTS.MAIN_PORT = window.location.port;
+	CONSTS.MESSAGES_PORT = '3000';
+	CONSTS.PAINTINGS_PORT = '3030';
 	CONSTS.WINDOW_WIDTH = window.innerWidth;
 
 	// *** FROM GROUP ELEMENTS ***
@@ -29,9 +32,13 @@ $(document).ready(() => {
 	// *** NOTIFICATIONS ***
 	CONSTS.NOTIFICATIONS_WRAPPER = document.querySelector('#notifications');
 
-	// CONSTS.API_GET_VALENTINES = 'http://' + CONSTS.HOST + '/valentines';
+	// *** APIs ***
+	CONSTS.API_MESSAGES = 'http://' + CONSTS.HOSTNAME + ':' + CONSTS.MESSAGES_PORT + '/api/messages';
+	CONSTS.API_PAINTINGS = 'http://' + CONSTS.HOSTNAME + ':' + CONSTS.PAINTINGS_PORT + '/api/paintings';
 
-	CONSTS.SOCKET = {}; //io.connect('http://' + CONSTS.HOST);
+	// *** SOCKETS ***
+	CONSTS.MESSAGES_SOCKET = io.connect('http://' + CONSTS.HOSTNAME + ':' + CONSTS.MESSAGES_PORT);
+	CONSTS.PAINTINGS_SOCKET = io.connect('http://' + CONSTS.HOSTNAME + ':' + CONSTS.PAINTINGS_PORT);
 
 	CONSTS.MESSAGES_NUMBER = 0;
 

@@ -1,5 +1,6 @@
 $(document).ready(() => {
 	const CONSTS = window.APP.CONSTS;
+	const SOCKET = CONSTS.PAINTINGS_SOCKET;
 
 	if (CONSTS.WINDOW_WIDTH < 960) return;
 
@@ -23,6 +24,40 @@ $(document).ready(() => {
 	CTX.lineJoin = 'round';
 	CTX.lineCap = 'round';
 
+	fetch(CONSTS.API_PAINTINGS, {
+			method: 'GET',
+			mode: 'cors',
+			cache: 'no-cache'
+		})
+		.then(res => {
+			if (res.status >= 400) throw new Error('Не удалось загрузить рисунки');
+
+			return res.json();
+		})
+		.then((json) => {
+			isLoadingShapes = true;
+
+			uiManager.setCanvasHeight(+json.height);
+
+			json.paintings.forEach((shape) => {
+				CTX.strokeStyle = shape.color;
+				CTX.beginPath();
+			    CTX.moveTo(shape.coords[0].x, shape.coords[0].y);
+
+			    shape.coords.forEach((coords, i) => {
+			    	if (i === 0) return;
+			    	CTX.lineTo(coords.x, coords.y);
+			    	CTX.stroke();
+			    });
+
+			});
+		    
+		    isLoadingShapes = false;
+		})
+		.catch((err) => {
+			uiManager.addNotification('Ошибка', err.message, 'alert-danger');
+		});
+
 	function paint() {
 	    CTX.lineTo(MOUSE.x, MOUSE.y);
 	    CTX.stroke();
@@ -35,19 +70,17 @@ $(document).ready(() => {
 	    SHAPE.coords.push({ x: MOUSE.x, y: MOUSE.y });
 	}
 
-	CANVAS.addEventListener('mousemove', function(e) {
+	$('#' + CANVAS.id).mousemove(() => {
+		console.log('i work move');
 		if (!isPaintingMode) return;
-		if (isLoadingShapes) {
-			CONSTS.SOCKET.emit('client: coords', SHAPE);
-			return;
-		}
+		if (isLoadingShapes) return;
 
 	    updateCoords(e);
-
 	    paint();
 	});
-	 
-	CANVAS.addEventListener('mousedown', function(e) {
+
+	$('#' + CANVAS.id).mousedown((e) => {
+		console.log(e.target);
 		isPaintingMode = true;
 
 		updateCoords(e);
@@ -58,19 +91,23 @@ $(document).ready(() => {
 	    CTX.moveTo(MOUSE.x, MOUSE.y);
 	});
 	 
-	CANVAS.addEventListener('mouseup', function() {
-	    isPaintingMode = false;
-
-	    CONSTS.SOCKET.emit('client: coords', SHAPE);
+	$('#' + CANVAS.id).mouseup(() => {
+		console.log('i work 1');
+	    if (isPaintingMode) {
+	    	SOCKET.emit('client: put shape', SHAPE);
+	    	isPaintingMode = false;
+    	}
 	});
 
-	CANVAS.addEventListener('mouseleave', function() {
-	    isPaintingMode = false;
-
-	    CONSTS.SOCKET.emit('client: coords', SHAPE);
+	$('#' + CANVAS.id).mouseleave(() => {
+		console.log('i work 2');
+	    if (isPaintingMode) {
+	    	SOCKET.emit('client: put shape', SHAPE);
+			isPaintingMode = false;
+		}
 	});
 	 
-	CONSTS.SOCKET.on('server: coords', (data) => {
+	SOCKET.on('server: new shape', (data) => {
 		CTX.strokeStyle = data.color;
 		CTX.beginPath();
 	    CTX.moveTo(data.coords[0].x, data.coords[0].y);
@@ -79,28 +116,32 @@ $(document).ready(() => {
 	    	if (i === 0) return;
 	    	CTX.lineTo(coords.x, coords.y);
 	    	CTX.stroke();
-	    });	
+	    });
 	});
 
-	CONST.ADD_SPACE_BUTTON.addEventListener('click', () => {
-		CONSTS.SOCKET.emit('client: add space');
+	CONSTS.ADD_SPACE_BUTTON.addEventListener('click', () => {
+		SOCKET.emit('client: add space');
 	});
 
-	CONSTS.SOCKET.on('server: add space', () => {
+	SOCKET.on('server: add space', (height) => {
 		isLoadingShapes = true;
 
-		uiManager.extendCanvas(100);
-
-		fetch('', {
-			mode: 'GET'
+		fetch(CONSTS.API_PAINTINGS, {
+			method: 'GET',
+			mode: 'cors',
+			cache: 'no-cache'
 		})
 		.then(res => {
-			if (res.status !== 200) throw new Error('Не могу загрузить рисунки');
+			if (res.status >= 400) throw new Error('Не удалось загрузить рисунки');
 
 			return res.json();
 		})
 		.then((json) => {
-			json.forEach((shape) => {
+			isLoadingShapes = true;
+
+			uiManager.setCanvasHeight(height);
+
+			json.paintings.forEach((shape) => {
 				CTX.strokeStyle = shape.color;
 				CTX.beginPath();
 			    CTX.moveTo(shape.coords[0].x, shape.coords[0].y);
@@ -111,13 +152,19 @@ $(document).ready(() => {
 			    	CTX.stroke();
 			    });
 			});
+
+			isLoadingShapes = false;
 		})
 		.cath((err) => {
 			uiManager.addNotification('Ошибка', err.message, 'alert-danger');
 		});
 	});
 
-	CONSTS.SOCKET.on('server: add space error', () => {
+	SOCKET.on('server: add space ok', () => {
+		uiManager.addNotification('Успех', 'вы успешно добавили пространство', 'alert-success');
+	});
+
+	SOCKET.on('server: add space error', () => {
 		uiManager.addNotification('Предупреждение', 'добавлять пространство можно только один раз!', 'alert-warning');
 	});
 });
