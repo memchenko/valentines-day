@@ -2,11 +2,12 @@ $(document).ready(() => {
 	const CONSTS = window.APP.CONSTS;
 	const uiManager = new window.APP.CONSTRUCTORS.UIManager();
 
-	CONSTS.MESSAGE_INPUT.addEventListener('keydown', () => {
-		const MESSAGE_LENGTH = CONSTS.MESSAGE_INPUT.value;
+	CONSTS.MESSAGE_INPUT.addEventListener('keyup', () => {
+		const MESSAGE_LENGTH = CONSTS.MESSAGE_INPUT.value.length;
 		const MAX_LENGTH = 100;
+		const REMAINDER = MAX_LENGTH - MESSAGE_LENGTH < 0 ? 0 : MAX_LENGTH - MESSAGE_LENGTH;
 
-		
+		uiManager.setMessageRemainder(REMAINDER);
 	});
 
 	CONSTS.SUBMIT_BUTTON.addEventListener('click', () => {
@@ -34,7 +35,7 @@ $(document).ready(() => {
 	CONSTS.SOCKET.on('ok valentine', () => {
 		CONSTS.STATE.isSendingMessage = false;
 
-		uiManager.resetSubmitBtn().clearForm();
+		uiManager.resetSubmitBtn().clearForm().resetMessageRemainder();
 	});
 
 

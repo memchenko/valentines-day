@@ -165,9 +165,9 @@ $(document).ready(() => {
 		CONSTS.REMAINDER_CONTAINER.innerHTML = number;
 
 		if (number === 0) {
-			$('#' + COSNTS.REMAINDER_CONTAINER.id).addClass('text-danger');
+			$('#' + CONSTS.REMAINDER_CONTAINER.id).addClass('text-danger');
 		} else {
-			$('#' + COSNTS.REMAINDER_CONTAINER.id).removeClass('text-danger');
+			$('#' + CONSTS.REMAINDER_CONTAINER.id).removeClass('text-danger');
 		}
 
 		return this;
@@ -176,7 +176,7 @@ $(document).ready(() => {
 	UIManager.prototype.resetMessageRemainder = function() {
 		CONSTS.REMAINDER_CONTAINER.innerHTML = '100';
 
-		$('#' + COSNTS.REMAINDER_CONTAINER.id).removeClass('text-danger');
+		$('#' + CONSTS.REMAINDER_CONTAINER.id).removeClass('text-danger');
 
 		return this;
 	};
