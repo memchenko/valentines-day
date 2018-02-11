@@ -4,6 +4,7 @@ $(document).ready(() => {
 	APP.STATE = STATE = APP.STATE || {};
 
 	CONSTS.HOST = window.location.host;
+	CONSTS.WINDOW_WIDTH = window.innerWidth;
 
 	// *** FROM GROUP ELEMENTS ***
 	CONSTS.FROM_INPUT = document.querySelector('#from');
@@ -13,6 +14,7 @@ $(document).ready(() => {
 	CONSTS.LABEL_SELECT = document.querySelector('#label');
 	CONSTS.SPEAKER_SELECT = document.querySelector('#speaker');
 	CONSTS.SUBMIT_BUTTON = document.querySelector('#submit');
+	CONSTS.WRITE_VALENTINE_BUTTON = document.querySelector('#write-valentine-btn');
 
 	// *** MESSAGE GROUP ELEMENTS ***
 	CONSTS.INVISIBILITY_BUTTON = document.querySelector('#invisibility');
@@ -22,13 +24,16 @@ $(document).ready(() => {
 	// *** CANVAS GROUP ELEMENTS ***
 	CONSTS.CANVAS = document.querySelector('#canvas');
 	CONSTS.ADD_SPACE_BUTTON = document.querySelector('#add-space-btn');
+	CONSTS.PALETTE = document.querySelector('#palette');
 
 	// *** NOTIFICATIONS ***
 	CONSTS.NOTIFICATIONS_WRAPPER = document.querySelector('#notifications');
 
 	// CONSTS.API_GET_VALENTINES = 'http://' + CONSTS.HOST + '/valentines';
 
-	CONSTS.SOCKET = io.connect('http://' + CONSTS.HOST);
+	CONSTS.SOCKET = {}; //io.connect('http://' + CONSTS.HOST);
+
+	CONSTS.MESSAGES_NUMBER = 0;
 
 	STATE = {
 		isWaitingForMessages: false,
@@ -37,51 +42,20 @@ $(document).ready(() => {
 	};
 }); 
 
-(function() {
-	const host = window.location.host;
-
-	fetch('http://' + host + '/valentines', {
-		mode: "GET",
-		cors: "same-origin"
-	})
-	.then(data => data.json())
-	.then(json => console.dir(json));
-}());
-
-(function() {
-	const host = window.location.host;
-
-	const socket = io.connect('http://' + host);
-
-	const FROM_INPUT = document.querySelector('#from');
-	const TO_INPUT = document.querySelector('#to');
-	const MESSAGE_INPUT = document.querySelector('#message');
-	const SUBMIT_BUTTON = document.querySelector('#submit');
-
-	SUBMIT_BUTTON.addEventListener('click', () => {	
-		socket.emit('new valentine', {
-			from: FROM_INPUT.value,
-			to: TO_INPUT.value,
-			message: MESSAGE_INPUT.value
-		});
-	});
-
-	socket.on('send valentine', (data) => {
-		OUTPUT.innerHTML += 
-		`<p>
-			<strong>От: </strong>${data.from}
-		</p>
-		<p>
-			<strong>Кому: </strong>${data.to}
-		</p>
-		<p>
-			<strong>Сообщение:</strong><br>
-			${data.message}
-		</p>`;		
-	});
-
-}());
-
 $(document).ready(() => {
 	$('*[data-toggle="tooltip"]').tooltip();
+
+	if (window.APP.CONSTS.WINDOW_WIDTH < 960) {
+		let isFormOpened = false;
+
+		CONSTS.WRITE_VALENTINE_BUTTON.addEventListener('click', () => {
+			if (isFormOpened) {
+				isFormOpened = false;
+				$('.form').removeClass('form--opened');
+			} else {
+				isFormOpened = true;
+				$('.form').addClass('form--opened');
+			}			
+		});
+	}
 });

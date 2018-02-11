@@ -79,7 +79,44 @@ section {
 	font-size: 30px;
 }
 
-#visibility {
+.erase-btn {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+
+	width: 40px;
+	height: 40px;
+	padding: 0;
+	margin: 0;
+	border-radius: 20px;
+	border: none;
+
+	color: white;
+
+	cursor: pointer;
+
+	position: absolute;
+	right: 80px;
+	bottom: -20px;	
+}
+
+.erase-btn__icon {
+	font-size: 30px;
+}
+
+#palette {
+	display: inline-block;
+	width: 0;
+	height: 0;
+	padding: 0;
+	margin: 0;
+	border: 0;
+	overflow: hidden;
+
+	position: absolute;
+}
+
+#invisibility i {
 	display: inline-block;
 	margin-right: 20px;
 }
@@ -102,6 +139,14 @@ section {
 	border-bottom: 1px solid rgba(0, 0, 0, .125);
 
 	position: relative;
+
+	background-color: #fff;
+
+	transition: all .5s ease;
+}
+
+.message--new {
+	background-color: #ffb;
 }
 
 .message__header {
@@ -115,19 +160,6 @@ section {
 	width: 100%;
 	padding: 0 10px;
 	box-sizing: border-box;
-}
-
-.notifications {
-	position: fixed;
-	bottom: 0;
-	left: 0;
-
-	width: 100%;
-}
-
-.notifications__wrapper {
-	width: 600px;
-	margin: 0 auto;
 }
 
 .message__like-btn {
@@ -167,4 +199,65 @@ section {
 
 .message__like-heart--liked {
 	color: #a2a6aa;
+}
+
+.notifications {
+	position: fixed;
+	bottom: 0;
+	left: 0;
+
+	width: 100%;
+}
+
+.notifications__wrapper {
+	width: 600px;
+	margin: 0 auto;
+}
+
+.write-valentine-btn {
+	display: none;
+}
+
+@media only screen and (max-width: 960px) {
+	.notifications__wrapper {
+		width: 95%;
+	}
+
+	.left-column {
+		min-width: 100%;
+		max-width: 100%;
+	}
+
+	.right-column {
+		display: none;
+	}
+
+	.write-valentine-btn {
+		display: block;
+	}
+
+	.form {
+		display: none;
+
+		background-color: white;
+
+		position: fixed;
+		top: 25px;
+		left: 0;
+		width: 100%;
+		height: calc(100% - 25px);
+		z-index: 999;
+	}
+
+	.form--opened {
+		display: block;
+	}
+
+	.form form {
+		flex-direction: column;
+	}
+
+	.form .form-group {
+		max-width: 100%;
+	}
 }

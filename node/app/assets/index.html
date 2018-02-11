@@ -12,6 +12,10 @@
 	<link rel="stylesheet" href="./css/styles.css">	
 </head>
 <body>
+
+	<button id="write-valentine-btn" type="button" class="btn-primary btn-block write-valentine-btn">
+		<i class="material-icons">insert_comment</i>
+	</button>
 	
 	<section class="form">
 		<form class="row">
@@ -50,11 +54,11 @@
 
 	<div class="main">
 		<div class="row main__row">
-			<div class="col-4 no-padding no-margin">
+			<div class="col-4 no-padding no-margin left-column">
 				<section class="messages-block">
 					<div class="row features no-margin">
 						<button id="invisibility" type="button" class="btn btn-block btn-sm btn-light features__visibility-btn" data-toggle="tooltip" data-placement="bottom" title="Кто-то смотрит на ваш экран? Эта кнопка скроет вводимый вами текст">
-							<i id="visibility" class="material-icons">visibility</i>
+							<i class="material-icons">visibility</i>
 							<span>Невидимка</span>
 						</button>
 					</div>
@@ -71,10 +75,10 @@
 									С днем святого Валентина!
 								</div>
 							</div>
-							<button class="message__like-btn">
+							<!--<button class="message__like-btn">
 								<span class="message__like-amount">31</span>
 								<i class="material-icons message__like-heart">favorite</i>
-							</button>
+							</button>-->
 						</div>
 						<div class="message">
 							<div class="message__icon-container">
@@ -88,10 +92,10 @@
 									Второе сообщение! Оно больше. Здесь просто текст, текст, текст, текст, текст, текст, текст, текст, текст, текст, текст, текст
 								</div>
 							</div>
-							<button class="message__like-btn">
-								<span class="message__like-amount message__like-amount--liked">31</span>
-								<i class="material-icons message__like-heart message__like-heart--liked">favorite</i>
-							</button>						
+							<!--<button class="message__like-btn">
+								<span class="message__like-amount">31</span>
+								<i class="material-icons message__like-heart">favorite</i>
+							</button>-->				
 						</div>
 					</div>
 					<div class="row no-margin">
@@ -101,13 +105,17 @@
 					</div>
 				</section>
 			</div>
-			<div class="col-8 no-padding no-margin">
+			<div class="col-8 no-padding no-margin right-column">
 				<section class="canvas-container bg-light">
 					<div class="canvas-wrapper">
-						<canvas height="300" width="600" class="canvas" id="canvas"></canvas>					
+						<canvas width="600" height="300" class="canvas" id="canvas"></canvas>					
 						<button type="button" id="add-space-btn" class="add-space-btn bg-success" data-toggle="tooltip" data-placement="top" title="Добавить пространство для рисования">
 							<i class="material-icons add-space-btn__icon">add</i>
 						</button>
+						<label role="button" for="palette" class="erase-btn bg-primary" data-toggle="tooltip" data-placement="top" title="Выбрать цвет кисти">
+							<i class="material-icons erase-btn__icon">palette</i>
+						</label>
+						<input id="palette" type="color" value="#000">
 					</div>					
 				</section>
 			</div>
@@ -136,5 +144,9 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>	
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 	<script src="./js/main.js"></script>
+	<script src="./js/UIManager.js"></script>
+	<script src="./js/form.js"></script>
+	<script src="./js/messages.js"></script>
+	<script src="./js/canvas.js"></script>
 </body>
 </html>

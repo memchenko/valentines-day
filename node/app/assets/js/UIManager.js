@@ -14,7 +14,7 @@ $(document).ready(() => {
 
 		$(CONSTS.NOTIFICATIONS_WRAPPER.id).prepend(
 			'<div id="' + NOTIFICATION_ID + '" class="alert ' + className + ' alert-dismissible fade show" role="alert">' +
-			  '<strong>' + type + '</strong> ' + text +
+			  '<strong>' + type + ':</strong> ' + text +
 			  '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' +
 			    '<span aria-hidden="true">&times;</span>' +
 			  '</button>' +
@@ -47,7 +47,7 @@ $(document).ready(() => {
 		const ID = data._id;
 
 		$(CONSTS.MESSAGES_CONTAINER).prepend(
-			'<div id="' + ID + '" class="message">' +
+			'<div id="' + ID + '" class="message message--new">' +
 				'<div class="message__icon-container">' +
 					'<i class="material-icons ' + LABEL.className + '">' + LABEL.text + '</i>' +
 				'</div>' +
@@ -56,7 +56,11 @@ $(document).ready(() => {
 						'<span class="font-weight-bold message__title">' + TO + FROM + '</span>' +
 					'</div>' +
 					'<div class="message__text text-muted">' + MESSAGE + '</div>' +
-				'</div>' +
+				'</div>'  +
+				// '<button class="message__like-btn">' +
+				// 	'<span class="message__like-amount">' + data.likes_quantity + '</span>' +
+				// 	'<i class="material-icons message__like-heart">favorite</i>' +
+				// '</button>' +
 			'</div>'
 		);
 
@@ -65,41 +69,47 @@ $(document).ready(() => {
 
 	UIManager.prototype.appendMessage = function(data) {
 		const FROM = data.from.length > 0 ? ' от ' + data.from : '';
-		const TO = data.to;
-		const MESSAGE = data.message;
 		const LABEL = this.getLabel(data.label.toLowerCase());
 		const ID = data._id;
 
 		$(CONSTS.MESSAGES_CONTAINER).prepend(
-			'<div id="' + ID + '" class="message">' +
+			'<div id="' + ID + '" class="message message--new">' +
 				'<div class="message__icon-container">' +
 					'<i class="material-icons ' + LABEL.className + '">' + LABEL.text + '</i>' +
 				'</div>' +
 				'<div class="message__content">' +
 					'<div class="message__header">' +
-						'<span class="font-weight-bold message__title">' + TO + FROM + '</span>' +
+						'<span class="font-weight-bold message__title">' + data.to + FROM + '</span>' +
 					'</div>' +
-					'<div class="message__text text-muted">' + MESSAGE + '</div>' +
+					'<div class="message__text text-muted">' + data.message + '</div>' +
 				'</div>' +
+				// '<button class="message__like-btn">' +
+				// 	'<span class="message__like-amount">' + data.likes_quantity + '</span>' +
+				// 	'<i class="material-icons message__like-heart">favorite</i>' +
+				// '</button>' +
 			'</div>'
 		);
+
+		/*$('#' + ID).find('.message__like-btn').click(() => {
+			
+		});*/
 
 		return this;
 	};
 
 	UIManager.prototype.extendCanvas = function(height) {
-		CONSTS.APP.CONSTS.CANVAS.height = height;
+		CONSTS.APP.CONSTS.CANVAS.height += height;
 
 		return this;
 	};
 
 	UIManager.prototype.makeSubmitBtnWaiting = function() {
-		$('#' + CONSTS.SUBMIT_BUTTON).attr('disabled', true).text('. . .');
+		$('#' + CONSTS.SUBMIT_BUTTON.id).attr('disabled', true).text('. . .');
 		return this;
 	};
 
 	UIManager.prototype.resetSubmitBtn = function() {
-		$('#' + CONSTS.SUBMIT_BUTTON).attr('disabled', false).text('Отправить');
+		$('#' + CONSTS.SUBMIT_BUTTON.id).attr('disabled', false).text('Отправить');
 		return this;
 	};
 
@@ -114,33 +124,41 @@ $(document).ready(() => {
 	};
 
 	UIManager.prototype.showInvisibleMode = function() {
-		CONSTS.INVISIBILITY_BUTTON.innerHTML = 'visibility_off';
+		$('#' + CONSTS.INVISIBILITY_BUTTON.id).find('i').text('visibility_off');
 
 		CONSTS.FROM_INPUT.style = 'color: transparent';
 		CONSTS.TO_INPUT.style = 'color: transparent';
 		CONSTS.MESSAGE_INPUT.style = 'color: transparent';
 		CONSTS.LABEL_SELECT.style = 'color: transparent';
 		CONSTS.SPEAKER_SELECT.style = 'color: transparent';
+
+		return this;
 	};
 
 	UIManager.prototype.showVisibleMode = function() {
-		CONSTS.INVISIBILITY_BUTTON.innerHTML = 'visibility';
+		$('#' + CONSTS.INVISIBILITY_BUTTON.id).find('i').text('visibility');
 
 		CONSTS.FROM_INPUT.style = 'color: #495057';
 		CONSTS.TO_INPUT.style = 'color: #495057';
 		CONSTS.MESSAGE_INPUT.style = 'color: #495057';
 		CONSTS.LABEL_SELECT.style = 'color: #495057';
 		CONSTS.SPEAKER_SELECT.style = 'color: #495057';
+
+		return this;
 	};
 
 	UIManager.prototype.addLikedClassToMessage = function(id) {
 		$('#' + id).find('.message__like-amount').addClass('message__like-amount--liked');
 		$('#' + id).find('.message__like-heart').addClass('message__like-heart--liked');
+
+		return this;
 	};
 
 	UIManager.prototype.removeLikedClassFromMessage = function(id) {
 		$('#' + id).find('.message__like-amount').removeClass('message__like-amount--liked');
 		$('#' + id).find('.message__like-heart').removeClass('message__like-heart--liked');
+
+		return this;
 	};
 
 	UIManager.prototype.setMessageRemainder = function(number) {
@@ -151,12 +169,26 @@ $(document).ready(() => {
 		} else {
 			$('#' + COSNTS.REMAINDER_CONTAINER.id).removeClass('text-danger');
 		}
+
+		return this;
 	};
 
 	UIManager.prototype.resetMessageRemainder = function() {
 		CONSTS.REMAINDER_CONTAINER.innerHTML = '100';
 
 		$('#' + COSNTS.REMAINDER_CONTAINER.id).removeClass('text-danger');
+
+		return this;
+	};
+
+	UIManager.prototype.makeLoadMoreBtnWaiting = function() {
+		$('#' + CONSTS.LOAD_MORE_BUTTON.id).attr('disabled', true).text('. . .');
+		return this;
+	};
+
+	UIManager.prototype.makeLoadMoreBtnWaiting = function() {
+		$('#' + CONSTS.LOAD_MORE_BUTTON.id).attr('disabled', false).text('Загрузить еще...');
+		return this;
 	};
 
 	window.APP.CONSTRUCTORS = window.APP.CONSTRUCTORS || {};
