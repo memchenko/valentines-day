@@ -4,7 +4,8 @@ function Messages(mongoose) {
 		to: String,
 		message: String,
 		label: String,
-		speaker: String
+		speaker: String,
+		likedIPs: Array
 	}));
 
 	this.speakers = ['alyss', 'jane', 'oksana', 'zahar', 'ermil'];
@@ -51,13 +52,76 @@ Messages.prototype.saveMessage = function(data, callback) {
 		to: String(data.to).length > 0 ? String(data.to) : "N/A",
 		message: String(data.message),
 		label: data.label,
-		speaker: data.speaker
+		speaker: data.speaker,
+		likedIPs: []
 	});
 
 	message.save((err, message) => {
 		if (err) callback(err);
 
-		callback(null);
+		callback(null, message);
+	});
+};
+
+Messages.prototype.getMessage = function(message_id) {
+	return new Promise((resolve, reject) => {
+		this.Model.findById({ '_id': message_id }).exec((err, doc) => {
+			if (err) {
+				reject(err);
+				return;
+			}
+
+			resolve(doc);
+		});
+	});
+};
+
+Messages.prototype.likeMessage = function(message_id, ip) {
+	const _this = this;
+
+	return new Promise((resolve, reject) => {
+		_this.getMessage(message_id)
+		.then((doc) => {
+			const isLikeHasIP = doc.likedIPs.some(val => val === ip);
+
+			if (isLikeHasIP) {
+				reject();
+				return;
+			}
+
+			doc.likedIPs = doc.likedIPs.concat([ip]);
+			doc.save(() => resolve({ likesNumber: doc.likedIPs.length, messageId: message_id }));
+		})
+		.catch((err) => {
+			reject();
+		});
+	});
+};
+
+Messages.prototype.unlikeMessage = function(message_id, ip) {
+	const _this = this;
+
+	return new Promise((resolve, reject) => {
+		_this.getMessage(message_id)
+		.then((doc) => {
+			const isLikeHasIP = doc.likedIPs.some(val => val === ip);
+
+			if (!isLikeHasIP) {
+				reject();
+				return;
+			}
+
+			const indexOfIP = doc.likedIPs.indexOf(ip);
+			doc.likedIPs = doc.likedIPs
+				.slice(0, indexOfIP)
+				.concat(
+					doc.likedIPs.slice(indexOfIP + 1)
+				);
+			doc.save(() => resolve({ likesNumber: doc.likedIPs.length, messageId: message_id }));
+		})
+		.catch((err) => {
+			reject();
+		});
 	});
 };
 

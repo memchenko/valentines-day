@@ -16,20 +16,29 @@ app.get('/api/messages', (req, res) => {
 	const offset = +req.query.offset;
 	const limit = +req.query.limit;
 
-	messages.getMessages(limit, offset, (err, docs) => {
-		if (err) {
-			res.status(500).send('Couldn\'t find documents');
-			return;
-		}
+  messages.getMessages(limit, offset, (err, messages) => {
+    if (err) {
+      res.status(500).send('Couldn\'t find documents');
+      return;
+    }
 
-		res.set({
-			'Content-Type': 'application/json',
-			'Cache-Control': 'no-cache',
-      		'Access-Control-Allow-Methods': 'GET',
-  			'Access-Control-Allow-Origin': '*'
-		});
-		res.status(200).send(JSON.stringify(docs));
-	});	
+    let result = messages.map((doc) => {
+      let message = doc.toObject();
+
+      return {
+        ...message,
+        isLiked: message.likedIPs.some(ip => ip === req.ip)
+      };
+    });
+
+    res.set({
+      'Content-Type': 'application/json',
+      'Cache-Control': 'no-cache',
+      'Access-Control-Allow-Methods': 'GET',
+      'Access-Control-Allow-Origin': '*'
+    });
+    res.status(200).send(JSON.stringify(result));
+  });
 });
 
 app.all('*', (req, res) => {
@@ -49,7 +58,7 @@ io.on('connection', (socket) => {
   			return;
   		}
 
-  		messages.saveMessage(data, (err) => {
+  		messages.saveMessage(data, (err, message) => {
   			if (err) {
   				socket.emit('server: message error', 'Не удалось сохранить сообщение');
   				return;
@@ -58,11 +67,29 @@ io.on('connection', (socket) => {
   			process.send(data);
 
 			  socket.emit('server: message ok');
-  			io.sockets.emit('server: new message', data);
+  			io.sockets.emit('server: new message', message.toObject());
   		});
   	});
 
     socket.on('client: like message', (message_id) => {
-      return;
+      messages.likeMessage(message_id, socket.handshake.address)
+      .then((like) => {
+        socket.emit('server: like message ok');
+        io.sockets.emit('server: like message', like);
+      })
+      .catch((err) => {
+        socket.emit('server: like message error');
+      });
+    });
+
+    socket.on('client: unlike message', (message_id) => {
+      messages.unlikeMessage(message_id, socket.handshake.address)
+      .then((like) => {
+        socket.emit('server: unlike message ok');
+        io.sockets.emit('server: unlike message', like);
+      })
+      .catch((err) => {
+        socket.emit('server: unlike message error');
+      });
     });
 });
