@@ -1,12 +1,9 @@
 const fs = require('fs');
 const path = require('path');
 
-const mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost:27017/app');
-
 let canvasJSON = require('./canvas.json');
 
-function Paintings() {
+function Paintings(mongoose) {
 	this.Model = mongoose.model('shapes', new mongoose.Schema({
 		color: String,
 		coords: Array

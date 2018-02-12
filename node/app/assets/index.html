@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 	
 	<title>Valentine's Day</title>
+	<link rel="shortcut icon" href="./images/favicon.ico">
 	
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 	<link href="https://fonts.googleapis.com/icon?family=Material+Icons"
@@ -21,13 +22,15 @@
 		<form class="row">
 			<div class="col-2 form-group">
 				<input id="from" class="form-control form-control-sm" type="text" placeholder="Введите свое имя">
+				<small id="fromHelp" class="form-text text-muted">Осталось: <span id="fromRemainder" class="">20</span> символов</small>
 			</div>
 			<div class="col-2 form-group">
 				<input id="to" class="form-control form-control-sm" type="text" placeholder="Введите получателя" required>
+				<small id="toHelp" class="form-text text-muted">Осталось: <span id="toRemainder" class="">20</span> символов</small>
 			</div>
 			<div class="col-3 form-group">
 				<textarea style="resize: none" id="message" class="form-control form-control-sm" rows="1" placeholder="Введите сообщение" aria-describedby="messageHelp" required></textarea>
-				<small id="messageHelp" class="form-text text-muted">Осталось: <span id="remainder" class="">100</span> символов</small>
+				<small id="messageHelp" class="form-text text-muted">Осталось: <span id="messageRemainder" class="">100</span> символов</small>
 			</div>
 			<div class="col-2 form-group">
 				<select id="label" class="form-control form-control-sm" data-toggle="tooltip" data-placement="top" title="Выберите приставку">
@@ -40,11 +43,11 @@
 			</div>
 			<div class="col-1 form-group">
 				<select id="speaker" class="form-control form-control-sm" data-toggle="tooltip" data-placement="top" title="Выберите голос диктора">
-			    	<option>Алиса</option>
-			    	<option>Джейн</option>
-			    	<option>Оксана</option>
-			    	<option>Захар</option>
-			    	<option>Ермил</option>
+			    	<option value="alyss">Алиса</option>
+			    	<option value="jane">Джейн</option>
+			    	<option value="oksana">Оксана</option>
+			    	<option value="zahar">Захар</option>
+			    	<option value="ermil">Ермил</option>
 				</select>
 			</div>
 			<div class="col-2 form-group">
@@ -75,8 +78,8 @@
 			</div>
 			<div class="col-8 no-padding no-margin right-column">
 				<section class="canvas-container bg-light">
-					<div class="canvas-wrapper">
-						<canvas width="600" height="300" class="canvas" id="canvas"></canvas>					
+					<div id="canvas-wrapper" class="canvas-wrapper">
+						<canvas width="600" height="0" class="canvas" id="canvas"></canvas>					
 						<button type="button" id="add-space-btn" class="add-space-btn bg-success" data-toggle="tooltip" data-placement="top" title="Добавить пространство для рисования">
 							<i class="material-icons add-space-btn__icon">add</i>
 						</button>

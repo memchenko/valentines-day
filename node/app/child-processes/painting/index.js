@@ -4,8 +4,11 @@ const app = express();
 const server = require('http').Server(app);
 const io = require('socket.io')(server);
 
+const mongoose = require('mongoose');
+mongoose.connect('mongodb://localhost:27017/app');
+
 const Paintings = require('../../db/Paintings.js');
-const paintings = new Paintings();
+const paintings = new Paintings(mongoose);
 
 const PAINTING_PORT = require('../../../../constants/constants.js').PAINTING_PORT;
 
@@ -43,7 +46,6 @@ server.listen(PAINTING_PORT, () => {
 
 io.on('connection', (socket) => {
   	socket.on('client: put shape', (data) => {
-      console.log('shape');
   		paintings.savePainting(data, (err) => {
   			if (err) {
   				socket.emit('server: shape error', 'Не удалось сохранить рисунок');
@@ -56,14 +58,14 @@ io.on('connection', (socket) => {
   	});
 
   	socket.on('client: add space', () => {
-  		const newHeight = +paintings.getCanvasHeight() + 150;
+  		const newHeight = +paintings.getCanvasHeight() + 50;
 
   		const clientIP = socket.handshake.address;
 
   		if (paintings.isIPCatched(clientIP)) {
   			socket.emit('server: add space error');
   			return;
-		}
+		  }
 
   		paintings.putNewIP(clientIP)
   		.then(() => {

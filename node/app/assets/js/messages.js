@@ -5,8 +5,6 @@ $(document).ready(() => {
 	const API_MESSAGES = CONSTS.API_MESSAGES;
 	const uiManager = new window.APP.CONSTRUCTORS.UIManager();
 
-	const API_ENDPOINT = API_MESSAGES + '?limit=10&offset=0';
-
 	STATE.isWaitingForMessages = true;
 	fetch(API_MESSAGES + '?limit=10&offset=0', {
 		method: 'GET',
@@ -45,7 +43,7 @@ $(document).ready(() => {
 
 		STATE.isWaitingForMessages = true;
 
-		fetch(API_MESSAGES + '/api/valentines?limit=5&offset=' + CONSTS.MESSAGES_NUMBER, {
+		fetch(API_MESSAGES + '?limit=5&offset=' + CONSTS.MESSAGES_NUMBER, {
 			method: 'GET',
 			mode: 'cors',
 			cache: 'no-cache'
@@ -56,6 +54,8 @@ $(document).ready(() => {
 		})
 		.then((json) => {
 			CONSTS.MESSAGES_NUMBER += json.length;
+
+			if (json.length === 0) uiManager.addNotification('Пусто', 'Уже загружены все сообщения', 'alert-warning');
 
 			json.forEach((message) => {
 				uiManager.appendMessage(message);
@@ -68,6 +68,8 @@ $(document).ready(() => {
 	});
 
 	SOCKET.on('server: new message', (data) => {
+		CONSTS.MESSAGES_NUMBER += 1;
+
 		uiManager.prependMessage(data);
 	});
 

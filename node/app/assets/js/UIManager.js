@@ -26,25 +26,25 @@ $(document).ready(() => {
 		}, 3000);
 
 		return this;
-	}
+	};
 
 	UIManager.prototype.getLabel = function(label) {
 		switch (label) {
-			case 'валентинка': return { text: 'favorite_border', className: 'text-danger' };
+			case 'валентинка': return { text: 'favorite', className: 'text-danger' };
 			case 'секрет': return { text: 'hearing', className: 'text-info' };
 			case 'шутка': return { text: 'mood', className: 'text-warning' };
 			case 'гадость': return { text: 'gesture', className: 'text-success' };
 			case 'идея': return { text: 'lightbulb_outline', className: 'text-warning' };
 			default: return { text: 'more_horiz', lassName: 'text-secondary' };
 		}
-	}
+	};
 
 	UIManager.prototype.prependMessage = function(data) {
 		const FROM = data.from !== 'N/A' ? ' от ' + data.from : '';
 		const TO = data.to;
 		const MESSAGE = data.message;
 		const LABEL = this.getLabel(data.label.toLowerCase());
-		const ID = 'message-' + CONSTS.MESSAGES_NUMBER;
+		const ID = data['_id']; //'message-' + CONSTS.MESSAGES_NUMBER;
 
 		CONSTS.MESSAGES_NUMBER += 1;
 
@@ -76,7 +76,7 @@ $(document).ready(() => {
 	UIManager.prototype.appendMessage = function(data) {
 		const FROM = data.from !== 'N/A' ? ' от ' + data.from : '';
 		const LABEL = this.getLabel(data.label.toLowerCase());
-		const ID = 'message-' + CONSTS.MESSAGES_NUMBER;
+		const ID = data['_id']; //'message-' + CONSTS.MESSAGES_NUMBER;
 
 		CONSTS.MESSAGES_NUMBER += 1;
 
@@ -105,8 +105,19 @@ $(document).ready(() => {
 		return this;
 	};
 
+	UIManager.prototype.rebuildCanvas = function() {
+		$('#' + CONSTS.CANVAS.id).remove();
+		$('#' + CONSTS.CANVAS_WRAPPER.id).prepend(
+			'<canvas width="600" height="0" class="canvas" id="canvas"></canvas>'	
+		);
+
+		CONSTS.CANVAS = document.querySelector('#canvas');
+
+		return this;
+	};
+
 	UIManager.prototype.setCanvasHeight = function(height) {
-		CONSTS.APP.CONSTS.CANVAS.height += height;
+		CONSTS.CANVAS.height = height;
 
 		return this;
 	};
@@ -170,21 +181,61 @@ $(document).ready(() => {
 	};
 
 	UIManager.prototype.setMessageRemainder = function(number) {
-		CONSTS.REMAINDER_CONTAINER.innerHTML = number;
+		CONSTS.MESSAGE_REMAINDER_CONTAINER.innerHTML = number;
 
 		if (number === 0) {
-			$('#' + CONSTS.REMAINDER_CONTAINER.id).addClass('text-danger');
+			$('#' + CONSTS.MESSAGE_REMAINDER_CONTAINER.id).addClass('text-danger');
 		} else {
-			$('#' + CONSTS.REMAINDER_CONTAINER.id).removeClass('text-danger');
+			$('#' + CONSTS.MESSAGE_REMAINDER_CONTAINER.id).removeClass('text-danger');
+		}
+
+		return this;
+	};
+
+	UIManager.prototype.setFromRemainder = function(number) {
+		CONSTS.FROM_REMAINDER_CONTAINER.innerHTML = number;
+
+		if (number === 0) {
+			$('#' + CONSTS.FROM_REMAINDER_CONTAINER.id).addClass('text-danger');
+		} else {
+			$('#' + CONSTS.FROM_REMAINDER_CONTAINER.id).removeClass('text-danger');
+		}
+
+		return this;
+	};
+
+	UIManager.prototype.setToRemainder = function(number) {
+		CONSTS.TO_REMAINDER_CONTAINER.innerHTML = number;
+
+		if (number === 0) {
+			$('#' + CONSTS.TO_REMAINDER_CONTAINER.id).addClass('text-danger');
+		} else {
+			$('#' + CONSTS.TO_REMAINDER_CONTAINER.id).removeClass('text-danger');
 		}
 
 		return this;
 	};
 
 	UIManager.prototype.resetMessageRemainder = function() {
-		CONSTS.REMAINDER_CONTAINER.innerHTML = '100';
+		CONSTS.MESSAGE_REMAINDER_CONTAINER.innerHTML = '100';
 
-		$('#' + CONSTS.REMAINDER_CONTAINER.id).removeClass('text-danger');
+		$('#' + CONSTS.MESSAGE_REMAINDER_CONTAINER.id).removeClass('text-danger');
+
+		return this;
+	};
+
+	UIManager.prototype.resetFromRemainder = function() {
+		CONSTS.FROM_REMAINDER_CONTAINER.innerHTML = '20';
+
+		$('#' + CONSTS.FROM_REMAINDER_CONTAINER.id).removeClass('text-danger');
+
+		return this;
+	};
+
+	UIManager.prototype.resetToRemainder = function() {
+		CONSTS.TO_REMAINDER_CONTAINER.innerHTML = '20';
+
+		$('#' + CONSTS.TO_REMAINDER_CONTAINER.id).removeClass('text-danger');
 
 		return this;
 	};
@@ -196,6 +247,16 @@ $(document).ready(() => {
 
 	UIManager.prototype.makeLoadMoreBtnWaiting = function() {
 		$('#' + CONSTS.LOAD_MORE_BUTTON.id).attr('disabled', false).text('Загрузить еще...');
+		return this;
+	};
+
+	UIManager.prototype.makeAddSpaceBtnWaiting = function() {
+		$('#' + CONSTS.ADD_SPACE_BUTTON.id).html('<span style="display: inline-block; margin-bottom: 9px">. . .</span>');
+		return this;
+	};
+
+	UIManager.prototype.resetAddSpaceBtn = function() {
+		$('#' + CONSTS.ADD_SPACE_BUTTON.id).html('<i class="material-icons add-space-btn__icon">add</i>');
 		return this;
 	};
 

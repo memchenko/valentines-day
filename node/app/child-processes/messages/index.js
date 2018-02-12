@@ -4,8 +4,11 @@ const app = express();
 const server = require('http').Server(app);
 const io = require('socket.io')(server);
 
+const mongoose = require('mongoose');
+mongoose.connect('mongodb://localhost:27017/app');
+
 const Messages = require('../../db/Messages.js');
-const messages = new Messages();
+const messages = new Messages(mongoose);
 
 const MESSAGES_PORT = require('../../../../constants/constants.js').MESSAGES_PORT;
 
@@ -39,7 +42,13 @@ server.listen(MESSAGES_PORT, () => {
 
 io.on('connection', (socket) => {
   	socket.on('client: put message', (data) => {
-  		console.log('message');
+  		const inputValidation = messages.validateInput(data);
+
+  		if (inputValidation !== 'OK') {
+  			socket.emit('server: message error', inputValidation);
+  			return;
+  		}
+
   		messages.saveMessage(data, (err) => {
   			if (err) {
   				socket.emit('server: message error', 'Не удалось сохранить сообщение');
@@ -52,4 +61,8 @@ io.on('connection', (socket) => {
   			io.sockets.emit('server: new message', data);
   		});
   	});
+
+    socket.on('client: like message', (message_id) => {
+      return;
+    });
 });

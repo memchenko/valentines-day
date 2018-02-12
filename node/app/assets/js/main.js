@@ -1,7 +1,7 @@
 $(document).ready(() => {
-	window.APP = APP = window.APP || {};
-	APP.CONSTS = CONSTS = APP.CONSTS || {};
-	APP.STATE = STATE = APP.STATE || {};
+	window.APP = APP = {};
+	APP.CONSTS = CONSTS = {};
+	APP.STATE = STATE = {};
 
 	CONSTS.HOSTNAME = window.location.hostname;
 	CONSTS.MAIN_PORT = window.location.port;
@@ -13,7 +13,9 @@ $(document).ready(() => {
 	CONSTS.FROM_INPUT = document.querySelector('#from');
 	CONSTS.TO_INPUT = document.querySelector('#to');
 	CONSTS.MESSAGE_INPUT = document.querySelector('#message');
-	CONSTS.REMAINDER_CONTAINER = document.querySelector('#remainder');
+	CONSTS.MESSAGE_REMAINDER_CONTAINER = document.querySelector('#messageRemainder');
+	CONSTS.FROM_REMAINDER_CONTAINER = document.querySelector('#fromRemainder');
+	CONSTS.TO_REMAINDER_CONTAINER = document.querySelector('#toRemainder');
 	CONSTS.LABEL_SELECT = document.querySelector('#label');
 	CONSTS.SPEAKER_SELECT = document.querySelector('#speaker');
 	CONSTS.SUBMIT_BUTTON = document.querySelector('#submit');
@@ -25,6 +27,7 @@ $(document).ready(() => {
 	CONSTS.LOAD_MORE_BUTTON = document.querySelector('#load-more-btn');
 
 	// *** CANVAS GROUP ELEMENTS ***
+	CONSTS.CANVAS_WRAPPER = document.querySelector('#canvas-wrapper');
 	CONSTS.CANVAS = document.querySelector('#canvas');
 	CONSTS.ADD_SPACE_BUTTON = document.querySelector('#add-space-btn');
 	CONSTS.PALETTE = document.querySelector('#palette');

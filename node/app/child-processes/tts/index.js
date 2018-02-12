@@ -32,12 +32,10 @@ process.on('message', (data) => {
 		filename = urlencode(filename);
 
 		http.get(DEVICE_ENDPOINT + '?filename=' + filename, (res) => {
-			try {
-				if (res.statusCode !== 200) throw new Error('Filename hasn\'t been sent');
-			} catch(err) {
-				console.error(err.message);
-			}
-		});	
+			if (res.statusCode !== 200) throw new Error('Filename hasn\'t been sent');
+		}).on('error', (e) => {
+			console.error('Device is not available');
+		});
 	}
 
 	getBufferAndWriteFile();

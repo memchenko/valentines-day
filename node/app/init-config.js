@@ -21,6 +21,5 @@ module.exports = function() {
 };
 
 function sendToTTSProcess(data) {
-	console.log('I got ', data);
 	ttsProcess.send(data);
 }

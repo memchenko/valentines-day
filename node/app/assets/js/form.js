@@ -4,11 +4,27 @@ $(document).ready(() => {
 	const uiManager = new window.APP.CONSTRUCTORS.UIManager();
 
 	CONSTS.MESSAGE_INPUT.addEventListener('keyup', () => {
-		const MESSAGE_LENGTH = CONSTS.MESSAGE_INPUT.value.length;
+		const TEXT_LENGTH = CONSTS.MESSAGE_INPUT.value.length;
 		const MAX_LENGTH = 100;
-		const REMAINDER = MAX_LENGTH - MESSAGE_LENGTH < 0 ? 0 : MAX_LENGTH - MESSAGE_LENGTH;
+		const REMAINDER = MAX_LENGTH - TEXT_LENGTH < 0 ? 0 : MAX_LENGTH - TEXT_LENGTH;
 
 		uiManager.setMessageRemainder(REMAINDER);
+	});
+
+	CONSTS.FROM_INPUT.addEventListener('keyup', () => {
+		const TEXT_LENGTH = CONSTS.FROM_INPUT.value.length;
+		const MAX_LENGTH = 20;
+		const REMAINDER = MAX_LENGTH - TEXT_LENGTH < 0 ? 0 : MAX_LENGTH - TEXT_LENGTH;
+
+		uiManager.setFromRemainder(REMAINDER);
+	});
+
+	CONSTS.TO_INPUT.addEventListener('keyup', () => {
+		const TEXT_LENGTH = CONSTS.TO_INPUT.value.length;
+		const MAX_LENGTH = 20;
+		const REMAINDER = MAX_LENGTH - TEXT_LENGTH < 0 ? 0 : MAX_LENGTH - TEXT_LENGTH;
+
+		uiManager.setToRemainder(REMAINDER);
 	});
 
 	CONSTS.SUBMIT_BUTTON.addEventListener('click', () => {
