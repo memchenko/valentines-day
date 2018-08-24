@@ -91,6 +91,10 @@ Messages.prototype.likeMessage = function(message_id, ip) {
 				reject();
 				return;
 			}
+<<<<<<< HEAD
+=======
+
+>>>>>>> 5626fef829f0d2e6f5c67f9d8f0d28718b17b63d
 			doc.likedIPs = doc.likedIPs.concat([ip]);
 			doc.save(() => resolve({ likesNumber: doc.likedIPs.length, messageId: message_id }));
 		})
