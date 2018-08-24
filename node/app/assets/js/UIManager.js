@@ -39,14 +39,16 @@ $(document).ready(() => {
 		}
 	};
 
+	UIManager.prototype.updateLike = function(messageId, number) {
+		$('#' + messageId).find('.message__like-amount').text(number);
+	};
+
 	UIManager.prototype.prependMessage = function(data) {
 		const FROM = data.from !== 'N/A' ? ' от ' + data.from : '';
 		const TO = data.to;
 		const MESSAGE = data.message;
 		const LABEL = this.getLabel(data.label.toLowerCase());
-		const ID = data['_id']; //'message-' + CONSTS.MESSAGES_NUMBER;
-
-		CONSTS.MESSAGES_NUMBER += 1;
+		const ID = data['_id'];
 
 		$('#' + CONSTS.MESSAGES_CONTAINER.id).prepend(
 			'<div id="' + ID + '" class="message message--new">' +
@@ -59,16 +61,37 @@ $(document).ready(() => {
 					'</div>' +
 					'<div class="message__text text-muted">' + MESSAGE + '</div>' +
 				'</div>'  +
-				// '<button class="message__like-btn">' +
-				// 	'<span class="message__like-amount">' + data.likes_quantity + '</span>' +
-				// 	'<i class="material-icons message__like-heart">favorite</i>' +
-				// '</button>' +
+				'<button class="message__like-btn">' +
+					'<span class="message__like-amount">' + data.likedIPs.length + '</span>' +
+					'<i class="material-icons message__like-heart">favorite</i>' +
+				'</button>' +
 			'</div>'
 		);
 
+		let isLiked = data.isLiked;
+
+		if (isLiked) {
+			$('#' + ID).find('.message__like-amount').addClass('message__like-amount--liked');
+			$('#' + ID).find('.message__like-heart').addClass('message__like-heart--liked');
+		}
+
+		$('#' + ID).click(() => {
+			if (isLiked) {
+				isLiked = false;
+				$('#' + ID).find('.message__like-amount').removeClass('message__like-amount--liked');
+				$('#' + ID).find('.message__like-heart').removeClass('message__like-heart--liked');
+				CONSTS.MESSAGES_SOCKET.emit('client: unlike message', ID);
+			} else {
+				isLiked = true;
+				$('#' + ID).find('.message__like-amount').addClass('message__like-amount--liked');
+				$('#' + ID).find('.message__like-heart').addClass('message__like-heart--liked');
+				CONSTS.MESSAGES_SOCKET.emit('client: like message', ID);
+			}
+		});
+
 		setTimeout(() => {
 			$('#' + ID).removeClass('message--new');
-		}, 500);
+		}, 500);		
 
 		return this;
 	};
@@ -76,11 +99,9 @@ $(document).ready(() => {
 	UIManager.prototype.appendMessage = function(data) {
 		const FROM = data.from !== 'N/A' ? ' от ' + data.from : '';
 		const LABEL = this.getLabel(data.label.toLowerCase());
-		const ID = data['_id']; //'message-' + CONSTS.MESSAGES_NUMBER;
+		const ID = data['_id'];
 
-		CONSTS.MESSAGES_NUMBER += 1;
-
-		$('#' + CONSTS.MESSAGES_CONTAINER.id).prepend(
+		$('#' + CONSTS.MESSAGES_CONTAINER.id).append(
 			'<div id="' + ID + '" class="message message--new">' +
 				'<div class="message__icon-container">' +
 					'<i class="material-icons ' + LABEL.className + '">' + LABEL.text + '</i>' +
@@ -91,12 +112,33 @@ $(document).ready(() => {
 					'</div>' +
 					'<div class="message__text text-muted">' + data.message + '</div>' +
 				'</div>' +
-				// '<button class="message__like-btn">' +
-				// 	'<span class="message__like-amount">' + data.likes_quantity + '</span>' +
-				// 	'<i class="material-icons message__like-heart">favorite</i>' +
-				// '</button>' +
+				'<button class="message__like-btn">' +
+					'<span class="message__like-amount">' + data.likedIPs.length + '</span>' +
+					'<i class="material-icons message__like-heart">favorite</i>' +
+				'</button>' +
 			'</div>'
 		);
+
+		let isLiked = data.isLiked;
+
+		if (isLiked) {
+			$('#' + ID).find('.message__like-amount').addClass('message__like-amount--liked');
+			$('#' + ID).find('.message__like-heart').addClass('message__like-heart--liked');
+		}
+
+		$('#' + ID).click(() => {
+			if (isLiked) {
+				isLiked = false;
+				$('#' + ID).find('.message__like-amount').removeClass('message__like-amount--liked');
+				$('#' + ID).find('.message__like-heart').removeClass('message__like-heart--liked');
+				CONSTS.MESSAGES_SOCKET.emit('client: unlike message', ID);
+			} else {
+				isLiked = true;
+				$('#' + ID).find('.message__like-amount').addClass('message__like-amount--liked');
+				$('#' + ID).find('.message__like-heart').addClass('message__like-heart--liked');
+				CONSTS.MESSAGES_SOCKET.emit('client: like message', ID);
+			}
+		});
 
 		setTimeout(() => {
 			$('#' + ID).removeClass('message--new');
@@ -137,7 +179,7 @@ $(document).ready(() => {
 		CONSTS.TO_INPUT.value = '';
 		CONSTS.MESSAGE_INPUT.value = '';
 		CONSTS.LABEL_SELECT.value = 'Валентинка';
-		CONSTS.SPEAKER_SELECT.value = 'Алиса';
+		CONSTS.SPEAKER_SELECT.value = 'alyss';
 
 		return this;
 	};

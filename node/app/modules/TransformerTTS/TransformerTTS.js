@@ -11,11 +11,11 @@ function TransformerTTS() {
 
 	this.labels = ['Валентинка', 'Шутка', 'Гадость', 'Секрет', 'Идея'];
 	this.speakers = [
-		{ 'Алиса': 'alyss' },
-		{ 'Джейн': 'jane' },
-		{ 'Оксана': 'oksana' },
-		{ 'Ермил': 'ermil' },
-		{ 'Захар': 'zahar' }
+		{ 'alyss': 'alyss' },
+		{ 'jane': 'jane' },
+		{ 'oksans': 'oksana' },
+		{ 'ermil': 'ermil' },
+		{ 'zahar': 'zahar' }
 	];
 }
 

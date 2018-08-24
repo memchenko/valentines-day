@@ -80,4 +80,20 @@ $(document).ready(() => {
 	SOCKET.on('server: message error', (text) => {
 		uiManager.addNotification('Ошибка', text, 'alert-danger');
 	});
+
+	SOCKET.on('server: like message', (obj) => {
+		uiManager.updateLike(obj.messageId, obj.likesNumber);
+	});
+
+	SOCKET.on('server: unlike message', (obj) => {
+		uiManager.updateLike(obj.messageId, obj.likesNumber);
+	});
+
+	/*SOCKET.on('server: like message error', () => {
+		uiManager.addNotification('Ошибка', 'по странному стечению обстоятельств мне не удалось сохранить лайк');
+	});
+
+	SOCKET.on('server: unlike message error', () => {
+		uiManager.addNotification('Ошибка', 'по странному стечению обстоятельств мне не удалось сохранить дизлайк');
+	});*/
 });

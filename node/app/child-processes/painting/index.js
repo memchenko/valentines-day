@@ -46,6 +46,11 @@ server.listen(PAINTING_PORT, () => {
 
 io.on('connection', (socket) => {
   	socket.on('client: put shape', (data) => {
+      if (data.color = "" || data.coords.length === 0) {
+        socket.emit('server: shape error', 'Не удалось сохранить рисунок');
+        return;
+      }
+
   		paintings.savePainting(data, (err) => {
   			if (err) {
   				socket.emit('server: shape error', 'Не удалось сохранить рисунок');

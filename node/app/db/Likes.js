@@ -5,12 +5,66 @@ function Likes(mongoose) {
 	}));
 }
 
-Likes.prototype.getLike = function(message_id, callback) {
-	this.Model.findById({ '_id': message_id }).exec(callback);
+Likes.prototype.getLike = function(message_id) {
+	return new Promise((resolve, reject) => {
+		this.Model.findById({ '_id': message_id }).exec((err, doc) => {
+			if (err) {
+				reject(err);
+				return;
+			}
+
+			resolve(doc);
+		});
+	});
 };
 
-Likes.prototype.updateLike = function(message_id) {
-	this.Model.findById({ '_id': message_id })
+Likes.prototype.likeMessage = function(message_id, ip) {
+	const _this = this;
+
+	return new Promise((resolve, reject) => {
+		_this.getLike(message_id)
+		.then((doc) => {
+			const isLikeHasIP = doc.likedIPs.some(val => val === ip);
+
+			if (isLikeHasIP) {
+				reject();
+				return;
+			}
+
+			doc.likedIPs = doc.likedIPs.concat([ip]);
+			doc.save(() => resolve({ likesNumber: doc.likedIPs.length, messageId: message_id }));
+		})
+		.catch((err) => {
+			reject();
+		});
+	});
+};
+
+Likes.prototype.unlikeMessage = function(message_id, ip) {
+	const _this = this;
+
+	return new Promise((resolve, reject) => {
+		_this.getLike(message_id)
+		.then((doc) => {
+			const isLikeHasIP = doc.likedIPs.some(val => val === ip);
+
+			if (!isLikeHasIP) {
+				reject();
+				return;
+			}
+
+			const indexOfIP = doc.likedIPs.indexOf(ip);
+			doc.likedIPs = doc.likedIPs
+				.slice(0, indexOfIP)
+				.concat(
+					doc.likedIPs.slice(indexOfIP + 1)
+				);
+			doc.save(() => resolve({ likesNumber: doc.likedIPs.length, messageId: message_id }));
+		})
+		.catch((err) => {
+			reject();
+		});
+	});
 };
 
 Likes.prototype.saveLike = function(data, callback) {
@@ -19,7 +73,7 @@ Likes.prototype.saveLike = function(data, callback) {
 		likedIPs: data.likedIPs 
 	});
 
-	likes.save((err, message) => {
+	likes.save((err, like) => {
 		if (err) callback(err);
 
 		callback(null);

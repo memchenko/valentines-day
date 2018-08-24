@@ -4,7 +4,8 @@ function Messages(mongoose) {
 		to: String,
 		message: String,
 		label: String,
-		speaker: String
+		speaker: String,
+		likedIPs: Array
 	}));
 
 	this.speakers = ['alyss', 'jane', 'oksana', 'zahar', 'ermil'];
@@ -21,7 +22,10 @@ Messages.prototype.validateInput = function(data) {
 		case data.from.length > NAME_MAX_LENGTH: {
 			return 'Превышено количество символов в имени отправителя';
 		}
-		case data.to.length > NAME_MAX_LENGTH: {
+		case data.to.length === 0 || data.to.trim() === '': {
+			return 'Без получателя не принимаю';
+		}
+		case data.to.length > NAME_MAX_LENGTH || data.to.trim() === '': {
 			return 'Превышено количество символов в имени получателя';
 		}
 		case data.message.length > MESSAGE_MAX_LENGTH: {
@@ -42,22 +46,84 @@ Messages.prototype.getAllMessages = function(callback) {
 };
 
 Messages.prototype.getMessages = function(limit, offset, callback){
-	this.Model.find().skip(offset).limit(limit).exec(callback);
+	this.Model.find({}, {}, { sort: { '_id': -1 } }).skip(offset).limit(limit).exec(callback);
 };
 
 Messages.prototype.saveMessage = function(data, callback) {
 	const message = new this.Model({
-		from: String(data.from),
-		to: String(data.to).length > 0 ? String(data.to) : "N/A",
+		from: String(data.from).length > 0 ? String(data.from) : 'Аноним',
+		to: String(data.to).length > 0 ? String(data.to) : "Аноним",
 		message: String(data.message),
 		label: data.label,
-		speaker: data.speaker
+		speaker: data.speaker,
+		likedIPs: []
 	});
 
 	message.save((err, message) => {
 		if (err) callback(err);
 
-		callback(null);
+		callback(null, message);
+	});
+};
+
+Messages.prototype.getMessage = function(message_id) {
+	return new Promise((resolve, reject) => {
+		this.Model.findById({ '_id': message_id }).exec((err, doc) => {
+			if (err) {
+				reject(err);
+				return;
+			}
+
+			resolve(doc);
+		});
+	});
+};
+
+Messages.prototype.likeMessage = function(message_id, ip) {
+	const _this = this;
+
+	return new Promise((resolve, reject) => {
+		_this.getMessage(message_id)
+		.then((doc) => {
+			const isLikeHasIP = doc.likedIPs.some(val => val === ip);
+
+			if (isLikeHasIP) {
+				reject();
+				return;
+			}
+			doc.likedIPs = doc.likedIPs.concat([ip]);
+			doc.save(() => resolve({ likesNumber: doc.likedIPs.length, messageId: message_id }));
+		})
+		.catch((err) => {
+			reject();
+		});
+	});
+};
+
+Messages.prototype.unlikeMessage = function(message_id, ip) {
+	const _this = this;
+
+	return new Promise((resolve, reject) => {
+		_this.getMessage(message_id)
+		.then((doc) => {
+			const isLikeHasIP = doc.likedIPs.some(val => val === ip);
+
+			if (!isLikeHasIP) {
+				reject();
+				return;
+			}
+
+			const indexOfIP = doc.likedIPs.indexOf(ip);
+			doc.likedIPs = doc.likedIPs
+				.slice(0, indexOfIP)
+				.concat(
+					doc.likedIPs.slice(indexOfIP + 1)
+				);
+			doc.save(() => resolve({ likesNumber: doc.likedIPs.length, messageId: message_id }));
+		})
+		.catch((err) => {
+			reject();
+		});
 	});
 };
 

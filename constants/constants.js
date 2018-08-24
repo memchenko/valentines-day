@@ -9,5 +9,5 @@ module.exports = {
 	SERVER_FILES_DIR: path.resolve(__dirname, '../node/app/files'),
 
 	DEVICE_FILES_DIR: path.resolve(__dirname, '../device/app/files'),
-	DEVICE_ENDPOINT: 'http://172.16.1.107:3131'
+	DEVICE_ENDPOINT: 'http://172.16.1.102:3131'
 };

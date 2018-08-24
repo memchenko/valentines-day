@@ -9,7 +9,7 @@ $(document).ready(() => {
 	let CANVAS = CONSTS.CANVAS;
 	let CTX = CANVAS.getContext('2d');
 
-	const CANVAS_COORDS = CONSTS.CANVAS.getBoundingClientRect();
+	let CANVAS_COORDS = CONSTS.CANVAS.getBoundingClientRect();
 	const MOUSE = { x: 0, y: 0 };
 
 	const SHAPE = {
@@ -19,6 +19,8 @@ $(document).ready(() => {
 
 	let isPaintingMode = false;
 	let isLoadingShapes = false;
+
+	let test;
 
 	fetch(CONSTS.API_PAINTINGS, {
 			method: 'GET',
@@ -36,6 +38,7 @@ $(document).ready(() => {
 			uiManager.setCanvasHeight(+json.height);
 
 			json.paintings.forEach((shape) => {
+				test = shape;
 				CTX.lineWidth = 3;
 				CTX.lineJoin = 'round';
 				CTX.lineCap = 'round';
@@ -53,7 +56,9 @@ $(document).ready(() => {
 		    isLoadingShapes = false;
 		})
 		.catch((err) => {
+			console.log(test);
 			uiManager.addNotification('Ошибка', err.message, 'alert-danger');
+			isLoadingShapes = false;
 		});
 
 	function paint(CTX) {
@@ -63,13 +68,20 @@ $(document).ready(() => {
 
 	function updateCoords(e) {
 		MOUSE.x = e.clientX + 4 - CANVAS_COORDS.x;
-	    MOUSE.y = e.clientY + 25 - CANVAS_COORDS.y;
+		
+		if (CANVAS_COORDS.y < 0) {
+			MOUSE.y = e.layerY + 25;
+		} else {
+			MOUSE.y = e.clientY + 25 - CANVAS_COORDS.y;
+		}		
 
 	    SHAPE.coords.push({ x: MOUSE.x, y: MOUSE.y });
 	}
 	 
 	function assignMouseDown(CANVAS, CTX) {
 		return function(e) {
+			CANVAS_COORDS = CONSTS.CANVAS.getBoundingClientRect();
+
 			isPaintingMode = true;
 
 			updateCoords(e);
