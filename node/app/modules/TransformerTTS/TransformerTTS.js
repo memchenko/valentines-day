@@ -27,7 +27,7 @@ TransformerTTS.prototype.getLabel = function(label) {
 
 TransformerTTS.prototype.getSpeaker = function(speaker) {
 	if (this.speakers.some((el) => {
-		if (el[speaker]) {
+		if (speaker in el) {
 			speaker = el[speaker];
 			return true;
 		}

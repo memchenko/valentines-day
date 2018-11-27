@@ -49,11 +49,8 @@ $(document).ready(() => {
 		const MESSAGE = data.message;
 		const LABEL = this.getLabel(data.label.toLowerCase());
 		const ID = data['_id'];
-<<<<<<< HEAD
-=======
 
 		CONSTS.MESSAGES_NUMBER += 1;
->>>>>>> 5626fef829f0d2e6f5c67f9d8f0d28718b17b63d
 
 		$('#' + CONSTS.MESSAGES_CONTAINER.id).prepend(
 			'<div id="' + ID + '" class="message message--new">' +
@@ -105,11 +102,8 @@ $(document).ready(() => {
 		const FROM = data.from !== 'N/A' ? ' от ' + data.from : '';
 		const LABEL = this.getLabel(data.label.toLowerCase());
 		const ID = data['_id'];
-<<<<<<< HEAD
-=======
 
 		CONSTS.MESSAGES_NUMBER += 1;
->>>>>>> 5626fef829f0d2e6f5c67f9d8f0d28718b17b63d
 
 		$('#' + CONSTS.MESSAGES_CONTAINER.id).append(
 			'<div id="' + ID + '" class="message message--new">' +

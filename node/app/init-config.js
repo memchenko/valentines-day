@@ -14,10 +14,16 @@ const paintingPath = path.resolve(__dirname, './child-processes/painting/index.j
 module.exports = function() {
 	ttsProcess = child_process.fork(ttsPath);
 	ftpProcess = child_process.fork(ftpPath);
-	messagesProcess = child_process.fork(messagesPath);
-	paintingProcess = child_process.fork(paintingPath);
 
-	messagesProcess.on('message', sendToTTSProcess);
+
+	setTimeout(() => {
+		sendToTTSProcess({ from: 'Миша', to: 'Сережа', message: 'оно работает' });
+	}, 5000);
+
+	// messagesProcess = child_process.fork(messagesPath);
+	// paintingProcess = child_process.fork(paintingPath);
+
+	// messagesProcess.on('message', sendToTTSProcess);
 };
 
 function sendToTTSProcess(data) {

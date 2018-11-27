@@ -23,7 +23,6 @@ process.on('message', (data) => {
 	async function getBufferAndWriteFile() {
 		try {
 			audioBuffer = await transformerTTS.getAudioBuffer(url);
-
 			await transformerTTS.createFile(filename, audioBuffer);
 		} catch(err) {
 			console.error(err);
