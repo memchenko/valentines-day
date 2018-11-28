@@ -9,5 +9,5 @@ bot.on('audio', (msg) => {
 });
 
 bot.on('text', (msg) => {
-
+//  process.send({ from, to, message, label, speaker });
 });

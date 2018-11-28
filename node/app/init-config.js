@@ -18,6 +18,8 @@ module.exports = function() {
 	ftpProcess = child_process.fork(ftpPath);
 	telegramProcess = child_process.fork(telegramPath);
 
+	telegramProcess.on('message', sendToTTSProcess);
+
 	setTimeout(() => {
 		sendToTTSProcess({ from: 'Миша', to: 'Сережа', message: 'оно работает' });
 	}, 5000);
