@@ -1,6 +1,8 @@
+const util = require('util');
 const EventEmitter = require('events');
+const path = require('path');
 const http = require('http');
-
+const exec = util.promisify(require('child_process').exec);
 const urlencode = require('urlencode');
 
 const DEVICE_ENDPOINT = require('../../../../constants/constants.js').DEVICE_ENDPOINT;
@@ -9,32 +11,30 @@ const TransformerTTS = require('../../modules/TransformerTTS/TransformerTTS.js')
 
 const transformerTTS = new TransformerTTS();
 
-let fileCounter = 0;
+let characters = 5000000;
 
 process.on('message', (data) => {
-	fileCounter += 1;
-	
-	let filename = fileCounter + '. ' + data.to + '.wav';
+	let filename = Date.now().toString(36) + '.mp3';
+	let filePath = path.resolve(__dirname, '../../files/' + filename);
 	let file;
 	let audioBuffer;
 
-	const url = transformerTTS.getRequestURL(data);
+	const cmdCommand = transformerTTS.getCmdCommand({ ...data, filename: filePath });
 
 	async function getBufferAndWriteFile() {
 		try {
-			audioBuffer = await transformerTTS.getAudioBuffer(url);
-			await transformerTTS.createFile(filename, audioBuffer);
+			const { stdout, stderr } = await exec(cmdCommand);
+
+			characters -= stdout ? +JSON.parse(stdout).RequestCharacters : 0;
+
+			http.get(DEVICE_ENDPOINT + '?filename=' + filename, (res) => {
+				if (res.statusCode !== 200) throw new Error('Filename hasn\'t been sent');
+			}).on('error', (e) => {
+				console.error('Device is not available');
+			});
 		} catch(err) {
 			console.error(err);
-		}		
-
-		filename = urlencode(filename);
-
-		http.get(DEVICE_ENDPOINT + '?filename=' + filename, (res) => {
-			if (res.statusCode !== 200) throw new Error('Filename hasn\'t been sent');
-		}).on('error', (e) => {
-			console.error('Device is not available');
-		});
+		}
 	}
 
 	getBufferAndWriteFile();

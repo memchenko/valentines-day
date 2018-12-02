@@ -6,17 +6,8 @@ const urlencode = require('urlencode');
 const FILES_DIR = require('../../../../constants/constants.js').SERVER_FILES_DIR;
 
 function TransformerTTS() {
-	this.url = 'https://tts.voicetech.yandex.net/generate';
-	this.apiKey = 'd577f014-5cc9-4bc3-95aa-8c122ab94e6c';
-
-	this.labels = ['Валентинка', 'Шутка', 'Гадость', 'Секрет', 'Идея'];
-	this.speakers = [
-		{ 'alyss': 'alyss' },
-		{ 'jane': 'jane' },
-		{ 'oksans': 'oksana' },
-		{ 'ermil': 'ermil' },
-		{ 'zahar': 'zahar' }
-	];
+	this.labels = ['Предсказание', 'Пожелание', 'Гороскоп', 'Секрет', 'Идея'];
+	this.speakers = ['Maxim', 'Tatyana'];
 }
 
 TransformerTTS.prototype.getLabel = function(label) {
@@ -26,27 +17,27 @@ TransformerTTS.prototype.getLabel = function(label) {
 };
 
 TransformerTTS.prototype.getSpeaker = function(speaker) {
-	if (this.speakers.some((el) => {
-		if (speaker in el) {
-			speaker = el[speaker];
-			return true;
-		}
-		return false;
-	})) return speaker;
+	if (this.speakers.some(item => item === speaker)) {
+		return speaker;
+	}
 
-	return 'alyss';
+	return this.speakers[0];
 };
 
-TransformerTTS.prototype.getRequestURL = function(data) {
-	const urlencodedText = urlencode(
-		this.getLabel(data.label) + ' ' + data.to +
-		(data.from.length > 0 ? ('от ' + data.from) : '') +
-		'. ' + data.message	
-	);
-	
-	return this.url + '?key=' + this.apiKey + '&text=' + urlencodedText +
-		'&format=wav&quality=hi&lang=ru-RU&speaker=' + this.getSpeaker(data.speaker) +
-		'&speed=0.7&emotion=good';
+TransformerTTS.prototype.getCmdCommand = function({
+	to, from, label, message, speaker, filename
+}) {
+	const normalizedFrom = from.length > 0 ? ('от ' + from) : '';
+	const text = `${this.getLabel(label)} ${to} ${normalizedFrom}. ${message}`;
+	const command = 'aws polly synthesize-speech';
+	const options = [
+		`--output-format mp3`,
+		`--voice-id ${this.getSpeaker(speaker)}`,
+		`--text "${text}"`,
+		`${filename}`
+	];
+
+ 	return command + ' ' + options.join(' ');
 }
 
 TransformerTTS.prototype.getAudioBuffer = function(request) {
@@ -66,7 +57,7 @@ TransformerTTS.prototype.getAudioBuffer = function(request) {
 				resolve(buffer);
 			});
 		}).on('error', err => reject(err));
-	});	
+	});
 }
 
 TransformerTTS.prototype.createFile = function(filename, data) {
