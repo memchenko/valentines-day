@@ -21,7 +21,7 @@ module.exports = function() {
 	// telegramProcess.on('message', sendToTTSProcess);
 
 	setTimeout(() => {
-		sendToTTSProcess({ from: 'Миша', to: 'Сережа', message: 'оно работает' });
+		sendToTTSProcess({ speaker: 'Tatyana', from: 'Миша', to: 'Всем', message: 'Хэй хей! Как ваше ничего поросята?' });
 	}, 5000);
 
 	// messagesProcess = child_process.fork(messagesPath);

@@ -12,6 +12,8 @@
   "dependencies": {
     "express": "^4.16.2",
     "ftp": "^0.3.10",
+    "johnny-five": "^1.0.0",
+    "lodash": "^4.17.11",
     "speaker": "^0.4.0",
     "urlencode": "^1.1.0",
     "wav": "^1.0.1"
