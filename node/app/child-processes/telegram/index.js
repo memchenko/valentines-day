@@ -13,9 +13,17 @@ bot.on('audio', (msg) => {
 //});
 
 bot.onText(/\/wish/, (msg, matches) => {
-  console.log('Got message');
+  console.log('Start server');
 
   const chatId = msg.chat.id;
 
   bot.sendMessage(chatId, 'Желаю тебе всего наилучшего');
+});
+
+bot.onText((/\/гороскоп/) => {
+  console.log('Запрос гороскопа');
+
+  const chatId = msg.chat.id;
+
+  bot.sendMessage(chatId, 'Сейчас получишь гороскоп, нигга');
 });
