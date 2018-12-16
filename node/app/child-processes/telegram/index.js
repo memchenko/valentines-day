@@ -20,8 +20,9 @@ bot.onText(/\/wish/, (msg, matches) => {
   bot.sendMessage(chatId, 'Желаю тебе всего наилучшего');
 });
 
-bot.onText(/\/гороскоп/) => {
+bot.onText(/\/гороскоп/, (msg, mathes) => {
   console.log('Запрос гороскопа');
+  console.log(mathes, 'mathes');
 
   const chatId = msg.chat.id;
 
