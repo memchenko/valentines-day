@@ -92,10 +92,15 @@ sensorBoard.on('ready', () => {
   eventEmitter.on('tech:turn-off:eyes', turnOffEyes);
   eventEmitter.on('tech:turn-off:mouth', turnOffMouth);
 
+  let doGetData = true;
+  const THRESHOLD = 80;
   const getData = throttle(() => {
-    console.log("cm: ", sonic.cm);
-  }, 2000);
+    if (!doGetData) return;
 
+    if (sonic.cm < THRESHOLD) {
+        eventEmitter.fire('tech:sonic:crossed');
+    }
+  }, 1000);
   sonic.on("data", getData);
 });
 
