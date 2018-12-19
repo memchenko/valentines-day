@@ -10,8 +10,7 @@ const eventEmitter = new EventEmitter();
 
 eventEmitter.setMaxListeners(0);
 
-const ftpClient = require('./ftp-client.js')(eventEmitter);
-const speakFile = require('./speakFile.js')(eventEmitter);
+const manager = require('./manager.js')(eventEmitter);
 
 app.get('/', (req, res) => {
 	eventEmitter.emit('got filename', {
