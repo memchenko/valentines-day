@@ -1,70 +1,186 @@
+const fs = require('fs');
+
 let eventEmitter;
-
-const RIGHT_ARM_MIN_ANGLE = 10;
-const LEFT_ARM_MIN_ANGLE = 90;
-const RIGHT_ARM_MAX_ANGLE = 90;
-const LEFT_ARM_MAX_ANGLE = 10;
-const SPEED = 1000;
-
 let currentAngle = 0;
-const AMPLITUDE = 300;
-const CW_STEP_DIR = 1;
-const CCW_STEP_DIR = 0;
-const STEPPER_FULL_TURN = 900;
-const STEPPER_SPEED = 500;
-const STEPPER_SWEEP_SPEED = 1000;
-const STEPPER_SWEEP_AMPLITUDE = 150;
+let isMoving = false;
+let SERVO = {
+    minRightAngle: 10,
+    minLeftAngle: 90,
+    maxRightAngle: 90,
+    maxLeftAngle: 10,
+    speed: 1000,
+    sweepInterval: 1000
+};
+let STEPPER = {
+    currentAngle: 0,
+    amplitude: 300,
+    cwDir: 1,
+    ccwDir: 0,
+    fullTurn: 900,
+    speed: 500,
+    sweepSpeed: 1000,
+    sweepAmplitude: 150
+};
+
+const getConfig = () => {
+  const buf = fs.readFileSync('./move.config.json');
+  return JSON.parse(buf.toString());
+};
+
+const changeConfig = ({ servo = {}, stepper = {} }) => {
+  Object.keys(servo).forEach((prop) => {
+      if (!(prop in SERVO)) return;
+      SERVO[prop] = servo[prop];
+  });
+
+  Object.keys(stepper).forEach((prop) => {
+      if (!(prop in STEPPER)) return;
+      STEPPER[prop] = stepper[prop];
+  });
+
+  fs.writeFileSync('./move.config.json', JSON.stringify({ SERVO, STEPPER }));
+};
 
 const liftRightArm = (servo) => {
-  servo.to(RIGHT_ARM_MAX_ANGLE, SPEED);
-  eventEmitter.fire('move:right-arm:lifted');
+  servo.to(SERVO.maxRightAngle, SERVO.speed);
+
+  const cb = () => {
+      isMoving = false;
+      servo.off('move:complete', cb);
+      eventEmitter.fire('move:right-arm:lifted');
+  };
+
+  servo.on('move:complete', cb);
 };
 
 const liftLeftArm = (servo) => {
-  servo.to(LEFT_ARM_MAX_ANGLE, SPEED);
-  eventEmitter.fire('move:left-arm:lifted');
+  servo.to(SERVO.maxLeftAngle, SERVO.speed);
+
+  const cb = () => {
+      servo.off('move:complete', cb);
+      eventEmitter.fire('move:left-arm:lifted');
+  };
+
+  servo.on('move:complete', cb);
 };
 
 const lowerRightArm = (servo) => {
-  servo.to(RIGHT_ARM_MIN_ANGLE, SPEED);
-  eventEmitter.fire('move:right-arm:lowered');
+  servo.to(SERVO.minRightAngle, SERVO.speed);
+
+  const cb = () => {
+      servo.off('move:complete', cb);
+      eventEmitter.fire('move:right-arm:lowered');
+  };
+
+  servo.on('move:complete', cb);
 };
 
 const lowerLeftArm = (servo) => {
-  servo.to(LEFT_ARM_MIN_ANGLE, SPEED);
-  eventEmitter.fire('move:left-arm:lowered');
+  servo.to(SERVO.minLeftAngle, SERVO.speed);
+
+  const cb = () => {
+      servo.off('move:complete', cb);
+      eventEmitter.fire('move:left-arm:lowered');
+  };
+
+  servo.on('move:complete', cb);
 };
 
 const liftBothArms = (leftServo, rightServo) => {
-  leftServo.to(LEFT_ARM_MAX_ANGLE, SPEED);
-  rightServo.to(RIGHT_ARM_MAX_ANGLE, SPEED);
-  eventEmitter.fire('move:both-arms:lifted');
+  let isAnyFinished = false;
+  leftServo.to(SERVO.maxLeftAngle, SERVO.speed);
+  rightServo.to(SERVO.maxRightAngle, SERVO.speed);
+
+  const cb = () => {
+    if (!isAnyFinished) {
+      isAnyFinished = true;
+    } else {
+      leftServo.off('move:complete', cb);
+      rightServo.off('move:complete', cb);
+      eventEmitter.fire('move:both-arms:lifted');
+    }
+  };
+
+  leftServo.on('move:complete', cb);
+  rightServo.on('move:complete', cb);
 };
 
 const lowerBothArms = (leftServo, rightServo) => {
-  leftServo.to(LEFT_ARM_MIN_ANGLE, SPEED);
-  rightServo.to(RIGHT_ARM_MIN_ANGLE, SPEED);
-  eventEmitter.fire('move:both-arms:lowered');
+  let isAnyFinished = false;
+  leftServo.to(SERVO.minLeftAngle, SERVO.speed);
+  rightServo.to(SERVO.minRightAngle, SERVO.speed);
+
+  const cb = () => {
+    if (!isAnyFinished) {
+      isAnyFinished = true;
+    } else {
+      leftServo.off('move:complete', cb);
+      rightServo.off('move:complete', cb);
+      eventEmitter.fire('move:both-arms:lowered');
+    }
+  };
+
+  leftServo.on('move:complete', cb);
+  rightServo.on('move:complete', cb);
+};
+
+const sweepArms = (leftServo, rightServo) => {
+  leftServo.sweep({
+      range: [SERVO.minLeftAngle, SERVO.maxLeftAngle],
+      interval: SERVO.sweepInterval
+  });
+  rightServo.sweep({
+      range: [SERVO.minRightAngle, SERVO.maxRightAngle],
+      interval: SERVO.sweepInterval
+  });
+
+  return () => {
+    let isAnyFinished = false;
+    leftServo.stop();
+    rightServo.stop();
+
+    return new Promise((resolve, reject) => {
+        const cb = () => {
+            if (!isAnyFinished) {
+                isAnyFinished = true;
+            } else {
+                leftServo.off('move:complete', cb);
+                rightServo.off('move:complete', cb);
+                resolve();
+            }
+        };
+
+        leftServo.on('move:complete', cb);
+        rightServo.on('move:complete', cb);
+
+        leftServo.to(SERVO.minLeftAngle, SERVO.speed);
+        rightServo.to(SERVO.minRightAngle, SERVO.speed);
+    });
+
+
+
+
+  };
 };
 
 const turnHeadToCenter = (stepper) => {
   let steps = 0;
-  let direction = CW_STEP_DIR;
+  let direction = STEPPER.cwDir;
 
   if (currentAngle < 0) {
     steps = -currentAngle;
-    direction = CW_STEP_DIR;
+    direction = STEPPER.cwDir;
   }
   else if (currentAngle > 0) {
     steps = currentAngle;
-    direction = CCW_STEP_DIR;
+    direction = STEPPER.ccwDir;
   }
   else {
     eventEmitter.fire('move:head:centered');
     return;
   }
 
-  stepper.speed(STEPPER_SPEED).step({ steps, direction }, () => {
+  stepper.speed(STEPPER.speed).step({ steps, direction }, () => {
     currentAngle = 0;
     eventEmitter.fire('move:head:centered');
   });
@@ -72,30 +188,30 @@ const turnHeadToCenter = (stepper) => {
 
 const turnHeadLeft = (stepper) => {
   let steps = 0;
-  let direction = CW_STEP_DIR;
+  let direction = STEPPER.cwDir;
 
-  if (currentAngle === -AMPLITUDE) {
+  if (currentAngle === -STEPPER.amplitude) {
     eventEmitter.fire('move:head:left');
     return;
   }
-  else if (currentAngle < 0 && currentAngle > -AMPLITUDE) {
-    steps = AMPLITUDE + currentAngle;
-    direction = CCW_STEP_DIR;
+  else if (currentAngle < 0 && currentAngle > -STEPPER.amplitude) {
+    steps = STEPPER.amplitude + currentAngle;
+    direction = STEPPER.ccwDir;
   }
-  else if (currentAngle < 0 && currentAngle < -AMPLITUDE) {
-    steps = -currentAngle - AMPLITUDE;
-    direction = CW_STEP_DIR;
+  else if (currentAngle < 0 && currentAngle < -STEPPER.amplitude) {
+    steps = -currentAngle - STEPPER.amplitude;
+    direction = STEPPER.cwDir;
   }
   else if (currentAngle > 0) {
-    steps = currentAngle + AMPLITUDE;
-    direction = CCW_STEP_DIR;
+    steps = currentAngle + STEPPER.amplitude;
+    direction = STEPPER.ccwDir;
   }
   else if (currentAngle === 0) {
-    steps = AMPLITUDE;
-    direction = CCW_STEP_DIR;
+    steps = STEPPER.amplitude;
+    direction = STEPPER.ccwDir;
   }
 
-  stepper.speed(STEPPER_SPEED).step({ steps, direction }, () => {
+  stepper.speed(STEPPER.speed).step({ steps, direction }, () => {
     currentAngle = 0;
     eventEmitter.fire('move:head:left');
   });
@@ -103,41 +219,54 @@ const turnHeadLeft = (stepper) => {
 
 const turnHeadRight = (stepper) => {
   let steps = 0;
-  let direction = CW_STEP_DIR;
+  let direction = STEPPER.cwDir;
 
-  if (currentAngle === AMPLITUDE) {
+  if (currentAngle === STEPPER.amplitude) {
     eventEmitter.fire('move:head:right');
     return;
   }
   else if (currentAngle < 0) {
-    steps = -currentAngle + AMPLITUDE;
-    direction = CW_STEP_DIR;
+    steps = -currentAngle + STEPPER.amplitude;
+    direction = STEPPER.cwDir;
   }
-  else if (currentAngle > 0 && currentAngle < AMPLITUDE) {
-    steps = AMPLITUDE - currentAngle;
-    direction = CW_STEP_DIR;
+  else if (currentAngle > 0 && currentAngle < STEPPER.amplitude) {
+    steps = STEPPER.amplitude - currentAngle;
+    direction = STEPPER.cwDir;
   }
-  else if (currentAngle > 0 && currentAngle > AMPLITUDE) {
-    steps = currentAngle - AMPLITUDE;
-    direction = CCW_STEP_DIR;
+  else if (currentAngle > 0 && currentAngle > STEPPER.amplitude) {
+    steps = currentAngle - STEPPER.amplitude;
+    direction = STEPPER.ccwDir;
   }
 
-  stepper.speed(STEPPER_SPEED).step({ steps, direction }, () => {
+  stepper.speed(STEPPER.speed).step({ steps, direction }, () => {
     currentAngle = 0;
     eventEmitter.fire('move:head:right');
   });
 };
 
-const turnAround = (stepper) => {};
+const turnAround = (stepper) => {
+  let steps = 0;
+  const direction = STEPPER.ccwDir;
 
-const resetTurnAround = (stepper) => {};
+  if (currentAngle === STEPPER.fullTurn) {
+    eventEmitter.fire('move:head:turned');
+    return;
+  } else {
+    steps = STEPPER.fullTurn + currentAngle;
+  }
 
-const sweep = (stepper) => {
+  stepper.speed(STEPPER.speed).step({ steps, direction }, () => {
+    currentAngle = STEPPER.fullTurn;
+    eventEmitter.fire('move:head:turned');
+  });
+};
+
+const sweepHead = (stepper) => {
   let isFinishing = false;
   const goLeft = () => {
-    stepper.speed(STEPPER_SWEEP_SPEED).speed({
-      steps: STEPPER_SWEEP_AMPLITUDE,
-      direction: CW_STEP_DIR,
+    stepper.speed(STEPPER.sweepSpeed).step({
+      steps: STEPPER.amplitude,
+      direction: STEPPER.cwDir,
       accel: 10,
       deccel: 10
     }, () => {
@@ -149,9 +278,9 @@ const sweep = (stepper) => {
     });
   };
   const goRight = () => {
-    stepper.speed(STEPPER_SWEEP_SPEED).speed({
+    stepper.speed(STEPPER.sweepSpeed).step({
       steps: STEPPER_SWEEP_AMPLITUDE,
-      direction: CCW_STEP_DIR,
+      direction: STEPPER.ccwDir,
       accel: 10,
       deccel: 10
     }, () => {
@@ -181,10 +310,29 @@ const sweep = (stepper) => {
   };
 };
 
+const calibrateStepper = ({ steps, direction }) => (stepper) => {
+  stepper.speed(STEPPER.speed).step({ steps, direction }, () => {
+    eventEmitter.fire('head:calibrated');
+  });
+};
+
+let isRequired = false;
+
 module.exports = (_eventEmitter) => {
+  if (isRequired) return;
+  isRequired = true;
+
+  const config = getConfig();
+  STEPPER = config.STEPPER;
+  SERVO = config.SERVO;
   eventEmitter = _eventEmitter;
 
-  return {
+  eventEmitter.on('move:change-config', changeConfig);
 
+  return {
+      liftRightArm, liftLeftArm, liftBothArms,
+      lowerRightArm, lowerLeftArm, lowerBothArms, sweepArms,
+      turnHeadLeft, turnHeadToCenter, turnHeadRight,
+      turnAround, sweepHead, calibrateStepper
   };
 };

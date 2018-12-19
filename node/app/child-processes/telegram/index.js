@@ -22,7 +22,7 @@ bot.on('audio', (msg) => {
 //});
 
 bot.onText(/\/start/, (msg) => {
-  const chatId = msg.
+  const chatId = msg.chat.id;
 });
 
 bot.onText(/\/wish/, (msg, matches) => {
