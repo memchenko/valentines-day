@@ -1,18 +1,18 @@
-let eventEmitter;
+// let eventEmitter;
 const five = require('johnny-five');
 const throttle = require('lodash').throttle;
-const moves = require('./move-patterns');
-
+// const moves = require('./move-patterns');
+//
+// const servoBoard = new five.Board({
+//   port: 'COM3'
+// });
 const sensorBoard = new five.Board({
   port: 'COM4'
 });
-const servoBoard = new five.Board({
-  port: 'COM3'
-});
-const stepperBoard = new five.Board({
-  port: 'COM5'
-});
-
+// const stepperBoard = new five.Board({
+//   port: 'COM5'
+// });
+//
 const PINS = {
   SENSOR_BOARD: {
     MOUTH: 5,
@@ -28,30 +28,35 @@ const PINS = {
     MOTORS: [9, 10, 11, 12]
   }
 };
+//
+// servoBoard.on('ready', () => {
+//   const servo1 = new five.Servo({
+//       pin: PINS.BOARD_ARMS.SERVO_1,
+//       type: 'continuous',
+//       board: servoBoard
+//   });
+//   const servo2 = new five.Servo({
+//       pin: PINS.BOARD_ARMS.SERVO_2,
+//       type: 'continuous',
+//       board: servoBoard
+//   });
 
-servoBoard.on('ready', () => {
-  const servo1 = new five.Servo({
-      pin: PINS.BOARD_ARMS.SERVO_1,
-      type: 'continuous',
-      board: servoBoard
-  });
-  const servo2 = new five.Servo({
-      pin: PINS.BOARD_ARMS.SERVO_2,
-      type: 'continuous',
-      board: servoBoard
-  });
-
-});
-
-stepperBoard.on('ready', () => {
-  const stepper = new five.Stepper({
-    type: five.Stepper.TYPE.FOUR_WIRE,
-    stepsPerRev: 200,
-    pins: PINS.STEPPER_BOARD.MOTORS,
-    board: stepperBoard
-  });
-
-});
+//  eventEmitter.fire('tech:servo1:ready', servo1);
+//  eventEmitter.fire('tech:servo2:ready', servo2');
+//
+// });
+//
+// stepperBoard.on('ready', () => {
+//   const stepper = new five.Stepper({
+//     type: five.Stepper.TYPE.FOUR_WIRE,
+//     stepsPerRev: 200,
+//     pins: PINS.STEPPER_BOARD.MOTORS,
+//     board: stepperBoard
+//   });
+//
+//   eventEmitter.fire('tech:stepper:ready', stepper);
+// });
+//
 
 sensorBoard.on('ready', () => {
   const mouth = new five.Led({
@@ -72,6 +77,10 @@ sensorBoard.on('ready', () => {
       board: sensorBoard
   });
 
+  eye1.on();
+  eye2.on();
+  mouth.on();
+
   const turnOnEyes = () => {
     eye1.on();
     eye2.on();
@@ -87,24 +96,25 @@ sensorBoard.on('ready', () => {
     mouth.off();
   };
 
-  eventEmitter.on('tech:turn-on:eyes', turnOnEyes);
-  eventEmitter.on('tech:strobe-mouth', strobeMouth);
-  eventEmitter.on('tech:turn-off:eyes', turnOffEyes);
-  eventEmitter.on('tech:turn-off:mouth', turnOffMouth);
+  // eventEmitter.on('tech:turn-on:eyes', turnOnEyes);
+  // eventEmitter.on('tech:strobe-mouth', strobeMouth);
+  // eventEmitter.on('tech:turn-off:eyes', turnOffEyes);
+  // eventEmitter.on('tech:turn-off:mouth', turnOffMouth);
+  // eventEmitter.fire('tech:sonic:ready', sonic);
 
-  let doGetData = true;
-  const THRESHOLD = 80;
-  const getData = throttle(() => {
-    if (!doGetData) return;
-
-    if (sonic.cm < THRESHOLD) {
-        eventEmitter.fire('tech:sonic:crossed');
-    }
-  }, 1000);
-  sonic.on("data", getData);
+  // let doGetData = true;
+  // const THRESHOLD = 80;
+  // const getData = throttle(() => {
+  //   if (!doGetData) return;
+  //
+  //   if (sonic.cm < THRESHOLD) {
+  //       eventEmitter.fire('tech:sonic:crossed');
+  //   }
+  // }, 1000);
+  // sonic.on("data", getData);
 });
-
-
-module.exports = (_eventEmitter) => {
-  eventEmitter = _eventEmitter;
-};
+//
+//
+// module.exports = (_eventEmitter) => {
+//   eventEmitter = _eventEmitter;
+// };

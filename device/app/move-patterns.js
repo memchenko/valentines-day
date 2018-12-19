@@ -14,8 +14,8 @@ let SERVO = {
 let STEPPER = {
     currentAngle: 0,
     amplitude: 300,
-    cwDir: 1,
-    ccwDir: 0,
+    cwDir: 0,
+    ccwDir: 1,
     fullTurn: 900,
     speed: 500,
     sweepSpeed: 1000,
@@ -156,10 +156,6 @@ const sweepArms = (leftServo, rightServo) => {
         leftServo.to(SERVO.minLeftAngle, SERVO.speed);
         rightServo.to(SERVO.minRightAngle, SERVO.speed);
     });
-
-
-
-
   };
 };
 

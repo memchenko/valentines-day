@@ -3,6 +3,7 @@ const path = require('path');
 
 const Speaker = require('speaker');
 const wav = require('wav');
+const lame = require('lame');
 
 const _ = require('lodash');
 
@@ -38,27 +39,52 @@ function addTotracks({ filename, label }) {
 }
 
 function playFile({ filename, label }) {
+	let decoder = new lame.Decoder();
+	let sprk;
+	let format;
 	const file = fs.createReadStream(path.resolve(FILES_DIR, filename));
-	const reader = new wav.Reader();
 
-	// the "format" event gets emitted at the end of the WAVE header
-	reader.on('format', function (format) {
+	file.pipe(decoder);
 
-		const speaker = new Speaker(format);
+	decoder.on('format', (_format) => {
+		format = _format;
+		spkr = new Speaker(format);
 
-		speaker.on('unpipe', () => {
-			setTimeout(() => {
-				eventEmitter.emit('speakFile: file played', { filename, label });
-				resolve();
-			}, 500);
-		});
-
-			// the WAVE header is stripped from the output of the reader
-			reader.pipe(speaker);
+		decoder.pipe(spkr);
 	});
 
-	// pipe the WAVE file to the Reader instance
-	file.pipe(reader);
+	const onPause = () => {
+		file.unpipe();
+		spkr = null;
+		decoder = null;
+	};
+
+	const onResume = () => {
+		file.pipe(new lame.Decoder()).pipe(new Speaker(format));
+	};
+
+	if (label === 'songs') {
+		eventEmitter.on('speakFile:play:pause', onPause);
+		eventEmitter.on('speakFile:play:resume', onResume);
+	}
+
+	file.on('end', () => {
+		eventEmitter.off('speakFile:play:pause', onPause);
+		eventEmitter.off('speakFile:play:resume', onResume);
+
+		if (label === 'songs') {
+			eventEmitter.emit('speakFile:play:end:song', { filename, label });
+		} else if (label === 'phrases.greetings') {
+			eventEmitter.emit('speakFile:play:end:greeting', { filename, label });
+		} else {
+			if (queue.length <= 1) {
+				eventEmitter.emit('speakFile:play:end:file', { filename, label });
+			} else {
+				eventEmitter.emit('speakFile:play:end:file', { filename, label });
+				eventEmitter.emit('speakFile:play:totalend:file', { filename, label });
+			}
+		}
+	});
 }
 
 function removeFromtracks({ label }) {
@@ -93,9 +119,9 @@ module.exports = function(_eventEmitter) {
 	eventEmitter = _eventEmitter;
 
 	eventEmitter.on('ftp-client: file copied', addTotracks);
-	eventEmitter.on('speakFile: file played', removeFromtracks);
-	eventEmitter.on('speakFile: file played', execNext);
-	eventEmitter.on('speakFile: file played', rememberFileName);
+	eventEmitter.on('speakFile:play:end:file', removeFromtracks);
+	eventEmitter.on('speakFile:play:end:file', execNext);
+	eventEmitter.on('speakFile:play:end:file', rememberFileName);
 
 	eventEmitter.on('play', addFromTracksToQueue);
 	// eventEmitter.on('play:song', { label: 'songs', isRemove: false,  });
