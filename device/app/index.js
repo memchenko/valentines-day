@@ -47,6 +47,12 @@ app.get('/play/easter-egg', (req, res) => {
 	res.status(200).send('ok');
 });
 
+app.get('/play/joke', (req, res) => {
+	eventEmitter.emit('play', { label: 'phrases.jokes' });
+
+	res.status(200).send('ok');
+});
+
 app.listen(PORT, () => {
 	console.log('Server started at port: ', PORT);
 });

@@ -6,7 +6,7 @@ const urlencode = require('urlencode');
 const FILES_DIR = require('../../../../constants/constants.js').SERVER_FILES_DIR;
 
 function TransformerTTS() {
-	this.labels = ['Предсказание', 'Пожелание', 'Гороскоп', 'Секрет', 'Идея'];
+	this.labels = ['Предсказание', 'Пожелание', 'Гороскоп', 'Секрет', 'Идея', 'Шутка'];
 	this.speakers = ['Maxim', 'Tatyana'];
 }
 

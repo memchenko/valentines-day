@@ -30,14 +30,13 @@ const commands = {
     GET_WISH: '/wish',
     GET_HOROSCOPE: '/horos',
     GET_JOKE: '/joke',
-    HELP: '/help',
 
     ZODIAC: {
-        AQUARIUS: '/aqua',
-        PISCES: '/pisc',
+        AQUARIUS: '/aquar',
+        PISCES: '/pisce',
         ARIES: '/aries',
-        TAURUS: '/taurus',
-        GEMINI: '/gemini',
+        TAURUS: '/tauru',
+        GEMINI: '/gemin',
         CANCER: '/rak',
         LEO: '/leo',
         VIRGO: '/virgo',
@@ -47,7 +46,10 @@ const commands = {
         CAPRICORN: '/capri'
     },
 
-    EXIT: '/exit'
+    SERVICE: {
+        HELP: '/help',
+        EXIT: '/exit'
+    }
 };
 
 const getRandomText = (arr) => {
@@ -67,6 +69,22 @@ const commandsText = `
 Список всех команд: ${commands.HELP}
 `;
 
+const horoscopeCommands = `
+Выбери знак зодиака:
+♈ Овен: ${commands.ZODIAC.ARIES}
+♉ Телец: ${commands.ZODIAC.TAURUS}
+♊ Близнецы: ${commands.ZODIAC.GEMINI}
+♋ Рак: ${commands.ZODIAC.CANCER}
+♌ Лев: ${commands.ZODIAC.LEO}
+♍ Дева: ${commands.ZODIAC.VIRGO}
+♎ Весы: ${commands.ZODIAC.LIBRA}
+♏ Скорпион: ${commands.ZODIAC.SCORPIO}
+♐ Стрелец: ${commands.ZODIAC.SAGITTARIUS}
+♑ Козерог: ${commands.ZODIAC.CAPRICORN}
+♒ Водолей: ${commands.ZODIAC.AQUARIUS}
+♓ Рыбы: ${commands.ZODIAC.PISCES}
+`;
+
 const greetingTexts = ['Здравствуй, дуруг!', 'Хрюветики!'];
 const startText = `
 ${getRandomText(greetingTexts)} 🐷
@@ -82,9 +100,9 @@ P.S. Команды типа "Прослушать ..." играют дорож�
 `;
 
 const commandNotFoundTexts = [
-    'Не понимаю, что ты имеешь ввиду 😐',
-    'Давай по сценарию. Меня такому не учили 🙈',
-    'Ну ты чё...нормально же общались'
+  'Не понимаю, что ты имеешь ввиду 😐',
+  'Давай по сценарию. Меня такому не учили 🙈',
+  'Ну ты чё...нормально же общались'
 ];
 
 const commandSentTexts = [
@@ -102,9 +120,24 @@ const noCommandText = [
   'Это несмешная шутка 😑'
 ];
 
+const deviceUnavailTexts = [
+  'Упс, что-то пошло не так. Свиньюшка молчит 😶',
+  'Давай в другой раз. Свинье сейчас плохо 🤢',
+  'Твою команду не могу отправить сейчас я. Ошибка это',
+  'Хмхмхм не могу исполнить сейчас'
+];
+
 const waitingPhrases = [
   'Ок, отправь мне текст и я добавлю запись в очередь'
 ];
+
+const exitPhrases = [
+  'Ок',
+  'Действие успешно отменено',
+  'Как скажешь 👌',
+  'Хорошо'
+];
+
 const getWaitingPhrase = () => `
 ${getRandomText(waitingPhrases)}
 
@@ -120,7 +153,7 @@ bot.on('text', (msg) => {
   const text = msg.text;
 
   if (Object.values(commands).some((command) => {
-    if (typeof command === 'object' || command === '/exit' || command === '/help') {
+    if (typeof command === 'object') {
       return false;
     }
     return (new RegExp(command)).test(text);
@@ -128,21 +161,47 @@ bot.on('text', (msg) => {
     return;
   }
 
-  switch (chatIds[chatId]) {
+  if ((new RegExp('^' + commands.SERVICE.EXIT + '$')).test(text)) {
+    bot.sendMessage(chatId, getRandomText(exitPhrases));
+    return;
+  }
+
+  const state = chatIds[chatId];
+  const label = (state === states.WAIT_WISH && 'Пожелание') ||
+    (state === states.WAIT_PREDICTION && 'Предсказание') ||
+    (state === states.WAIT_JOKE && 'Шутка') || '';
+
+  switch (state) {
       case states.WAIT_WISH:
       case states.WAIT_PREDICTION:
       case states.WAIT_JOKE: {
+        process.send({ message: text, label  });
         chatIds[chatId] = states.IDLE;
         bot.sendMessage(chatId, getRandomText(commandSentTexts));
         break;
       }
-      case states.WAIT_HOROSCOPE: {
+      case state.WAIT_HOROSCOPE: {
+        const reText = '^(' + Object.values(commands.ZODIAC).join(')$|^(') + ')$';
+        const regex = new RegExp(reText);
+        if (regex.test(text)) {
+          http.get(DEVICE_ENDPOINT + '?zodiac=' + text.slice(1), (res) => {
+            if (res.statusCode !== 200) throw new Error('Device is unavail');
+            bot.sendMessage(chatId, getRandomText(commandSentTexts));
+          })
+            .on('error', (err) => {
+              bot.sendMessage(chatId, getRandomText(deviceUnavailTexts));
+              console.error(err);
+            });
+          chatIds[chatId] = states.IDLE;
+        } else {
+          bot.sendMessage(chatId, getRandomText(noCommandText));
+        }
         break;
       }
-      default: {}
+      default: {
+        bot.sendMessage(chatId, getRandomText(commandNotFoundTexts));
+      }
   }
-
- // process.send({ from, to, message, label, speaker });
 });
 
 const text = text => new RegExp(text);
@@ -191,14 +250,71 @@ bot.onText(text(commands.RECORD_JOKE), (msg) => {
     }
 });
 
-bot.onText(text(commands.HELP), (msg) => {
-    const chatId = msg.chat.id;
+bot.onText(text(commands.GET_WISH), (msg) => {
+  const chatId = msg.chat.id;
+  const state = chatIds[chatId];
 
-    bot.sendMessage(chatId, commandsText);
+  if (state === states.IDLE || state === states.STARTED) {
+    http.get(DEVICE_ENDPOINT + '/play/wish', (res) => {
+      if (res.statusCode !== 200) throw new Error('Device is unavail');
+      bot.sendMessage(chatId, getRandomText(commandSentTexts));
+    }).on('error', (err) => {
+      bot.sendMessage(chatId, getRandomText(deviceUnavailTexts));
+      console.error(err);
+    });
+  } else {
+    bot.sendMessage(chatId, getRandomText(noCommandText));
+  }
+});
+
+bot.onText(text(commands.GET_PREDICTION), (msg) => {
+  const chatId = msg.chat.id;
+  const state = chatIds[chatId];
+
+  if (state === states.IDLE || state === states.STARTED) {
+    http.get(DEVICE_ENDPOINT + '/play/prediction', (res) => {
+      if (res.statusCode !== 200) throw new Error('Device is unavail');
+      bot.sendMessage(chatId, getRandomText(commandSentTexts));
+    }).on('error', (err) => {
+      bot.sendMessage(chatId, getRandomText(deviceUnavailTexts));
+      console.error(err);
+    });
+  } else {
+    bot.sendMessage(chatId, getRandomText(noCommandText));
+  }
+});
+
+bot.onText(text(commands.GET_JOKE), (msg) => {
+  const chatId = msg.chat.id;
+  const state = chatIds[chatId];
+
+  if (state === states.IDLE || state === states.STARTED) {
+    http.get(DEVICE_ENDPOINT + '/play/wish', (res) => {
+      if (res.statusCode !== 200) throw new Error('Device is unavail');
+      bot.sendMessage(chatId, getRandomText(commandSentTexts));
+    }).on('error', (err) => {
+      bot.sendMessage(chatId, getRandomText(deviceUnavailTexts));
+      console.error(err);
+    });
+  } else {
+    bot.sendMessage(chatId, getRandomText(noCommandText));
+  }
 });
 
 bot.onText(text(commands.GET_HOROSCOPE), (msg) => {
-  const chatId = msg.chatId;
+  const chatId = msg.chat.id;
+  const state = chatIds[chatId];
 
-  bot.sendMessage(chatId, 'Сейчас получишь гороскоп, нигга');
+  if (state === states.IDLE || state === states.STARTED) {
+    chatIds[chatId] = states.WAIT_HOROSCOPE;
+    bot.sendMessage(chatId, horoscopeCommands);
+  } else {
+    bot.sendMessage(chatId, getRandomText(noCommandText));
+  }
+});
+
+bot.onText(text(commands.SERVICE.HELP), (msg) => {
+  const chatId = msg.chat.id;
+
+  bot.sendMessage(chatId, commandsText);
 });
