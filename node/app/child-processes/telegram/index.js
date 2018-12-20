@@ -47,7 +47,7 @@ const commands = {
         CAPRICORN: '/capri'
     },
 
-    EXIT: '/выйти'
+    EXIT: '/exit'
 };
 
 const getRandomText = (arr) => {
@@ -115,19 +115,25 @@ const getWaitingPhrase = () => `
 //
 // });
 
-// bot.on('text', (msg) => {
-//   const chatId = msg.chat.id;
-//
-//   switch (chatIds[chatId]) {
-//       case states.WAIT_WISH: { break; }
-//       case states.WAIT_PREDICTION: { break; }
-//       case states.WAIT_JOKE: { break; }
-//       case states.WAIT_HOROSCOPE: { break; }
-//       default: {}
-//   }
+bot.on('text', (msg) => {
+  const chatId = msg.chat.id;
+
+  switch (chatIds[chatId]) {
+      case states.WAIT_WISH:
+      case states.WAIT_PREDICTION:
+      case states.WAIT_JOKE: {
+        chatIds[chatId] = states.IDLE;
+        bot.sendMessage(chatId, getRandomText(commandSentTexts));
+        break;
+      }
+      case states.WAIT_HOROSCOPE: {
+        break;
+      }
+      default: {}
+  }
 
  // process.send({ from, to, message, label, speaker });
-// });
+});
 
 const text = text => new RegExp(text);
 
