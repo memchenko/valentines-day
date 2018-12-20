@@ -145,7 +145,7 @@ bot.onText(/\/start/, (msg) => {
 bot.onText(text(commands.RECORD_WISH), (msg) => {
   const chatId = msg.chat.id;
 
-  if (chatIds[chatId] === states.IDLE && chatIds[chatId] === states.STARTED) {
+  if (chatIds[chatId] === states.IDLE || chatIds[chatId] === states.STARTED) {
       chatIds[chatId] = states.WAIT_WISH;
       bot.sendMessage(chatId, getWaitingPhrase());
   } else {
@@ -156,7 +156,7 @@ bot.onText(text(commands.RECORD_WISH), (msg) => {
 bot.onText(text(commands.RECORD_PREDICTION), (msg) => {
     const chatId = msg.chat.id;
 
-    if (chatIds[chatId] === states.IDLE && chatIds[chatId] === states.STARTED) {
+    if (chatIds[chatId] === states.IDLE || chatIds[chatId] === states.STARTED) {
         chatIds[chatId] = states.WAIT_PREDICTION;
         bot.sendMessage(chatId, getWaitingPhrase());
     } else {
@@ -167,7 +167,7 @@ bot.onText(text(commands.RECORD_PREDICTION), (msg) => {
 bot.onText(text(commands.RECORD_JOKE), (msg) => {
     const chatId = msg.chat.id;
 
-    if (chatIds[chatId] === states.IDLE && chatIds[chatId] === states.STARTED) {
+    if (chatIds[chatId] === states.IDLE || chatIds[chatId] === states.STARTED) {
         chatIds[chatId] = states.WAIT_PREDICTION;
         bot.sendMessage(chatId, getWaitingPhrase());
     } else {
