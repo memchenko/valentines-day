@@ -132,22 +132,18 @@ const getWaitingPhrase = () => `
 const text = text => new RegExp(text);
 
 bot.onText(/\/start/, (msg) => {
-  const chatId = msg.chatId;
+  const chatId = msg.chat.id;
 
   if (chatId in chatIds) {
-    chatIds[chatId] = states.STARTED;
     bot.sendMessage(chatId, commandsText);
   } else {
+    chatIds[chatId] = states.STARTED;
     bot.sendMessage(chatId, startText)
   }
-
-  console.log(chatIds);
 });
 
 bot.onText(text(commands.RECORD_WISH), (msg) => {
-  const chatId = msg.chatId;
-
-  console.log(chatIds);
+  const chatId = msg.chat.id;
 
   if (chatIds[chatId] === states.IDLE || chatIds[chatId] === states.STARTED) {
       chatIds[chatId] = states.WAIT_WISH;
@@ -158,7 +154,7 @@ bot.onText(text(commands.RECORD_WISH), (msg) => {
 });
 
 bot.onText(text(commands.RECORD_PREDICTION), (msg) => {
-    const chatId = msg.chatId;
+    const chatId = msg.chat.id;
 
     if (chatIds[chatId] === states.IDLE || chatIds[chatId] === states.STARTED) {
         chatIds[chatId] = states.WAIT_PREDICTION;
@@ -169,7 +165,7 @@ bot.onText(text(commands.RECORD_PREDICTION), (msg) => {
 });
 
 bot.onText(text(commands.RECORD_JOKE), (msg) => {
-    const chatId = msg.chatId;
+    const chatId = msg.chat.id;
 
     if (chatIds[chatId] === states.IDLE || chatIds[chatId] === states.STARTED) {
         chatIds[chatId] = states.WAIT_PREDICTION;
@@ -180,7 +176,7 @@ bot.onText(text(commands.RECORD_JOKE), (msg) => {
 });
 
 bot.onText(text(commands.HELP), (msg) => {
-    const chatId = msg.chatId;
+    const chatId = msg.chat.id;
 
     bot.sendMessage(chatId, commandsText);
 });
