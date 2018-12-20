@@ -6,12 +6,12 @@ const throttle = require('lodash').throttle;
 // const servoBoard = new five.Board({
 //   port: 'COM3'
 // });
-const sensorBoard = new five.Board({
-  port: 'COM4'
-});
-// const stepperBoard = new five.Board({
-//   port: 'COM5'
+// const sensorBoard = new five.Board({
+//   port: 'COM4'
 // });
+const stepperBoard = new five.Board({
+  port: 'COM5'
+});
 //
 const PINS = {
   SENSOR_BOARD: {
@@ -46,55 +46,57 @@ const PINS = {
 //
 // });
 //
-// stepperBoard.on('ready', () => {
-//   const stepper = new five.Stepper({
-//     type: five.Stepper.TYPE.FOUR_WIRE,
-//     stepsPerRev: 200,
-//     pins: PINS.STEPPER_BOARD.MOTORS,
-//     board: stepperBoard
+stepperBoard.on('ready', () => {
+  const stepper = new five.Stepper({
+    type: five.Stepper.TYPE.FOUR_WIRE,
+    stepsPerRev: 200,
+    pins: PINS.STEPPER_BOARD.MOTORS,
+    board: stepperBoard
+  });
+
+  stepper.speed(500).cw().step({ steps: 500 });
+
+  // eventEmitter.emit('tech:stepper:ready', stepper);
+});
+//
+
+// sensorBoard.on('ready', () => {
+//   const mouth = new five.Led({
+//       pin: PINS.SENSOR_BOARD.MOUTH,
+//       board: sensorBoard
+//   });
+//   const eye1 = new five.Led({
+//       pin: PINS.SENSOR_BOARD.EYE_1,
+//       board: sensorBoard
+//   });
+//   const eye2 = new five.Led({
+//       pin: PINS.SENSOR_BOARD.EYE_2,
+//       board: sensorBoard
+//   });
+//   const sonic = new five.Proximity({
+//       controller: "HCSR04",
+//       pin: PINS.SENSOR_BOARD.SONIC,
+//       board: sensorBoard
 //   });
 //
-//   eventEmitter.emit('tech:stepper:ready', stepper);
-// });
+//   eye1.on();
+//   eye2.on();
+//   mouth.on();
 //
-
-sensorBoard.on('ready', () => {
-  const mouth = new five.Led({
-      pin: PINS.SENSOR_BOARD.MOUTH,
-      board: sensorBoard
-  });
-  const eye1 = new five.Led({
-      pin: PINS.SENSOR_BOARD.EYE_1,
-      board: sensorBoard
-  });
-  const eye2 = new five.Led({
-      pin: PINS.SENSOR_BOARD.EYE_2,
-      board: sensorBoard
-  });
-  const sonic = new five.Proximity({
-      controller: "HCSR04",
-      pin: PINS.SENSOR_BOARD.SONIC,
-      board: sensorBoard
-  });
-
-  eye1.on();
-  eye2.on();
-  mouth.on();
-
-  const turnOnEyes = () => {
-    eye1.on();
-    eye2.on();
-  };
-  const strobeMouth = () => {
-    mouth.strobe(500);
-  };
-  const turnOffEyes = () => {
-    eye1.off();
-    eye1.off();
-  };
-  const turnOffMouth = () => {
-    mouth.off();
-  };
+//   const turnOnEyes = () => {
+//     eye1.on();
+//     eye2.on();
+//   };
+//   const strobeMouth = () => {
+//     mouth.strobe(500);
+//   };
+//   const turnOffEyes = () => {
+//     eye1.off();
+//     eye1.off();
+//   };
+//   const turnOffMouth = () => {
+//     mouth.off();
+//   };
 
   // eventEmitter.on('tech:turn-on:eyes', turnOnEyes);
   // eventEmitter.on('tech:strobe-mouth', strobeMouth);
@@ -112,7 +114,7 @@ sensorBoard.on('ready', () => {
   //   }
   // }, 1000);
   // sonic.on("data", getData);
-});
+// });
 //
 //
 // module.exports = (_eventEmitter) => {

@@ -23,28 +23,28 @@ const states = {
 const chatIds = {};
 
 const commands = {
-    RECORD_WISH: '/записать_пожелание',
-    RECORD_PREDICTION: '/записать_предсказание',
-    RECORD_JOKE: '/записать_шутку',
-    GET_PREDICTION: '/предсказание',
-    GET_WISH: '/пожелание',
-    GET_HOROSCOPE: '/гороскоп',
-    GET_JOKE: '/шутка',
+    RECORD_WISH: '/recwish',
+    RECORD_PREDICTION: '/recpred',
+    RECORD_JOKE: '/recjoke',
+    GET_PREDICTION: '/pred',
+    GET_WISH: '/wish',
+    GET_HOROSCOPE: '/horoscope',
+    GET_JOKE: '/joke',
     HELP: '/help',
 
     ZODIAC: {
-        AQUARIUS: '/водолей',
-        PISCES: '/рыбы',
-        ARIES: '/овен',
-        TAURUS: '/телец',
-        GEMINI: '/близнецы',
-        CANCER: '/рак',
-        LEO: '/лев',
-        VIRGO: '/дева',
-        LIBRA: '/весы',
-        SCORPIO: '/скорпион',
-        SAGITTARIUS: '/стрелец',
-        CAPRICORN: '/козерог'
+        AQUARIUS: '/aqua',
+        PISCES: '/pisc',
+        ARIES: '/aries',
+        TAURUS: '/taurus',
+        GEMINI: '/gemini',
+        CANCER: '/rak',
+        LEO: '/leo',
+        VIRGO: '/virgo',
+        LIBRA: '/libra',
+        SCORPIO: '/scorp',
+        SAGITTARIUS: '/sagit',
+        CAPRICORN: '/capri'
     },
 
     EXIT: '/выйти'
@@ -70,12 +70,12 @@ const commandsText = `
 const greetingTexts = ['Здравствуй, дуруг!', 'Хрюветики!'];
 const startText = `
   ${getRandomText(greetingTexts)} 🐷
-  
+
   С моей помощью ты сможешь давать команды
   Санта Свину ☝
-  
+
   ${commandsText}
-  
+
   P.S. Команды типа "Прослушать ..." играют дорожку не сразу,
   а кладут в очередь. Если в очереди не будет дорожек, то
   твоя дорожка проиграется сразу 😉
@@ -98,7 +98,7 @@ const noCommandText = [
   'Не шути со мной. Я слежу за тобой 👀',
   'Ай-яй-яй ты отклоняешься от темы',
   'Тебе меня не провести',
-  'Каков шалун 🐷',
+  'Каков шалун 🐷 Я ожидал другого',
   'Это несмешная шутка 😑'
 ];
 
@@ -107,13 +107,13 @@ const waitingPhrases = [
 ];
 const getWaitingPhrase = () => `
   ${getRandomText(waitingPhrases)}
-  
+
   Для отмены команды: ${commands.EXIT}
 `;
 
-bot.on('audio', (msg) => {
-
-});
+// bot.on('audio', (msg) => {
+//
+// });
 
 bot.on('text', (msg) => {
   const chatId = msg.chat.id;
