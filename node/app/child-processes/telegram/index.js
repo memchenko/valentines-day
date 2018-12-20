@@ -140,10 +140,14 @@ bot.onText(/\/start/, (msg) => {
   } else {
     bot.sendMessage(chatId, startText)
   }
+
+  console.log(chatIds);
 });
 
 bot.onText(text(commands.RECORD_WISH), (msg) => {
   const chatId = msg.chat.id;
+
+  console.log(chatIds);
 
   if (chatIds[chatId] === states.IDLE || chatIds[chatId] === states.STARTED) {
       chatIds[chatId] = states.WAIT_WISH;
