@@ -132,7 +132,7 @@ const getWaitingPhrase = () => `
 const text = text => new RegExp(text);
 
 bot.onText(/\/start/, (msg) => {
-  const chatId = msg.chat.id;
+  const chatId = msg.chatId;
 
   if (chatId in chatIds) {
     chatIds[chatId] = states.STARTED;
@@ -145,7 +145,7 @@ bot.onText(/\/start/, (msg) => {
 });
 
 bot.onText(text(commands.RECORD_WISH), (msg) => {
-  const chatId = msg.chat.id;
+  const chatId = msg.chatId;
 
   console.log(chatIds);
 
@@ -158,7 +158,7 @@ bot.onText(text(commands.RECORD_WISH), (msg) => {
 });
 
 bot.onText(text(commands.RECORD_PREDICTION), (msg) => {
-    const chatId = msg.chat.id;
+    const chatId = msg.chatId;
 
     if (chatIds[chatId] === states.IDLE || chatIds[chatId] === states.STARTED) {
         chatIds[chatId] = states.WAIT_PREDICTION;
@@ -169,7 +169,7 @@ bot.onText(text(commands.RECORD_PREDICTION), (msg) => {
 });
 
 bot.onText(text(commands.RECORD_JOKE), (msg) => {
-    const chatId = msg.chat.id;
+    const chatId = msg.chatId;
 
     if (chatIds[chatId] === states.IDLE || chatIds[chatId] === states.STARTED) {
         chatIds[chatId] = states.WAIT_PREDICTION;
@@ -180,13 +180,13 @@ bot.onText(text(commands.RECORD_JOKE), (msg) => {
 });
 
 bot.onText(text(commands.HELP), (msg) => {
-    const chatId = msg.chat.id;
+    const chatId = msg.chatId;
 
     bot.sendMessage(chatId, commandsText);
 });
 
 bot.onText(text(commands.GET_HOROSCOPE), (msg) => {
-  const chatId = msg.chat.id;
+  const chatId = msg.chatId;
 
   bot.sendMessage(chatId, 'Сейчас получишь гороскоп, нигга');
 });
