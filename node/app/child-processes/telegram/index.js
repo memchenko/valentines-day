@@ -23,12 +23,12 @@ const states = {
 const chatIds = {};
 
 const commands = {
-    RECORD_WISH: '/recwish',
-    RECORD_PREDICTION: '/recpred',
-    RECORD_JOKE: '/recjoke',
+    RECORD_WISH: '/rwish',
+    RECORD_PREDICTION: '/rpred',
+    RECORD_JOKE: '/rjoke',
     GET_PREDICTION: '/pred',
     GET_WISH: '/wish',
-    GET_HOROSCOPE: '/horoscope',
+    GET_HOROSCOPE: '/horos',
     GET_JOKE: '/joke',
     HELP: '/help',
 
@@ -115,19 +115,19 @@ const getWaitingPhrase = () => `
 //
 // });
 
-bot.on('text', (msg) => {
-  const chatId = msg.chat.id;
-
-  switch (chatIds[chatId]) {
-      case states.WAIT_WISH: { break; }
-      case states.WAIT_PREDICTION: { break; }
-      case states.WAIT_JOKE: { break; }
-      case states.WAIT_HOROSCOPE: { break; }
-      default: {}
-  }
+// bot.on('text', (msg) => {
+//   const chatId = msg.chat.id;
+//
+//   switch (chatIds[chatId]) {
+//       case states.WAIT_WISH: { break; }
+//       case states.WAIT_PREDICTION: { break; }
+//       case states.WAIT_JOKE: { break; }
+//       case states.WAIT_HOROSCOPE: { break; }
+//       default: {}
+//   }
 
  // process.send({ from, to, message, label, speaker });
-});
+// });
 
 const text = text => new RegExp(text);
 
@@ -145,7 +145,7 @@ bot.onText(/\/start/, (msg) => {
 bot.onText(text(commands.RECORD_WISH), (msg) => {
   const chatId = msg.chat.id;
 
-  if (chatIds[chatId] === states.IDLE) {
+  if (chatIds[chatId] === states.IDLE && chatIds[chatId] === states.STARTED) {
       chatIds[chatId] = states.WAIT_WISH;
       bot.sendMessage(chatId, getWaitingPhrase());
   } else {
@@ -156,7 +156,7 @@ bot.onText(text(commands.RECORD_WISH), (msg) => {
 bot.onText(text(commands.RECORD_PREDICTION), (msg) => {
     const chatId = msg.chat.id;
 
-    if (chatIds[chatId] === states.IDLE) {
+    if (chatIds[chatId] === states.IDLE && chatIds[chatId] === states.STARTED) {
         chatIds[chatId] = states.WAIT_PREDICTION;
         bot.sendMessage(chatId, getWaitingPhrase());
     } else {
@@ -167,7 +167,7 @@ bot.onText(text(commands.RECORD_PREDICTION), (msg) => {
 bot.onText(text(commands.RECORD_JOKE), (msg) => {
     const chatId = msg.chat.id;
 
-    if (chatIds[chatId] === states.IDLE) {
+    if (chatIds[chatId] === states.IDLE && chatIds[chatId] === states.STARTED) {
         chatIds[chatId] = states.WAIT_PREDICTION;
         bot.sendMessage(chatId, getWaitingPhrase());
     } else {
