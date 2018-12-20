@@ -117,6 +117,9 @@ const getWaitingPhrase = () => `
 
 bot.on('text', (msg) => {
   const chatId = msg.chat.id;
+  console.log(msg);
+
+  // if (Object.values(commands).some()) {}
 
   switch (chatIds[chatId]) {
       case states.WAIT_WISH:
