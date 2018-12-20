@@ -1,8 +1,10 @@
 const EventEmitter = require('events');
-
+const http = require('http');
 const urlencode = require('urlencode');
 const express = require('express');
 const app = express();
+
+const { DEVICE_MANAGER_ENDPOINT } = require('../../constants/constants');
 
 const PORT = 3131;
 
@@ -10,7 +12,7 @@ const eventEmitter = new EventEmitter();
 
 eventEmitter.setMaxListeners(0);
 
-const manager = require('./manager.js')(eventEmitter);
+require('./manager.js')(eventEmitter);
 
 app.get('/', (req, res) => {
 	eventEmitter.emit('got filename', {
@@ -47,4 +49,13 @@ app.get('/play/easter-egg', (req, res) => {
 
 app.listen(PORT, () => {
 	console.log('Server started at port: ', PORT);
+});
+
+eventEmitter.on('speakFile:need', (label) => {
+	http.get(DEVICE_MANAGER_ENDPOINT + '?label=' + label, (res) => {
+		if (res.statusCode !== 200) throw new Error('Need didn\'t sent');
+	})
+	  .on('error', (e) => {
+	  	console.error('Need didn\'t sent');
+	  });
 });

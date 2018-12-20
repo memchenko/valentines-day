@@ -41,8 +41,8 @@ const PINS = {
 //       board: servoBoard
 //   });
 
-//  eventEmitter.fire('tech:servo1:ready', servo1);
-//  eventEmitter.fire('tech:servo2:ready', servo2');
+//  eventEmitter.emit('tech:servo1:ready', servo1);
+//  eventEmitter.emit('tech:servo2:ready', servo2');
 //
 // });
 //
@@ -54,7 +54,7 @@ const PINS = {
 //     board: stepperBoard
 //   });
 //
-//   eventEmitter.fire('tech:stepper:ready', stepper);
+//   eventEmitter.emit('tech:stepper:ready', stepper);
 // });
 //
 
@@ -100,7 +100,7 @@ sensorBoard.on('ready', () => {
   // eventEmitter.on('tech:strobe-mouth', strobeMouth);
   // eventEmitter.on('tech:turn-off:eyes', turnOffEyes);
   // eventEmitter.on('tech:turn-off:mouth', turnOffMouth);
-  // eventEmitter.fire('tech:sonic:ready', sonic);
+  // eventEmitter.emit('tech:sonic:ready', sonic);
 
   // let doGetData = true;
   // const THRESHOLD = 80;
@@ -108,7 +108,7 @@ sensorBoard.on('ready', () => {
   //   if (!doGetData) return;
   //
   //   if (sonic.cm < THRESHOLD) {
-  //       eventEmitter.fire('tech:sonic:crossed');
+  //       eventEmitter.emit('tech:sonic:crossed');
   //   }
   // }, 1000);
   // sonic.on("data", getData);

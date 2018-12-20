@@ -6,15 +6,23 @@ let speakFile;
 let tech;
 let ftp;
 
-let devicesReady = 0;
-
 let stepper = null;
 let sonic = null;
 let servo1 = null;
 let servo2 = null;
 
+const getRandom3 = () => {
+  const random = Math.ceil(Math.random() * 13);
+  return random % 3 === 0 ? 2 :
+    random % 2 === 0 ? 1 : 0;
+};
+
+const getRandom2 = () => {
+    const random = Math.ceil(Math.random() * 13);
+    return random % 2 === 0 ? 1 : 0;
+};
+
 function patrol() {
-  // TODO добавить условие "кто-то приказал свиньюшке говорить"
   if (stepper === null || sonic === null) return;
 
   let prevPosition = 0;
@@ -61,6 +69,7 @@ function patrol() {
       } else if (prevPosition === 1) {
         eventEmitter.off('move:head:left', onDetected);
       }
+      eventEmitter.emit('manager:patrol:finished');
     };
 
     if (prevPosition === -1) {
@@ -72,24 +81,28 @@ function patrol() {
     speak();
   };
 
+  eventEmitter.on('main:command', smbdDetected);
   eventEmitter.on('tech:sonic:crossed', smbdDetected);
 
   moves.turnHeadLeft(stepper);
 }
 
 function singAndDance() {
-  // TODO добавить условие "кто-то приказал свиньюшке говорить"
   if (stepper === null || servo1 === null || servo2 === null) return;
 
   let finishSweepingHead = moves.sweepHead(stepper);
   let finishSweepingArms = moves.sweepArms(servo1, servo2);
 
+  let isSmbdDetected = false;
   const startMoving = () => {
+    isSmbdDetected = false;
     finishSweepingHead = moves.sweepHead(stepper);
     finishSweepingArms = moves.sweepArms(servo1, servo2);
   };
 
   const smbdDetected = () => {
+    if (isSmbdDetected) return;
+    isSmbdDetected = true;
     finishSweepingArms();
     finishSweepingHead();
 
@@ -101,10 +114,10 @@ function singAndDance() {
   const onSongEnded = () => {
     finishSweepingArms();
     finishSweepingHead();
-
-    eventEmitter.emit('manager:singNdance:finished');
+    eventEmitter.emit('manager:singNDance:finished');
   };
 
+  eventEmitter.on('main:command', smbdDetected);
   eventEmitter.on('tech:sonic:crossed', smbdDetected);
   eventEmitter.on('speakFile:play:end:song', onSongEnded);
   eventEmitter.on('speakFile:play:totalend:file', startMoving);
@@ -114,18 +127,27 @@ function singAndDance() {
 function speak() {
   if (stepper === null || servo1 === null || servo2 === null) return;
 
+  const random3 = getRandom3();
   const onGreetingPlayed = () => {
-    const label = Math.ceil(Math.random() * 13) % 2 === 0 ? 'wishes' : 'predictions';
+    moves.lowerBothArms(servo1, servo2);
+    const label = random3 === 2 ? 'phrases.jokes' :
+      random3 === 1 ? 'wishes' : 'predictions';
     eventEmitter.emit('play', { label });
     eventEmitter.off('speakFile:play:end:greeting', onGreetingPlayed);
   };
 
   eventEmitter.on('speakFile:play:end:greeting', onGreetingPlayed);
   eventEmitter.emit('play', { label: 'greeting', isRemove: false });
+
+  const move = random3 === 2 ? 'liftBothArms' : random3 === 1 ? 'liftRightArm' : 'liftLeftArm';
+  const servos = random3 === 2 ? [servo1, servo2] : random3 === 1 ? [servo2] : [servo1];
+  moves[move](...servos);
 }
 
 function demon() {
   if (stepper === null || servo1 === null || servo2 === null) return;
+
+
 }
 
 module.exports = (_eventEmitter) => {
@@ -135,17 +157,11 @@ module.exports = (_eventEmitter) => {
     tech = require('./tech')(eventEmitter);
     ftp = require('./ftp-client')(eventEmitter);
 
-    eventEmitter.on('tech:sonic:ready', (_sonic) => {
-      sonic = _sonic;
-    });
-    eventEmitter.on('tech:servo1:ready', (_servo1) => {
-      servo1 = _servo1;
-    });
-    eventEmitter.on('tech:servo2:ready', (_servo2) => {
-      servo2 = _servo2;
-    });
-    eventEmitter.on('tech:stepper:ready', (_stepper) => {
-      stepper = _stepper;
-    });
-    eventEmitter.on('speakFile: file played', patrol);
+    eventEmitter.on('tech:sonic:ready', (_sonic) => { sonic = _sonic });
+    eventEmitter.on('tech:servo1:ready', (_servo1) => { servo1 = _servo1 });
+    eventEmitter.on('tech:servo2:ready', (_servo2) => { servo2 = _servo2 });
+    eventEmitter.on('tech:stepper:ready', (_stepper) => { stepper = _stepper });
+
+    eventEmitter.on('manager:patrol:finished', singAndDance);
+    eventEmitter.on('manager:singNDance:finished', patrol);
 };

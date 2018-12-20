@@ -2,7 +2,6 @@ const fs = require('fs');
 const path = require('path');
 
 const Speaker = require('speaker');
-const wav = require('wav');
 const lame = require('lame');
 
 const _ = require('lodash');
@@ -10,9 +9,11 @@ const _ = require('lodash');
 const FILES_DIR = require('../../constants/constants.js').DEVICE_FILES_DIR;
 
 let eventEmitter;
-let isSpeaking = false;
 
 const queue = [];
+
+let songsCounter = 0;
+let greetingsCounter = 0;
 
 const tracks = {
 	'horoscopes': {},
@@ -40,7 +41,7 @@ function addTotracks({ filename, label }) {
 
 function playFile({ filename, label }) {
 	let decoder = new lame.Decoder();
-	let sprk;
+	let spkr;
 	let format;
 	const file = fs.createReadStream(path.resolve(FILES_DIR, filename));
 
@@ -88,7 +89,13 @@ function playFile({ filename, label }) {
 }
 
 function removeFromtracks({ label }) {
-	return _.get(tracks, label).shift();
+	const arr = _.get(tracks, label);
+
+	if (arr.length === 5) {
+		eventEmitter.emit('speakFile:need', label);
+	}
+
+	return arr.shift();
 }
 
 function rememberFileName({ filename }) {
@@ -125,4 +132,4 @@ module.exports = function(_eventEmitter) {
 
 	eventEmitter.on('play', addFromTracksToQueue);
 	// eventEmitter.on('play:song', { label: 'songs', isRemove: false,  });
-}
+};

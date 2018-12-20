@@ -47,7 +47,7 @@ const liftRightArm = (servo) => {
   const cb = () => {
       isMoving = false;
       servo.off('move:complete', cb);
-      eventEmitter.fire('move:right-arm:lifted');
+      eventEmitter.emit('move:right-arm:lifted');
   };
 
   servo.on('move:complete', cb);
@@ -58,7 +58,7 @@ const liftLeftArm = (servo) => {
 
   const cb = () => {
       servo.off('move:complete', cb);
-      eventEmitter.fire('move:left-arm:lifted');
+      eventEmitter.emit('move:left-arm:lifted');
   };
 
   servo.on('move:complete', cb);
@@ -69,7 +69,7 @@ const lowerRightArm = (servo) => {
 
   const cb = () => {
       servo.off('move:complete', cb);
-      eventEmitter.fire('move:right-arm:lowered');
+      eventEmitter.emit('move:right-arm:lowered');
   };
 
   servo.on('move:complete', cb);
@@ -80,7 +80,7 @@ const lowerLeftArm = (servo) => {
 
   const cb = () => {
       servo.off('move:complete', cb);
-      eventEmitter.fire('move:left-arm:lowered');
+      eventEmitter.emit('move:left-arm:lowered');
   };
 
   servo.on('move:complete', cb);
@@ -97,7 +97,7 @@ const liftBothArms = (leftServo, rightServo) => {
     } else {
       leftServo.off('move:complete', cb);
       rightServo.off('move:complete', cb);
-      eventEmitter.fire('move:both-arms:lifted');
+      eventEmitter.emit('move:both-arms:lifted');
     }
   };
 
@@ -116,7 +116,7 @@ const lowerBothArms = (leftServo, rightServo) => {
     } else {
       leftServo.off('move:complete', cb);
       rightServo.off('move:complete', cb);
-      eventEmitter.fire('move:both-arms:lowered');
+      eventEmitter.emit('move:both-arms:lowered');
     }
   };
 
@@ -172,13 +172,13 @@ const turnHeadToCenter = (stepper) => {
     direction = STEPPER.ccwDir;
   }
   else {
-    eventEmitter.fire('move:head:centered');
+    eventEmitter.emit('move:head:centered');
     return;
   }
 
   stepper.speed(STEPPER.speed).step({ steps, direction }, () => {
     currentAngle = 0;
-    eventEmitter.fire('move:head:centered');
+    eventEmitter.emit('move:head:centered');
   });
 };
 
@@ -187,7 +187,7 @@ const turnHeadLeft = (stepper) => {
   let direction = STEPPER.cwDir;
 
   if (currentAngle === -STEPPER.amplitude) {
-    eventEmitter.fire('move:head:left');
+    eventEmitter.emit('move:head:left');
     return;
   }
   else if (currentAngle < 0 && currentAngle > -STEPPER.amplitude) {
@@ -209,7 +209,7 @@ const turnHeadLeft = (stepper) => {
 
   stepper.speed(STEPPER.speed).step({ steps, direction }, () => {
     currentAngle = 0;
-    eventEmitter.fire('move:head:left');
+    eventEmitter.emit('move:head:left');
   });
 };
 
@@ -218,7 +218,7 @@ const turnHeadRight = (stepper) => {
   let direction = STEPPER.cwDir;
 
   if (currentAngle === STEPPER.amplitude) {
-    eventEmitter.fire('move:head:right');
+    eventEmitter.emit('move:head:right');
     return;
   }
   else if (currentAngle < 0) {
@@ -236,7 +236,7 @@ const turnHeadRight = (stepper) => {
 
   stepper.speed(STEPPER.speed).step({ steps, direction }, () => {
     currentAngle = 0;
-    eventEmitter.fire('move:head:right');
+    eventEmitter.emit('move:head:right');
   });
 };
 
@@ -245,7 +245,7 @@ const turnAround = (stepper) => {
   const direction = STEPPER.ccwDir;
 
   if (currentAngle === STEPPER.fullTurn) {
-    eventEmitter.fire('move:head:turned');
+    eventEmitter.emit('move:head:turned');
     return;
   } else {
     steps = STEPPER.fullTurn + currentAngle;
@@ -253,7 +253,7 @@ const turnAround = (stepper) => {
 
   stepper.speed(STEPPER.speed).step({ steps, direction }, () => {
     currentAngle = STEPPER.fullTurn;
-    eventEmitter.fire('move:head:turned');
+    eventEmitter.emit('move:head:turned');
   });
 };
 
@@ -270,7 +270,7 @@ const sweepHead = (stepper) => {
         turnHeadToCenter(stepper);
         return;
       }
-      eventEmitter.fire('head:local:left');
+      eventEmitter.emit('head:local:left');
     });
   };
   const goRight = () => {
@@ -284,7 +284,7 @@ const sweepHead = (stepper) => {
         turnHeadToCenter(stepper);
         return;
       }
-      eventEmitter.fire('head:local:right');
+      eventEmitter.emit('head:local:right');
     });
   };
 
@@ -308,7 +308,7 @@ const sweepHead = (stepper) => {
 
 const calibrateStepper = ({ steps, direction }) => (stepper) => {
   stepper.speed(STEPPER.speed).step({ steps, direction }, () => {
-    eventEmitter.fire('head:calibrated');
+    eventEmitter.emit('head:calibrated');
   });
 };
 
