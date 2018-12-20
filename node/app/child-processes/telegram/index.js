@@ -152,9 +152,14 @@ bot.on('text', (msg) => {
   const chatId = msg.chat.id;
   const text = msg.text;
 
+  if (!(chatId in chatIds)) return;
+
   if (Object.values(commands).some((command) => {
-    if (typeof command === 'object') {
+    const isObj = typeof command === 'object';
+    if (isObj && command === commands.GET_HOROSCOPE) {
       return false;
+    } else if (isObj && command === commands.SERVICE) {
+      return true;
     }
     return (new RegExp(command)).test(text);
   })) {
