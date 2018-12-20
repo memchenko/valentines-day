@@ -154,20 +154,18 @@ bot.on('text', (msg) => {
 
   if (!(chatId in chatIds)) return;
 
+  if ((new RegExp('^' + commands.SERVICE.EXIT + '$')).test(text)) {
+    bot.sendMessage(chatId, getRandomText(exitPhrases));
+    return;
+  }
+
   if (Object.values(commands).some((command) => {
     const isObj = typeof command === 'object';
     if (isObj && (command === commands.GET_HOROSCOPE)) {
       return false;
-    } else if (isObj && (command === commands.SERVICE)) {
-      return true;
     }
     return (new RegExp(command)).test(text);
   })) {
-    return;
-  }
-
-  if ((new RegExp('^' + commands.SERVICE.EXIT + '$')).test(text)) {
-    bot.sendMessage(chatId, getRandomText(exitPhrases));
     return;
   }
 
