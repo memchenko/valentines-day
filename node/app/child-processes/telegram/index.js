@@ -117,9 +117,16 @@ ${getRandomText(waitingPhrases)}
 
 bot.on('text', (msg) => {
   const chatId = msg.chat.id;
-  console.log(msg);
+  const text = msg.text;
 
-  // if (Object.values(commands).some()) {}
+  if (Object.values(commands).some((command) => {
+    if (typeof command === 'object' || command === '/exit' || command === '/help') {
+      return false;
+    }
+    return (new RegExp(command)).test(text);
+  })) {
+    return;
+  }
 
   switch (chatIds[chatId]) {
       case states.WAIT_WISH:
