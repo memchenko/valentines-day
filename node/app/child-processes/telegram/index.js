@@ -141,7 +141,7 @@ const exitPhrases = [
 const getWaitingPhrase = () => `
 ${getRandomText(waitingPhrases)}
 
-Для отмены команды: ${commands.EXIT}
+Для отмены команды: ${commands.SERVICE.EXIT}
 `;
 
 // bot.on('audio', (msg) => {
@@ -156,9 +156,9 @@ bot.on('text', (msg) => {
 
   if (Object.values(commands).some((command) => {
     const isObj = typeof command === 'object';
-    if (isObj && command === commands.GET_HOROSCOPE) {
+    if (isObj && (command === commands.GET_HOROSCOPE)) {
       return false;
-    } else if (isObj && command === commands.SERVICE) {
+    } else if (isObj && (command === commands.SERVICE)) {
       return true;
     }
     return (new RegExp(command)).test(text);
@@ -180,7 +180,7 @@ bot.on('text', (msg) => {
       case states.WAIT_WISH:
       case states.WAIT_PREDICTION:
       case states.WAIT_JOKE: {
-        process.send({ message: text, label  });
+        process.send({ message: text, label });
         chatIds[chatId] = states.IDLE;
         bot.sendMessage(chatId, getRandomText(commandSentTexts));
         break;
