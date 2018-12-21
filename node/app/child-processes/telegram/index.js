@@ -7,10 +7,12 @@ const token = '633707259:AAH7KSjTnRAUJtly1EXGwPDDwyRIHxQ6W0U';
 
 const bot = new TelegramBot(token, { polling: true });
 
+const keepAliveAgent = new http.Agent({ keepAlive: true, keepAliveMsecs: 5000 });
 const httpOpts = {
     headers: {
         'Keep-Alive': 'max=10000'
-    }
+    },
+    agent: keepAliveAgent
 };
 
 const states = {
