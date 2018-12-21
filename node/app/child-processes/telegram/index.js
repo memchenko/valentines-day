@@ -105,10 +105,10 @@ const commandNotFoundTexts = [
 ];
 
 const commandSentTexts = [
-    'Принял, жди последствий',
-    'Слушаю и повинуюсь 👍',
-    'Будет исполнено',
-    'Опять работать... Ладно, сделаю 🐷'
+  'Принял, жди последствий',
+  'Слушаю и повинуюсь 👍',
+  'Будет исполнено',
+  'Опять работать... Ладно, сделаю 🐷'
 ];
 
 const noCommandText = [
@@ -116,18 +116,26 @@ const noCommandText = [
   'Ай-яй-яй ты отклоняешься от темы',
   'Тебе меня не провести',
   'Каков шалун 🐷 Я ожидал другого',
-  'Это несмешная шутка 😑'
+  'Это несмешная шутка 😑',
+  'Хорош заигрывать со мной. Давай по делу 😑'
 ];
 
 const deviceUnavailTexts = [
   'Упс, что-то пошло не так. Свиньюшка молчит 😶',
   'Давай в другой раз. Свинье сейчас плохо 🤢',
   'Твою команду не могу отправить сейчас я. Ошибка это',
-  'Хмхмхм не могу исполнить сейчас'
+  'Хмхмхм не могу исполнить сейчас',
+  'Сорян, чувак, сейчас не получится'
 ];
 
 const waitingPhrases = [
   'Ок, отправь мне текст и я добавлю запись в очередь'
+];
+
+const requestPhrases = [
+  'Это займет некоторое время, так что не паникуй',
+  'Сейчас сбегаю до свиньи - посмотрю, здорова ли',
+  'Понял тебя! Подожди, надо проверить свиньюшку 🐖'
 ];
 
 const exitPhrases = [
@@ -151,10 +159,18 @@ bot.on('text', (msg) => {
   const chatId = msg.chat.id;
   const text = msg.text;
 
-  if (!(chatId in chatIds)) return;
+  if (!(chatId in chatIds)) {
+      bot.sendMessage(chatId, getRandomText(commandNotFoundTexts));
+      return;
+  }
 
   if ((new RegExp('^' + commands.SERVICE.EXIT + '$')).test(text)) {
+    chatIds[chatId] = states.SERVICE.EXIT;
     bot.sendMessage(chatId, getRandomText(exitPhrases));
+    return;
+  }
+
+  if ((new RegExp('^' + commands.SERVICE.HELP + '$')).test(text)) {
     return;
   }
 
@@ -185,6 +201,7 @@ bot.on('text', (msg) => {
         const reText = '^(' + Object.values(commands.ZODIAC).join(')$|^(') + ')$';
         const regex = new RegExp(reText);
         if (regex.test(text)) {
+          bot.sendMessage(chatId, getRandomText(requestPhrases));
           http.get(DEVICE_ENDPOINT + '?zodiac=' + text.slice(1), (res) => {
             if (res.statusCode !== 200) throw new Error('Device is unavail');
             bot.sendMessage(chatId, getRandomText(commandSentTexts));
@@ -256,6 +273,7 @@ bot.onText(text(commands.GET_WISH), (msg) => {
   const state = chatIds[chatId];
 
   if (state === states.IDLE || state === states.STARTED) {
+    bot.sendMessage(chatId, getRandomText(requestPhrases));
     http.get(DEVICE_ENDPOINT + '/play/wish', (res) => {
       if (res.statusCode !== 200) throw new Error('Device is unavail');
       bot.sendMessage(chatId, getRandomText(commandSentTexts));
@@ -273,6 +291,7 @@ bot.onText(text(commands.GET_PREDICTION), (msg) => {
   const state = chatIds[chatId];
 
   if (state === states.IDLE || state === states.STARTED) {
+    bot.sendMessage(chatId, getRandomText(requestPhrases));
     http.get(DEVICE_ENDPOINT + '/play/prediction', (res) => {
       if (res.statusCode !== 200) throw new Error('Device is unavail');
       bot.sendMessage(chatId, getRandomText(commandSentTexts));
@@ -290,6 +309,7 @@ bot.onText(text(commands.GET_JOKE), (msg) => {
   const state = chatIds[chatId];
 
   if (state === states.IDLE || state === states.STARTED) {
+    bot.sendMessage(chatId, getRandomText(requestPhrases));
     http.get(DEVICE_ENDPOINT + '/play/wish', (res) => {
       if (res.statusCode !== 200) throw new Error('Device is unavail');
       bot.sendMessage(chatId, getRandomText(commandSentTexts));
