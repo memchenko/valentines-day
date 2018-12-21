@@ -160,7 +160,8 @@ bot.on('text', (msg) => {
   const text = msg.text;
 
   if (!(chatId in chatIds)) {
-      bot.sendMessage(chatId, getRandomText(commandNotFoundTexts));
+      chatIds[chatId] = states.STARTED;
+      bot.sendMessage(chatId, 'Сорри, это по-свински, но я забыл тебя. Что, говоришь, хочешь?');
       return;
   }
 
