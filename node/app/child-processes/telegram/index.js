@@ -181,7 +181,7 @@ bot.on('text', (msg) => {
         bot.sendMessage(chatId, getRandomText(commandSentTexts));
         break;
       }
-      case state.WAIT_HOROSCOPE: {
+      case states.WAIT_HOROSCOPE: {
         const reText = '^(' + Object.values(commands.ZODIAC).join(')$|^(') + ')$';
         const regex = new RegExp(reText);
         if (regex.test(text)) {
