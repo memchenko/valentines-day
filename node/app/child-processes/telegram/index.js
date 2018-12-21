@@ -7,6 +7,8 @@ const token = '633707259:AAH7KSjTnRAUJtly1EXGwPDDwyRIHxQ6W0U';
 
 const bot = new TelegramBot(token, { polling: true });
 
+const httpOpts = { timeout: 10000 };
+
 const states = {
     STARTED: 0,
     IDLE: 1,
@@ -133,8 +135,8 @@ const waitingPhrases = [
 ];
 
 const requestPhrases = [
-  'Это займет некоторое время, так что не паникуй',
-  'Сейчас сбегаю до свиньи - посмотрю, здорова ли',
+  'Это займет некоторое время, так что не паникуй, скоро вернусь с вестями 😉',
+  'Сейчас сбегаю до свиньи - посмотрю, здорова ли, а пото сразу вернусь к тебе 😌',
   'Понял тебя! Подожди, надо проверить свиньюшку 🐖'
 ];
 
@@ -203,7 +205,7 @@ bot.on('text', (msg) => {
         const regex = new RegExp(reText);
         if (regex.test(text)) {
           bot.sendMessage(chatId, getRandomText(requestPhrases));
-          http.get(DEVICE_ENDPOINT + '?zodiac=' + text.slice(1), (res) => {
+          http.get(DEVICE_ENDPOINT + '?zodiac=' + text.slice(1), httpOpts, (res) => {
             if (res.statusCode !== 200) throw new Error('Device is unavail');
             bot.sendMessage(chatId, getRandomText(commandSentTexts));
           })
@@ -275,7 +277,7 @@ bot.onText(text(commands.GET_WISH), (msg) => {
 
   if (state === states.IDLE || state === states.STARTED) {
     bot.sendMessage(chatId, getRandomText(requestPhrases));
-    http.get(DEVICE_ENDPOINT + '/play/wish', (res) => {
+    http.get(DEVICE_ENDPOINT + '/play/wish', httpOpts, (res) => {
       if (res.statusCode !== 200) throw new Error('Device is unavail');
       bot.sendMessage(chatId, getRandomText(commandSentTexts));
     }).on('error', (err) => {
@@ -293,7 +295,7 @@ bot.onText(text(commands.GET_PREDICTION), (msg) => {
 
   if (state === states.IDLE || state === states.STARTED) {
     bot.sendMessage(chatId, getRandomText(requestPhrases));
-    http.get(DEVICE_ENDPOINT + '/play/prediction', (res) => {
+    http.get(DEVICE_ENDPOINT + '/play/prediction', httpOpts, (res) => {
       if (res.statusCode !== 200) throw new Error('Device is unavail');
       bot.sendMessage(chatId, getRandomText(commandSentTexts));
     }).on('error', (err) => {
@@ -311,7 +313,7 @@ bot.onText(text(commands.GET_JOKE), (msg) => {
 
   if (state === states.IDLE || state === states.STARTED) {
     bot.sendMessage(chatId, getRandomText(requestPhrases));
-    http.get(DEVICE_ENDPOINT + '/play/wish', (res) => {
+    http.get(DEVICE_ENDPOINT + '/play/wish', httpOpts, (res) => {
       if (res.statusCode !== 200) throw new Error('Device is unavail');
       bot.sendMessage(chatId, getRandomText(commandSentTexts));
     }).on('error', (err) => {
