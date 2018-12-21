@@ -7,7 +7,11 @@ const token = '633707259:AAH7KSjTnRAUJtly1EXGwPDDwyRIHxQ6W0U';
 
 const bot = new TelegramBot(token, { polling: true });
 
-const httpOpts = { timeout: 10000 };
+const httpOpts = {
+    headers: {
+        'Keep-Alive': 'max=10000'
+    }
+};
 
 const states = {
     STARTED: 0,
@@ -161,7 +165,7 @@ bot.on('text', (msg) => {
   const chatId = msg.chat.id;
   const text = msg.text;
 
-  if (!(chatId in chatIds)) {
+  if (!(chatId in chatIds) && text !== '/start') {
       chatIds[chatId] = states.STARTED;
       bot.sendMessage(chatId, 'Сорри, это по-свински, но я забыл тебя. Что, говоришь, хочешь?');
       return;
