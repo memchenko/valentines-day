@@ -57,11 +57,11 @@ app.listen(PORT, () => {
 	console.log('Server started at port: ', PORT);
 });
 
-eventEmitter.on('speakFile:need', (label) => {
-	http.get(DEVICE_MANAGER_ENDPOINT + '?label=' + label, (res) => {
-		if (res.statusCode !== 200) throw new Error('Need didn\'t sent');
-	})
-	  .on('error', (e) => {
-	  	console.error('Need didn\'t sent');
-	  });
-});
+// eventEmitter.on('speakFile:need', (label) => {
+// 	http.get(DEVICE_MANAGER_ENDPOINT + '?label=' + label, (res) => {
+// 		if (res.statusCode !== 200) throw new Error('Need didn\'t sent');
+// 	})
+// 	  .on('error', (e) => {
+// 	  	console.error('Need didn\'t sent');
+// 	  });
+// });

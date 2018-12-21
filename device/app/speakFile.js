@@ -20,9 +20,9 @@ const tracks = {
 	'wishes': [],
 	'predictions': [],
 	'easter_eggs': [],
-	'songs': [],
+	'songs': ['2.mp3', '3.mp3', '4.mp3'],
 	'phrases': {
-		'greetings': [],
+		'greetings': ['1.mp3'],
 		'jokes': [],
 		'questions': {
 			'gender': '',
@@ -34,6 +34,7 @@ const tracks = {
 function addTotracks({ filename, label }) {
 	const arr = _.get(tracks, label);
 
+	console.log('track has added', filename, label);
 	_.set(tracks, label, arr.concat(() => {
 		playFile({ filename, label });
 	}));

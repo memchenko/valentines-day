@@ -15,10 +15,10 @@ const telegramPath = path.resolve(__dirname, './child-processes/telegram/index.j
 
 module.exports = function() {
 	ttsProcess = child_process.fork(ttsPath);
-	// ftpProcess = child_process.fork(ftpPath);
-	 telegramProcess = child_process.fork(telegramPath);
+	ftpProcess = child_process.fork(ftpPath);
+	telegramProcess = child_process.fork(telegramPath);
 
-	// telegramProcess.on('message', sendToTTSProcess);
+	telegramProcess.on('message', sendToTTSProcess);
 
 //	setTimeout(() => {
 //		sendToTTSProcess({ speaker: 'Tatyana', from: 'Миша', to: 'Всем', message: 'Хэй хей! Как ваше ничего поросята?' });
