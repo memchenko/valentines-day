@@ -160,9 +160,8 @@ bot.on('text', (msg) => {
 
   if (Object.values(commands).some((command) => {
     const isObj = typeof command === 'object';
-    if (isObj && (command === commands.GET_HOROSCOPE)) {
-      return false;
-    }
+    if (isObj && (command === commands.ZODIAC)) return false;
+    if (isObj && (command === commands.SERVICE)) return false;
     return (new RegExp(command)).test(text);
   })) {
     return;
