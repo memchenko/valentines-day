@@ -1,15 +1,15 @@
 {
   "SERVO": {
-    "minRightAngle": 10,
-    "minLeftAngle": 90,
-    "maxRightAngle": 90,
-    "maxLeftAngle": 10,
+    "minRightAngle": 90,
+    "minLeftAngle": 30,
+    "maxRightAngle":30,
+    "maxLeftAngle": 90,
     "speed": 1000,
     "sweepInterval": 800
   },
   "STEPPER": {
     "currentAngle": 0,
-    "amplitude": 300,
+    "amplitude": 600,
     "cwDir": 1,
     "ccwDir": 0,
     "fullTurn": 900,

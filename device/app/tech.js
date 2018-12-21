@@ -4,13 +4,16 @@ const throttle = require('lodash').throttle;
 const moves = require('./move-patterns');
 
 const servoBoard = new five.Board({
-  port: 'COM3'
+  port: 'COM3',
+  repl: false
 });
 const sensorBoard = new five.Board({
-  port: 'COM7'
+  port: 'COM7',
+  repl: false
 });
 const stepperBoard = new five.Board({
-  port: 'COM5'
+  port: 'COM5',
+  repl: false
 });
 //
 const PINS = {
@@ -21,8 +24,8 @@ const PINS = {
     SONIC: 7
   },
   BOARD_ARMS: {
-    SERVO_1: 4,
-    SERVO_2: 9
+    SERVO_1: 9,
+    SERVO_2: 4
   },
   STEPPER_BOARD: {
     MOTORS: [9, 10, 11, 12]
@@ -42,7 +45,7 @@ servoBoard.on('ready', () => {
   });
 
  eventEmitter.emit('tech:servo1:ready', servo1);
- eventEmitter.emit('tech:servo2:ready', servo2');
+ eventEmitter.emit('tech:servo2:ready', servo2);
 
 });
 //
@@ -76,10 +79,6 @@ sensorBoard.on('ready', () => {
       pin: PINS.SENSOR_BOARD.SONIC,
       board: sensorBoard
   });
-
-  eye1.on();
-  eye2.on();
-  mouth.on();
 
   const turnOnEyes = () => {
     eye1.on();

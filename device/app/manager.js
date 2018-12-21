@@ -24,7 +24,7 @@ const getRandom2 = () => {
 
 function patrol() {
   if (stepper === null || sonic === null) return;
-
+console.log('patrolling');
   let prevPosition = 0;
   let position = 0;
 
@@ -63,6 +63,7 @@ function patrol() {
     eventEmitter.off('tech:sonic:crossed', smbdDetected);
 
     const onDetected = () => {
+      console.log('detected');
       moves.turnHeadToCenter(stepper);
       if (prevPosition === -1) {
         eventEmitter.off('move:head:right', onDetected);
@@ -85,16 +86,19 @@ function patrol() {
   eventEmitter.on('tech:sonic:crossed', smbdDetected);
 
   moves.turnHeadLeft(stepper);
+  moves.lowerBothArms(servo1, servo2);
 }
 
 function singAndDance() {
   if (stepper === null || servo1 === null || servo2 === null) return;
 
+console.log('singNDance');
   let finishSweepingHead = moves.sweepHead(stepper);
   let finishSweepingArms = moves.sweepArms(servo1, servo2);
 
   let isSmbdDetected = false;
   const startMoving = () => {
+    console.log('startMoving')
     isSmbdDetected = false;
     finishSweepingHead = moves.sweepHead(stepper);
     finishSweepingArms = moves.sweepArms(servo1, servo2);
@@ -122,6 +126,7 @@ function singAndDance() {
   eventEmitter.on('speakFile:play:end:song', onSongEnded);
   eventEmitter.on('speakFile:play:totalend:file', startMoving);
   startMoving();
+  eventEmitter.emit('play', { label: 'songs' })
 }
 
 function speak() {
@@ -164,4 +169,16 @@ module.exports = (_eventEmitter) => {
 
     eventEmitter.on('manager:patrol:finished', singAndDance);
     eventEmitter.on('manager:singNDance:finished', patrol);
+
+    const init = () => {
+      if (stepper === null && sonic === null && servo1 === null && servo2 === null) return;
+      eventEmitter.off('manager:init', init);
+      patrol();
+    };
+
+    eventEmitter.on('tech:sonic:ready', init);
+    eventEmitter.on('tech:servo1:ready', init);
+    eventEmitter.on('tech:servo2:ready', init);
+    eventEmitter.on('tech:stepper:ready', init);
+
 };

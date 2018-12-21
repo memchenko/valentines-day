@@ -1,19 +1,20 @@
 const fs = require('fs');
+const path = require('path');
 
 let eventEmitter;
 let currentAngle = 0;
 let isMoving = false;
 let SERVO = {
-    minRightAngle: 10,
-    minLeftAngle: 90,
-    maxRightAngle: 90,
-    maxLeftAngle: 10,
+    minRightAngle: 90,
+    minLeftAngle: 30,
+    maxRightAngle: 30,
+    maxLeftAngle: 90,
     speed: 1000,
     sweepInterval: 1000
 };
 let STEPPER = {
     currentAngle: 0,
-    amplitude: 300,
+    amplitude: 600,
     cwDir: 0,
     ccwDir: 1,
     fullTurn: 900,
@@ -23,7 +24,8 @@ let STEPPER = {
 };
 
 const getConfig = () => {
-  const buf = fs.readFileSync('./move.config.json');
+  const json = path.resolve(__dirname, './move.config.json');
+  const buf = fs.readFileSync(json);
   return JSON.parse(buf.toString());
 };
 
@@ -107,8 +109,11 @@ const liftBothArms = (leftServo, rightServo) => {
 
 const lowerBothArms = (leftServo, rightServo) => {
   let isAnyFinished = false;
+  console.log('lowering left');
   leftServo.to(SERVO.minLeftAngle, SERVO.speed);
+  console.log('lowering right');
   rightServo.to(SERVO.minRightAngle, SERVO.speed);
+  console.log('lowered both');
 
   const cb = () => {
     if (!isAnyFinished) {
@@ -125,6 +130,7 @@ const lowerBothArms = (leftServo, rightServo) => {
 };
 
 const sweepArms = (leftServo, rightServo) => {
+  console.log('sweepArms');
   leftServo.sweep({
       range: [SERVO.minLeftAngle, SERVO.maxLeftAngle],
       interval: SERVO.sweepInterval
@@ -175,8 +181,11 @@ const turnHeadToCenter = (stepper) => {
     eventEmitter.emit('move:head:centered');
     return;
   }
+console.log('currentAngle', currentAngle);
+  console.log('center', steps);
+  console.log('direction', direction);
 
-  stepper.speed(STEPPER.speed).step({ steps, direction }, () => {
+  stepper[direction === 0 ? 'cw' : 'ccw']().speed(STEPPER.speed).step({ steps }, () => {
     currentAngle = 0;
     eventEmitter.emit('move:head:centered');
   });
@@ -205,10 +214,11 @@ const turnHeadLeft = (stepper) => {
   else if (currentAngle === 0) {
     steps = STEPPER.amplitude;
     direction = STEPPER.ccwDir;
-  }
-
-  stepper.speed(STEPPER.speed).step({ steps, direction }, () => {
-    currentAngle = 0;
+  }console.log('currentAngle', currentAngle);
+console.log('left', steps);
+console.log('direction', direction);
+  stepper[direction === 0 ? 'cw' : 'ccw']().speed(STEPPER.speed).step({ steps }, () => {
+    currentAngle = -STEPPER.amplitude;
     eventEmitter.emit('move:head:left');
   });
 };
@@ -233,9 +243,15 @@ const turnHeadRight = (stepper) => {
     steps = currentAngle - STEPPER.amplitude;
     direction = STEPPER.ccwDir;
   }
-
-  stepper.speed(STEPPER.speed).step({ steps, direction }, () => {
-    currentAngle = 0;
+  else if (currentAngle === 0) {
+    steps = STEPPER.amplitude;
+    direction = STEPPER.cwDir;
+  }
+console.log('currentAngle', currentAngle);
+console.log('right', steps);
+console.log('direction', direction);
+  stepper[direction === 0 ? 'cw' : 'ccw']().speed(STEPPER.speed).step({ steps }, () => {
+    currentAngle = STEPPER.amplitude;
     eventEmitter.emit('move:head:right');
   });
 };
@@ -258,8 +274,10 @@ const turnAround = (stepper) => {
 };
 
 const sweepHead = (stepper) => {
+  console.log('sweepHead');
   let isFinishing = false;
   const goLeft = () => {
+    console.log('goleft');
     stepper.speed(STEPPER.sweepSpeed).step({
       steps: STEPPER.amplitude,
       direction: STEPPER.cwDir,
@@ -274,8 +292,9 @@ const sweepHead = (stepper) => {
     });
   };
   const goRight = () => {
+    console.log('goright');
     stepper.speed(STEPPER.sweepSpeed).step({
-      steps: STEPPER_SWEEP_AMPLITUDE,
+      steps: STEPPER.sweepAmplitude,
       direction: STEPPER.ccwDir,
       accel: 10,
       deccel: 10

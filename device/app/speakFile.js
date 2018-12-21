@@ -20,9 +20,15 @@ const tracks = {
 	'wishes': [],
 	'predictions': [],
 	'easter_eggs': [],
-	'songs': ['2.mp3', '3.mp3', '4.mp3'],
+	'songs': [
+		() => { playFile({ filename: '2.mp3' }) },
+		() => { playFile({ filename: '3.mp3' }) },
+		() => { playFile({ filename: '4.mp3' }) },
+	],
 	'phrases': {
-		'greetings': ['1.mp3'],
+		'greetings': [
+			() => { playFile({ filename: '1.mp3' }) },
+		],
 		'jokes': [],
 		'questions': {
 			'gender': '',

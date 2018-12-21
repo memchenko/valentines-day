@@ -62,6 +62,7 @@ function copyFile({ filename, label }) {
   		host: FTP_HOST,
   		port: FTP_PORT
   	});
+	});
 }
 
 function execNext() {
