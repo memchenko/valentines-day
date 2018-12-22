@@ -1,9 +1,9 @@
 {
   "SERVO": {
-    "minRightAngle": 90,
-    "minLeftAngle": 30,
-    "maxRightAngle":30,
-    "maxLeftAngle": 90,
+    "minRightAngle": 10,
+    "minLeftAngle": 160,
+    "maxRightAngle": 60,
+    "maxLeftAngle": 110,
     "speed": 1000,
     "sweepInterval": 800
   },

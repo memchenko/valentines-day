@@ -8,11 +8,11 @@ const servoBoard = new five.Board({
   repl: false
 });
 const sensorBoard = new five.Board({
-  port: 'COM7',
+  port: 'COM6',
   repl: false
 });
 const stepperBoard = new five.Board({
-  port: 'COM5',
+  port: 'COM4',
   repl: false
 });
 //
@@ -58,6 +58,14 @@ stepperBoard.on('ready', () => {
   });
 
   eventEmitter.emit('tech:stepper:ready', stepper);
+
+  const calibrateStepper = ({ steps, direction }) => {
+      stepper[Number(direction) === 0 ? 'cw' : 'ccw']().speed(500).step({ steps }, () => {
+          console.log('calibrated');
+      });
+  };
+
+  eventEmitter.on('tech:calibrate:stepper', calibrateStepper);
 });
 //
 

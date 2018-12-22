@@ -53,6 +53,16 @@ app.get('/play/joke', (req, res) => {
 	res.status(200).send('ok');
 });
 
+app.get('/cacalibrate/head', (req, res) => {
+	const {
+		direction,
+		steps
+	} = req.query;
+
+	eventEmitter.emit('tech:calibrate:stepper', { direction, steps });
+	res.status(200).send('ok');
+});
+
 app.listen(PORT, () => {
 	console.log('Server started at port: ', PORT);
 });

@@ -5,10 +5,10 @@ let eventEmitter;
 let currentAngle = 0;
 let isMoving = false;
 let SERVO = {
-    minRightAngle: 90,
-    minLeftAngle: 30,
-    maxRightAngle: 30,
-    maxLeftAngle: 90,
+    minRightAngle: 10,
+    minLeftAngle: 180,
+    maxRightAngle: 60,
+    maxLeftAngle: 130,
     speed: 1000,
     sweepInterval: 1000
 };
@@ -267,7 +267,7 @@ const turnAround = (stepper) => {
     steps = STEPPER.fullTurn + currentAngle;
   }
 
-  stepper.speed(STEPPER.speed).step({ steps, direction }, () => {
+  stepper[direction === STEPPER.ccwDir ? 'cw' : 'ccw'].speed(STEPPER.speed).step({ steps, direction }, () => {
     currentAngle = STEPPER.fullTurn;
     eventEmitter.emit('move:head:turned');
   });
@@ -278,11 +278,8 @@ const sweepHead = (stepper) => {
   let isFinishing = false;
   const goLeft = () => {
     console.log('goleft');
-    stepper.speed(STEPPER.sweepSpeed).step({
+    stepper.cw().speed(STEPPER.sweepSpeed).step({
       steps: STEPPER.amplitude,
-      direction: STEPPER.cwDir,
-      accel: 10,
-      deccel: 10
     }, () => {
       if (isFinishing) {
         turnHeadToCenter(stepper);
@@ -293,11 +290,8 @@ const sweepHead = (stepper) => {
   };
   const goRight = () => {
     console.log('goright');
-    stepper.speed(STEPPER.sweepSpeed).step({
+    stepper.ccw().speed(STEPPER.sweepSpeed).step({
       steps: STEPPER.sweepAmplitude,
-      direction: STEPPER.ccwDir,
-      accel: 10,
-      deccel: 10
     }, () => {
       if (isFinishing) {
         turnHeadToCenter(stepper);
@@ -325,12 +319,6 @@ const sweepHead = (stepper) => {
   };
 };
 
-const calibrateStepper = ({ steps, direction }) => (stepper) => {
-  stepper.speed(STEPPER.speed).step({ steps, direction }, () => {
-    eventEmitter.emit('head:calibrated');
-  });
-};
-
 let isRequired = false;
 
 module.exports = (_eventEmitter) => {
@@ -348,6 +336,6 @@ module.exports = (_eventEmitter) => {
       liftRightArm, liftLeftArm, liftBothArms,
       lowerRightArm, lowerLeftArm, lowerBothArms, sweepArms,
       turnHeadLeft, turnHeadToCenter, turnHeadRight,
-      turnAround, sweepHead, calibrateStepper
+      turnAround, sweepHead
   };
 };

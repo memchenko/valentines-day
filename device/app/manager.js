@@ -57,6 +57,7 @@ console.log('patrolling');
     if (isSmbdDetected) return;
     isSmbdDetected = true;
     eventEmitter.off('tech:sonic:crossed', smbdDetected);
+    eventEmitter.off('main:command', smbdDetected);
     eventEmitter.off('move:head:left', onLeftFinished);
     eventEmitter.off('move:head:right', onRightFinished);
     eventEmitter.off('move:head:centered', onCenterFinished);
@@ -80,12 +81,11 @@ console.log('patrolling');
 
     const onTotalEnd = () => {
       eventEmitter.emit('manager:patrol:finished');
-
       eventEmitter.off('speakFile:play:totalend:file', onTotalEnd);
+      eventEmitter.off('speakFile:song:paused', speak);
     };
 
     eventEmitter.on('speakFile:play:totalend:file', onTotalEnd);
-    speak();
   };
 
   eventEmitter.on('main:command', smbdDetected);
@@ -97,28 +97,35 @@ console.log('patrolling');
 
 function singAndDance() {
   if (stepper === null || servo1 === null || servo2 === null) return;
+  let isPaused = false;
 
 console.log('singNDance');
-  let finishSweepingHead = moves.sweepHead(stepper);
-  let finishSweepingArms = moves.sweepArms(servo1, servo2);
+  let finishSweepingHead;
+  let finishSweepingArms;
 
   let isSmbdDetected = false;
   const startMoving = () => {
-    console.log('startMoving')
+    console.log('startMoving');
     isSmbdDetected = false;
     finishSweepingHead = moves.sweepHead(stepper);
     finishSweepingArms = moves.sweepArms(servo1, servo2);
+
+    if (isPaused) {
+      eventEmitter.emit('speakFile:song:resume');
+      eventEmitter.off('speakFile:song:paused', speak);
+    }
   };
 
   const smbdDetected = () => {
     if (isSmbdDetected) return;
+    console.log('smbdDetected');
+    isPaused = true;
     isSmbdDetected = true;
     finishSweepingArms();
     finishSweepingHead();
 
-    eventEmitter.emit('speakFile:pause');
-
-    speak();
+    eventEmitter.emit('speakFile:song:pause');
+    eventEmitter.on('speakFile:song:paused', speak);
   };
 
   const onSongEnded = () => {
@@ -129,26 +136,29 @@ console.log('singNDance');
 
   eventEmitter.on('main:command', smbdDetected);
   eventEmitter.on('tech:sonic:crossed', smbdDetected);
-  eventEmitter.on('speakFile:play:end:song', onSongEnded);
+  eventEmitter.on('speakFile:song:end', onSongEnded);
   eventEmitter.on('speakFile:play:totalend:file', startMoving);
   startMoving();
-  eventEmitter.emit('play', { label: 'songs' })
+  eventEmitter.emit('speakFile:song:play');
 }
 
 function speak() {
   if (stepper === null || servo1 === null || servo2 === null) return;
 
+  console.log('start speaking');
+
   const random3 = getRandom3();
   const onGreetingPlayed = () => {
+    console.log('greeting played');
     moves.lowerBothArms(servo1, servo2);
     const label = random3 === 2 ? 'phrases.jokes' :
       random3 === 1 ? 'wishes' : 'predictions';
-    eventEmitter.emit('play', { label });
-    eventEmitter.off('speakFile:play:end:greeting', onGreetingPlayed);
+    eventEmitter.emit('play', { label: 'wishes' });
+    eventEmitter.off('speakFile:greet:end', onGreetingPlayed);
   };
 
-  eventEmitter.on('speakFile:play:end:greeting', onGreetingPlayed);
-  eventEmitter.emit('play', { label: 'greeting', isRemove: false });
+  eventEmitter.on('speakFile:greet:end', onGreetingPlayed);
+  eventEmitter.emit('speakFile:greet:play');
 
   const move = random3 === 2 ? 'liftBothArms' : random3 === 1 ? 'liftRightArm' : 'liftLeftArm';
   const servos = random3 === 2 ? [servo1, servo2] : random3 === 1 ? [servo2] : [servo1];
@@ -179,7 +189,7 @@ module.exports = (_eventEmitter) => {
     const init = () => {
       if (stepper === null && sonic === null && servo1 === null && servo2 === null) return;
       eventEmitter.off('manager:init', init);
-      patrol();
+      singAndDance();
     };
 
     eventEmitter.on('tech:sonic:ready', init);
