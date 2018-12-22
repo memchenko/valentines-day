@@ -70,7 +70,6 @@ console.log('patrolling');
       } else if (prevPosition === 1) {
         eventEmitter.off('move:head:left', onDetected);
       }
-      eventEmitter.emit('manager:patrol:finished');
     };
 
     if (prevPosition === -1) {
@@ -79,6 +78,13 @@ console.log('patrolling');
       eventEmitter.on('move:head:left', onDetected);
     }
 
+    const onTotalEnd = () => {
+      eventEmitter.emit('manager:patrol:finished');
+
+      eventEmitter.off('speakFile:play:totalend:file', onTotalEnd);
+    };
+
+    eventEmitter.on('speakFile:play:totalend:file', onTotalEnd);
     speak();
   };
 
