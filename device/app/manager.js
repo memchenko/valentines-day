@@ -79,12 +79,17 @@ console.log('patrolling');
       eventEmitter.on('move:head:left', onDetected);
     }
 
-    const onTotalEnd = () => {
+    let onTotalEnd = () => {
       eventEmitter.emit('manager:patrol:finished');
       eventEmitter.off('speakFile:play:totalend:file', onTotalEnd);
       eventEmitter.off('speakFile:song:paused', speak);
+      onTotalEnd = null;
     };
 
+    const random3 = getRandom3();
+    const label = random3 === 2 ? 'phrases.jokes' :
+      random3 === 1 ? 'wishes' : 'predictions';
+    eventEmitter.emit('play', { label: 'wishes' });
     eventEmitter.on('speakFile:play:totalend:file', onTotalEnd);
   };
 

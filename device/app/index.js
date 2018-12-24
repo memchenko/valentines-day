@@ -59,7 +59,29 @@ app.get('/cacalibrate/head', (req, res) => {
 		steps
 	} = req.query;
 
-	eventEmitter.emit('tech:calibrate:stepper', { direction, steps });
+	eventEmitter.emit('move:calibrate:stepper', { direction, steps });
+	res.status(200).send('ok');
+});
+
+app.get('/coconfig', (req, res) => {
+	const {
+        stepAmpl, stepSpeed, stepSwAmpl, stepSwSpeed, lMinAngle, rMinAngle,
+        lMaxAngle, rMaxAngle, armSpeed, armInterval
+	} = req.query;
+	const newConfig = { stepper: {}, servo: {} };
+
+	(stepAmpl !== undefined) && (newConfig.stepper.amplitude = stepAmpl);
+	(stepSpeed !== undefined) && (newConfig.stepper.speed = stepSpeed);
+	(stepSwAmpl !== undefined) && (newConfig.stepper.sweepAmplitude = stepSwAmpl);
+	(stepSwSpeed !== undefined) && (newConfig.stepper.sweepSpeed = stepSwSpeed);
+	(lMinAngle !== undefined) && (newConfig.servo.minLeftAngle = lMinAngle);
+	(rMinAngle !== undefined) && (newConfig.servo.minRightAngle = rMinAngle);
+	(lMaxAngle !== undefined) && (newConfig.servo.maxLeftAngle = lMaxAngle);
+	(rMaxAngle !== undefined) && (newConfig.servo.maxRightAngle = rMaxAngle);
+	(armSpeed !== undefined) && (newConfig.servo.speed = armSpeed);
+	(armInterval !== undefined) && (newConfig.servo.sweepInterval = armInterval);
+
+	eventEmitter.emit('move:change-config', newConfig);
 	res.status(200).send('ok');
 });
 

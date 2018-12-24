@@ -207,7 +207,47 @@ bot.onText(/\/calibrate steps=(\d+?) dir=(0|1)/, (msg, matches) => {
 
     http.get(`${DEVICE_ENDPOINT}/cacalibrate/head?steps=${steps}&dir=${dir}`, httpOpts, (res) => {
         if (res.statusCode !== 200) throw new Error('Device is unavail');
+        bot.sendMessage(chatId, 'Ок');
+    }).on('error', (err) => {
         bot.sendMessage(chatId, 'Не доступна');
+        console.error(err);
+    });
+});
+
+bot.onText(/\/config .+/, (msg) => {
+    const chatId = msg.chat.id;
+
+    if (!chatIds[chatId].isAdmin) {
+        bot.sendMessage(chatId, 'Нет прав');
+        return;
+    }
+
+    const text = msg.text;
+    const stepAmpl = text.match(/stepAm=(\d+)?/);
+    const stepSpeed = text.match(/stepSpeed=(\d+)?/);
+    const stepSwAmpl = text.match(/stepSwAmpl=(\d+)?/);
+    const stepSwSpeed = text.match(/stepSwSpeed=(\d+)?/);
+    const lMinAngle = text.match(/lMinAngle=(\d+)?/);
+    const rMinAngle = text.match(/rMinAngle=(\d+)?/);
+    const lMaxAngle = text.match(/lMaxAngle=(\d+)?/);
+    const rMaxAngle = text.match(/rMaxAngle=(\d+)?/);
+    const armSpeed = text.match(/armSpeed=(\d+)?/);
+    const armInterval = text.match(/armInterval=(\d+)?/);
+
+    const params = stepAmpl === null ? '' : 'stepAmpl=' + stepAmpl +
+      stepSpeed === null ? '' : '&stepSpeed=' + stepSpeed +
+      stepSwAmpl === null ? '' : '&stepSwAmpl=' + stepSwAmpl +
+      stepSwSpeed === null ? '' : '&stepSwSpeed=' + stepSwSpeed +
+      lMinAngle === null ? '' : '&lMinAngle=' + lMinAngle +
+      rMinAngle === null ? '' : '&rMinAngle=' + rMinAngle +
+      lMaxAngle === null ? '' : '&lMaxAngle=' + lMaxAngle +
+      rMaxAngle === null ? '' : '&rMaxAngle=' + rMaxAngle +
+      armSpeed === null ? '' : '&armSpeed=' + armSpeed +
+      armInterval === null ? '' : '&armInterval=' + armInterval;
+
+    http.get(`${DEVICE_ENDPOINT}/coconfig?${params}`, httpOpts, (res) => {
+        if (res.statusCode !== 200) throw new Error('Device is unavail');
+        bot.sendMessage(chatId, 'Ок');
     }).on('error', (err) => {
         bot.sendMessage(chatId, 'Не доступна');
         console.error(err);

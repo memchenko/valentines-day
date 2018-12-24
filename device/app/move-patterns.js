@@ -5,10 +5,10 @@ let eventEmitter;
 let currentAngle = 0;
 let isMoving = false;
 let SERVO = {
-    minRightAngle: 10,
-    minLeftAngle: 180,
-    maxRightAngle: 60,
-    maxLeftAngle: 130,
+    minRightAngle: 5,
+    minLeftAngle: 175,
+    maxRightAngle: 55,
+    maxLeftAngle: 125,
     speed: 1000,
     sweepInterval: 1000
 };
@@ -132,16 +132,20 @@ const lowerBothArms = (leftServo, rightServo) => {
 const sweepArms = (leftServo, rightServo) => {
   console.log('sweepArms');
   leftServo.sweep({
-      range: [SERVO.minLeftAngle, SERVO.maxLeftAngle],
-      interval: SERVO.sweepInterval
+      range: [SERVO.maxLeftAngle, SERVO.minLeftAngle],
+      interval: SERVO.sweepInterval,
+      step: 10
   });
   rightServo.sweep({
       range: [SERVO.minRightAngle, SERVO.maxRightAngle],
-      interval: SERVO.sweepInterval
+      interval: SERVO.sweepInterval,
+      step: 10
   });
 
   return () => {
     let isAnyFinished = false;
+    leftServo.home();
+    rightServo.home();
     leftServo.stop();
     rightServo.stop();
 

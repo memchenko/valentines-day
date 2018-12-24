@@ -12,8 +12,8 @@ let eventEmitter;
 
 const queue = [];
 const songsQueue = [
-    () => { playSong('5.mp3') },
     () => { playSong('1.mp3') },
+    () => { playSong('5.mp3') },
 ];
 const greetQueue = [
 	() => { playGreeting('greet.mp3') }
@@ -91,8 +91,8 @@ function playSong(filename) {
     const onPause = () => {
         console.log('unpiping');
         file.unpipe();
-        // spkr = null;
-        // decoder = null;
+        spkr = null;
+        decoder = null;
         setTimeout(() => {
             console.log('pausing');
             eventEmitter.emit('speakFile:song:paused');
@@ -101,16 +101,14 @@ function playSong(filename) {
 
     const onResume = () => {
         console.log('resuming');
-        file.pipe(new lame.Decoder()).pipe(new Speaker(format));
-    };
-
-	decoder.on('format', (_format) => {
-		format = _format;
-		spkr = new Speaker(format);
+        spkr = new Speaker(format);
+        decoder = new lame.Decoder();
 
         spkr.on('unpipe', () => {
             eventEmitter.off('speakFile:song:pause', onPause);
             eventEmitter.off('speakFile:song:resume', onResume);
+
+            console.log('speaker unpiping');
 
             setTimeout(() => {
                 eventEmitter.emit('speakFile:song:end');
@@ -121,7 +119,34 @@ function playSong(filename) {
             } else {
                 songsCounter += 1;
             }
+
+            decoder = null;
+            spkr = null;
         });
+
+        file.pipe(decoder).pipe(spkr);
+    };
+
+	decoder.on('format', (_format) => {
+		format = _format;
+		spkr = new Speaker(format);
+
+		spkr.on('unpipe', () => {
+			eventEmitter.off('speakFile:song:pause', onPause);
+			eventEmitter.off('speakFile:song:resume', onResume);
+
+			console.log('speaker unpiping');
+
+			setTimeout(() => {
+				eventEmitter.emit('speakFile:song:end');
+			}, 5000);
+
+			if (songsCounter === (songsQueue.length - 1)) {
+				songsCounter = 0;
+			} else {
+				songsCounter += 1;
+			}
+		});
 
 		decoder.pipe(spkr);
 	});

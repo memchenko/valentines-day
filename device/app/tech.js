@@ -35,13 +35,13 @@ const PINS = {
 servoBoard.on('ready', () => {
   const servo1 = new five.Servo({
       pin: PINS.BOARD_ARMS.SERVO_1,
-      type: 'continuous',
-      board: servoBoard
+      board: servoBoard,
+      startAt: 175
   });
   const servo2 = new five.Servo({
       pin: PINS.BOARD_ARMS.SERVO_2,
-      type: 'continuous',
-      board: servoBoard
+      board: servoBoard,
+      startAt: 5
   });
 
  eventEmitter.emit('tech:servo1:ready', servo1);
