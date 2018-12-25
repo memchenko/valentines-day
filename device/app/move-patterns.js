@@ -23,6 +23,11 @@ let STEPPER = {
     sweepAmplitude: 150
 };
 
+const getRandom2 = () => {
+    const random = Math.ceil(Math.random() * 13);
+    return random % 2 === 0 ? 1 : 0;
+};
+
 const getConfig = () => {
   const json = path.resolve(__dirname, './move.config.json');
   const buf = fs.readFileSync(json);
@@ -130,42 +135,21 @@ const lowerBothArms = (leftServo, rightServo) => {
 };
 
 const sweepArms = (leftServo, rightServo) => {
+  const servo = getRandom2() === 1 ? leftServo : rightServo;
+
   console.log('sweepArms');
-  leftServo.sweep({
-      range: [SERVO.maxLeftAngle, SERVO.minLeftAngle],
-      interval: SERVO.sweepInterval,
-      step: 10
-  });
-  rightServo.sweep({
-      range: [SERVO.minRightAngle, SERVO.maxRightAngle],
-      interval: SERVO.sweepInterval,
-      step: 10
-  });
+    servo.sweep({
+        range: servo === leftServo ?
+          [SERVO.maxLeftAngle, SERVO.minLeftAngle] :
+          [SERVO.minRightAngle, SERVO.maxRightAngle],
+        interval: SERVO.sweepInterval,
+        step: 10
+    });
 
   return () => {
-    let isAnyFinished = false;
-    leftServo.home();
-    rightServo.home();
-    leftServo.stop();
-    rightServo.stop();
-
-    return new Promise((resolve, reject) => {
-        const cb = () => {
-            if (!isAnyFinished) {
-                isAnyFinished = true;
-            } else {
-                leftServo.off('move:complete', cb);
-                rightServo.off('move:complete', cb);
-                resolve();
-            }
-        };
-
-        leftServo.on('move:complete', cb);
-        rightServo.on('move:complete', cb);
-
-        leftServo.to(SERVO.minLeftAngle, SERVO.speed);
-        rightServo.to(SERVO.minRightAngle, SERVO.speed);
-    });
+    servo.home();
+    servo.stop();
+    servo.to(servo === leftServo ? SERVO.minLeftAngle : SERVO.minRightAngle, SERVO.speed);
   };
 };
 
@@ -218,9 +202,10 @@ const turnHeadLeft = (stepper) => {
   else if (currentAngle === 0) {
     steps = STEPPER.amplitude;
     direction = STEPPER.ccwDir;
-  }console.log('currentAngle', currentAngle);
-console.log('left', steps);
-console.log('direction', direction);
+  }
+  console.log('currentAngle', currentAngle);
+  console.log('left', steps);
+  console.log('direction', direction);
   stepper[direction === 0 ? 'cw' : 'ccw']().speed(STEPPER.speed).step({ steps }, () => {
     currentAngle = -STEPPER.amplitude;
     eventEmitter.emit('move:head:left');

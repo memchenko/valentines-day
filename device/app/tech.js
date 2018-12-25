@@ -1,21 +1,15 @@
 let eventEmitter;
 const five = require('johnny-five');
 const throttle = require('lodash').throttle;
-const moves = require('./move-patterns');
 
 const servoBoard = new five.Board({
   port: 'COM3',
   repl: false
 });
 const sensorBoard = new five.Board({
-  port: 'COM6',
+  port: 'COM10',
   repl: false
 });
-const stepperBoard = new five.Board({
-  port: 'COM4',
-  repl: false
-});
-//
 const PINS = {
   SENSOR_BOARD: {
     MOUTH: 5,
@@ -27,9 +21,6 @@ const PINS = {
     SERVO_1: 9,
     SERVO_2: 4
   },
-  STEPPER_BOARD: {
-    MOTORS: [9, 10, 11, 12]
-  }
 };
 //
 servoBoard.on('ready', () => {
@@ -48,26 +39,6 @@ servoBoard.on('ready', () => {
  eventEmitter.emit('tech:servo2:ready', servo2);
 
 });
-//
-stepperBoard.on('ready', () => {
-  const stepper = new five.Stepper({
-    type: five.Stepper.TYPE.FOUR_WIRE,
-    stepsPerRev: 200,
-    pins: PINS.STEPPER_BOARD.MOTORS,
-    board: stepperBoard
-  });
-
-  eventEmitter.emit('tech:stepper:ready', stepper);
-
-  const calibrateStepper = ({ steps, direction }) => {
-      stepper[Number(direction) === 0 ? 'cw' : 'ccw']().speed(500).step({ steps }, () => {
-          console.log('calibrated');
-      });
-  };
-
-  eventEmitter.on('tech:calibrate:stepper', calibrateStepper);
-});
-//
 
 sensorBoard.on('ready', () => {
   const mouth = new five.Led({
@@ -112,7 +83,8 @@ sensorBoard.on('ready', () => {
   let doGetData = true;
   const THRESHOLD = 80;
   const getData = throttle(() => {
-    if (!doGetData) return;
+      console.log(sonic.cm);
+    if (!doGetData || sonic.cm === 0) return;
 
     if (sonic.cm < THRESHOLD) {
         eventEmitter.emit('tech:sonic:crossed');

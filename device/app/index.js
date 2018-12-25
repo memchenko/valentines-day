@@ -47,12 +47,6 @@ app.get('/play/easter-egg', (req, res) => {
 	res.status(200).send('ok');
 });
 
-app.get('/play/joke', (req, res) => {
-	eventEmitter.emit('play', { label: 'phrases.jokes' });
-
-	res.status(200).send('ok');
-});
-
 app.get('/cacalibrate/head', (req, res) => {
 	const {
 		direction,

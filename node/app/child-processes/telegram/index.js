@@ -74,11 +74,9 @@ const commandsText = `
 Список возможных свинокоманд:
 Записать пожелание: ${commands.RECORD_WISH}
 Записать предсказание: ${commands.RECORD_PREDICTION}
-Записать шутку: ${commands.RECORD_JOKE}
 Прослушать предсказание: ${commands.GET_PREDICTION}
 Прослушать пожелание: ${commands.GET_WISH}
 Прослушать гороскоп: ${commands.GET_HOROSCOPE}
-Прослушать шутку: ${commands.GET_JOKE}
 Список всех команд: ${commands.SERVICE.HELP}
 `;
 
@@ -138,11 +136,11 @@ const deviceUnavailTexts = [
   'Давай в другой раз. Свинье сейчас плохо 🤢',
   'Твою команду не могу отправить сейчас я. Ошибка это',
   'Хмхмхм не могу исполнить сейчас',
-  'Сорян, чувак, сейчас не получится'
+  'Сорян, сейчас не получится'
 ];
 
 const waitingPhrases = [
-  'Ок, отправь мне текст и я добавлю запись в очередь'
+  'Отправь мне текст и я добавлю запись в очередь'
 ];
 
 const requestPhrases = [
@@ -276,17 +274,6 @@ bot.onText(text(commands.RECORD_PREDICTION), (msg) => {
     }
 });
 
-bot.onText(text(commands.RECORD_JOKE), (msg) => {
-    const chatId = msg.chat.id;
-
-    if (chatIds[chatId] === states.IDLE || chatIds[chatId] === states.STARTED) {
-        chatIds[chatId].state = states.WAIT_PREDICTION;
-        bot.sendMessage(chatId, getWaitingPhrase());
-    } else {
-        bot.sendMessage(chatId, getRandomText(noCommandText));
-    }
-});
-
 bot.onText(text(commands.GET_WISH), (msg) => {
   const chatId = msg.chat.id;
   const state = chatIds[chatId].state;
@@ -323,24 +310,6 @@ bot.onText(text(commands.GET_PREDICTION), (msg) => {
   }
 });
 
-bot.onText(text(commands.GET_JOKE), (msg) => {
-  const chatId = msg.chat.id;
-  const state = chatIds[chatId].state;
-
-  if (state === states.IDLE || state === states.STARTED) {
-    bot.sendMessage(chatId, getRandomText(requestPhrases));
-    http.get(DEVICE_ENDPOINT + '/play/wish', httpOpts, (res) => {
-      if (res.statusCode !== 200) throw new Error('Device is unavail');
-      bot.sendMessage(chatId, getRandomText(commandSentTexts));
-    }).on('error', (err) => {
-      bot.sendMessage(chatId, getRandomText(deviceUnavailTexts));
-      console.error(err);
-    });
-  } else {
-    bot.sendMessage(chatId, getRandomText(noCommandText));
-  }
-});
-
 bot.onText(text(commands.GET_HOROSCOPE), (msg) => {
   const chatId = msg.chat.id;
   const state = chatIds[chatId].state;
@@ -359,7 +328,13 @@ bot.on('text', (msg) => {
 
     if (!(chatId in chatIds) && text !== '/start') {
         chatIds[chatId] = getUser();
-        bot.sendMessage(chatId, 'Сорри, это по-свински, но я забыл тебя. Что, говоришь, хочешь?');
+        bot.sendMessage(
+          chatId,
+`Это, конечно, очень по-свински, но я забыл тебя. Что, говоришь, хочешь?
+
+${commandsText}
+`
+        );
         return;
     }
 

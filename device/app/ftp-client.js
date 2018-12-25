@@ -11,7 +11,20 @@ const FILES_DIR = CONSTANTS.DEVICE_FILES_DIR;
 let eventEmitter;
 
 const queue = {
-	'horoscopes': [],
+	'horoscopes': {
+		'aquar': [],
+		'pisce': [],
+		'aries': [],
+		'tauru': [],
+		'gemin': [],
+		'rak': [],
+		'leo': [],
+		'virgo': [],
+		'libra': [],
+		'scorp': [],
+		'sagit': [],
+		'capri': []
+	},
 	'wishes': [],
 	'predictions': [],
 	'songs': [],
@@ -52,7 +65,7 @@ function copyFile({ filename, label }) {
 				client.destroy();
 
 				eventEmitter.emit('ftp-client: file copied', { filename, label });
-				eventEmitter.emit('ftp-client: ready for next');
+				eventEmitter.emit('ftp-client: ready for next', { filename, label });
 			});
 
 			stream.pipe(fs.createWriteStream(path.resolve(FILES_DIR, filename)));
@@ -65,10 +78,10 @@ function copyFile({ filename, label }) {
 	});
 }
 
-function execNext() {
-	queue = queue.slice(1);
+function execNext({ filename, label }) {
+	queue[label] = queue[label].slice(1);
 
-	if (queue[0] && typeof queue[0] === 'function') queue[0]();
+	if (queue[label][0] && typeof queue[label][0] === 'function') queue[label][0]();
 }
 
 module.exports = function(_eventEmitter) {

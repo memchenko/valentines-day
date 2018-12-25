@@ -14,7 +14,7 @@ const transformerTTS = new TransformerTTS();
 let characters = 5000000;
 
 process.on('message', (data) => {
-	let filename = Date.now().toString(36) + '.mp3';
+	let filename = data.label + Date.now().toString(36) + '.mp3';
 	let filePath = path.resolve(__dirname, '../../files/' + filename);
 	let file;
 	let audioBuffer;
@@ -27,7 +27,7 @@ process.on('message', (data) => {
 
 			characters -= stdout ? +JSON.parse(stdout).RequestCharacters : 0;
 
-			http.get(DEVICE_ENDPOINT + '?filename=' + filename, (res) => {
+			http.get(DEVICE_ENDPOINT + '?filename=' + filename + '&label=' + data.label, (res) => {
 				if (res.statusCode !== 200) throw new Error('Filename hasn\'t been sent');
 			}).on('error', (e) => {
 				console.error('Device is not available');
