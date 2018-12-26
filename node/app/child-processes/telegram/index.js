@@ -7,14 +7,6 @@ const token = '633707259:AAH7KSjTnRAUJtly1EXGwPDDwyRIHxQ6W0U';
 
 const bot = new TelegramBot(token, { polling: true });
 
-const keepAliveAgent = new http.Agent({ keepAlive: true, keepAliveMsecs: 5000 });
-const httpOpts = {
-    headers: {
-        'Keep-Alive': 'max=10000'
-    },
-    agent: keepAliveAgent
-};
-
 const states = {
     STARTED: 0,
     IDLE: 1,
@@ -203,7 +195,7 @@ bot.onText(/\/calibrate steps=(\d+?) dir=(0|1)/, (msg, matches) => {
         return;
     }
 
-    http.get(`${DEVICE_ENDPOINT}/cacalibrate/head?steps=${steps}&dir=${dir}`, httpOpts, (res) => {
+    http.get(`${DEVICE_ENDPOINT}/cacalibrate/head?steps=${steps}&dir=${dir}`, (res) => {
         if (res.statusCode !== 200) throw new Error('Device is unavail');
         bot.sendMessage(chatId, 'Ок');
     }).on('error', (err) => {
@@ -243,7 +235,7 @@ bot.onText(/\/config .+/, (msg) => {
       armSpeed === null ? '' : '&armSpeed=' + armSpeed +
       armInterval === null ? '' : '&armInterval=' + armInterval;
 
-    http.get(`${DEVICE_ENDPOINT}/coconfig?${params}`, httpOpts, (res) => {
+    http.get(`${DEVICE_ENDPOINT}/coconfig?${params}`, (res) => {
         if (res.statusCode !== 200) throw new Error('Device is unavail');
         bot.sendMessage(chatId, 'Ок');
     }).on('error', (err) => {
@@ -280,7 +272,7 @@ bot.onText(text(commands.GET_WISH), (msg) => {
 
   if (state === states.IDLE || state === states.STARTED) {
     bot.sendMessage(chatId, getRandomText(requestPhrases));
-    http.get(DEVICE_ENDPOINT + '/play/wish', httpOpts, (res) => {
+    http.get(DEVICE_ENDPOINT + '/play/wish', (res) => {
       if (res.statusCode !== 200) throw new Error('Device is unavail');
       bot.sendMessage(chatId, getRandomText(commandSentTexts));
     }).on('error', (err) => {
@@ -298,7 +290,7 @@ bot.onText(text(commands.GET_PREDICTION), (msg) => {
 
   if (state === states.IDLE || state === states.STARTED) {
     bot.sendMessage(chatId, getRandomText(requestPhrases));
-    http.get(DEVICE_ENDPOINT + '/play/prediction', httpOpts, (res) => {
+    http.get(DEVICE_ENDPOINT + '/play/prediction', (res) => {
       if (res.statusCode !== 200) throw new Error('Device is unavail');
       bot.sendMessage(chatId, getRandomText(commandSentTexts));
     }).on('error', (err) => {
@@ -380,7 +372,7 @@ ${commandsText}
             const regex = new RegExp(reText);
             if (regex.test(text)) {
                 bot.sendMessage(chatId, getRandomText(requestPhrases));
-                http.get(DEVICE_ENDPOINT + '?zodiac=' + text.slice(1), httpOpts, (res) => {
+                http.get(DEVICE_ENDPOINT + '?zodiac=' + text.slice(1), (res) => {
                     if (res.statusCode !== 200) throw new Error('Device is unavail');
                     bot.sendMessage(chatId, getRandomText(commandSentTexts));
                 })
