@@ -49,95 +49,116 @@ const changeConfig = ({ servo = {}, stepper = {} }) => {
 };
 
 const liftRightArm = (servo) => {
-  servo.to(SERVO.maxRightAngle, SERVO.speed);
+  try {
+    servo.to(SERVO.maxRightAngle, SERVO.speed);
 
-  const cb = () => {
-      isMoving = false;
-      servo.off('move:complete', cb);
-      eventEmitter.emit('move:right-arm:lifted');
-  };
+    const cb = () => {
+        isMoving = false;
+        servo.off('move:complete', cb);
+        eventEmitter.emit('move:right-arm:lifted');
+    };
 
-  servo.on('move:complete', cb);
+    servo.on('move:complete', cb);
+  } catch(err) {
+    return;
+  }
 };
 
 const liftLeftArm = (servo) => {
-  servo.to(SERVO.maxLeftAngle, SERVO.speed);
+  try {
+    servo.to(SERVO.maxLeftAngle, SERVO.speed);
 
-  const cb = () => {
-      servo.off('move:complete', cb);
-      eventEmitter.emit('move:left-arm:lifted');
-  };
+    const cb = () => {
+        servo.off('move:complete', cb);
+        eventEmitter.emit('move:left-arm:lifted');
+    };
 
-  servo.on('move:complete', cb);
+    servo.on('move:complete', cb);
+  } catch(err) {
+    return;
+  }
 };
 
 const lowerRightArm = (servo) => {
-  servo.to(SERVO.minRightAngle, SERVO.speed);
+  try {
+    servo.to(SERVO.minRightAngle, SERVO.speed);
 
-  const cb = () => {
-      servo.off('move:complete', cb);
-      eventEmitter.emit('move:right-arm:lowered');
-  };
+    const cb = () => {
+        servo.off('move:complete', cb);
+        eventEmitter.emit('move:right-arm:lowered');
+    };
 
-  servo.on('move:complete', cb);
+    servo.on('move:complete', cb);
+  } catch(err) {
+    return;
+  }
 };
 
 const lowerLeftArm = (servo) => {
-  servo.to(SERVO.minLeftAngle, SERVO.speed);
+  try {
+    servo.to(SERVO.minLeftAngle, SERVO.speed);
 
-  const cb = () => {
-      servo.off('move:complete', cb);
-      eventEmitter.emit('move:left-arm:lowered');
-  };
+    const cb = () => {
+        servo.off('move:complete', cb);
+        eventEmitter.emit('move:left-arm:lowered');
+    };
 
-  servo.on('move:complete', cb);
+    servo.on('move:complete', cb);
+  } catch(err) {
+    return;
+  }
 };
 
 const liftBothArms = (leftServo, rightServo) => {
-  let isAnyFinished = false;
-  leftServo.to(SERVO.maxLeftAngle, SERVO.speed);
-  rightServo.to(SERVO.maxRightAngle, SERVO.speed);
+  try {
+    let isAnyFinished = false;
+    leftServo.to(SERVO.maxLeftAngle, SERVO.speed);
+    rightServo.to(SERVO.maxRightAngle, SERVO.speed);
 
-  const cb = () => {
-    if (!isAnyFinished) {
-      isAnyFinished = true;
-    } else {
-      leftServo.off('move:complete', cb);
-      rightServo.off('move:complete', cb);
-      eventEmitter.emit('move:both-arms:lifted');
-    }
-  };
+    const cb = () => {
+      if (!isAnyFinished) {
+        isAnyFinished = true;
+      } else {
+        leftServo.off('move:complete', cb);
+        rightServo.off('move:complete', cb);
+        eventEmitter.emit('move:both-arms:lifted');
+      }
+    };
 
-  leftServo.on('move:complete', cb);
-  rightServo.on('move:complete', cb);
+    leftServo.on('move:complete', cb);
+    rightServo.on('move:complete', cb);
+  } catch(err) {
+    return;
+  }
 };
 
 const lowerBothArms = (leftServo, rightServo) => {
-  let isAnyFinished = false;
-  console.log('lowering left');
-  leftServo.to(SERVO.minLeftAngle, SERVO.speed);
-  console.log('lowering right');
-  rightServo.to(SERVO.minRightAngle, SERVO.speed);
-  console.log('lowered both');
+  try {
+    let isAnyFinished = false;
+    leftServo.to(SERVO.minLeftAngle, SERVO.speed);
+    rightServo.to(SERVO.minRightAngle, SERVO.speed);
 
-  const cb = () => {
-    if (!isAnyFinished) {
-      isAnyFinished = true;
-    } else {
-      leftServo.off('move:complete', cb);
-      rightServo.off('move:complete', cb);
-      eventEmitter.emit('move:both-arms:lowered');
-    }
-  };
+    const cb = () => {
+      if (!isAnyFinished) {
+        isAnyFinished = true;
+      } else {
+        leftServo.off('move:complete', cb);
+        rightServo.off('move:complete', cb);
+        eventEmitter.emit('move:both-arms:lowered');
+      }
+    };
 
-  leftServo.on('move:complete', cb);
-  rightServo.on('move:complete', cb);
+    leftServo.on('move:complete', cb);
+    rightServo.on('move:complete', cb);
+  } catch(err) {
+    return;
+  }
 };
 
 const sweepArms = (leftServo, rightServo) => {
-  const servo = getRandom2() === 1 ? leftServo : rightServo;
+  try {
+    const servo = getRandom2() === 1 ? leftServo : rightServo;
 
-  console.log('sweepArms');
     servo.sweep({
         range: servo === leftServo ?
           [SERVO.maxLeftAngle, SERVO.minLeftAngle] :
@@ -146,11 +167,15 @@ const sweepArms = (leftServo, rightServo) => {
         step: 10
     });
 
-  return () => {
-    servo.home();
-    servo.stop();
-    servo.to(servo === leftServo ? SERVO.minLeftAngle : SERVO.minRightAngle, SERVO.speed);
-  };
+    return () => {
+      servo.home();
+      servo.stop();
+      servo.to(servo === leftServo ? SERVO.minLeftAngle : SERVO.minRightAngle, SERVO.speed);
+    };
+  } catch(err) {
+    return;
+  }
+
 };
 
 const turnHeadToCenter = (stepper) => {
@@ -321,10 +346,29 @@ module.exports = (_eventEmitter) => {
 
   eventEmitter.on('move:change-config', changeConfig);
 
+  let noServoBoard = false;
+  let noSensorBoard = false;
+
+  eventEmitter.on('no:servo:board', () => {
+    noServoBoard = true;
+  });
+
+  eventEmitter.on('no:sensor:board', () => {
+    noSensorBoard = true;
+  });
+
   return {
-      liftRightArm, liftLeftArm, liftBothArms,
-      lowerRightArm, lowerLeftArm, lowerBothArms, sweepArms,
-      turnHeadLeft, turnHeadToCenter, turnHeadRight,
-      turnAround, sweepHead
+      liftRightArm: noServoBoard ? () => {} : liftRightArm,
+      liftLeftArm: noServoBoard ? () => {} : liftLeftArm,
+      liftBothArms: noServoBoard ? () => {} : liftBothArms,
+      lowerRightArm: noServoBoard ? () => {} : lowerRightArm,
+      lowerLeftArm: noServoBoard ? () => {} : lowerLeftArm,
+      lowerBothArms: noServoBoard ? () => {} : lowerBothArms,
+      sweepArms: noServoBoard ? () => {} : sweepArms,
+      turnHeadLeft,
+      turnHeadToCenter,
+      turnHeadRight,
+      turnAround,
+      sweepHead
   };
 };

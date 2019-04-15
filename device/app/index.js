@@ -15,6 +15,7 @@ eventEmitter.setMaxListeners(0);
 require('./manager.js')(eventEmitter);
 
 app.get('/', (req, res) => {
+	console.log('request /', req.query.label);
 	eventEmitter.emit('got filename', {
 		label: req.query.label,
 		filename: urlencode.decode(req.query.filename)
@@ -24,28 +25,34 @@ app.get('/', (req, res) => {
 });
 
 app.get('/play/wish', (req, res) => {
-	eventEmitter.emit('play', { label: 'wishes' });
+	console.log('playwish /');
+
+	eventEmitter.emit(USER_COMMAND, 'wishes');
+
+	// eventEmitter.emit('play', { label: 'wishes' });
 
 	res.status(200).send('ok');
 });
 
 app.get('/play/horoscope', (req, res) => {
-	eventEmitter.emit('play', { label: `horoscopes.${req.query.zodiac}`  });
+	eventEmitter.emit(USER_COMMAND, `horoscopes.${req.query.zodiac}`);
+	// eventEmitter.emit('play', { label: `horoscopes.${req.query.zodiac}`  });
 
 	res.status(200).send('ok');
 });
 
 app.get('/play/prediction', (req, res) => {
-	eventEmitter.emit('play', { label: 'predictions' });
+	eventEmitter.emit(USER_COMMAND, 'predictions');
+	// eventEmitter.emit('play', { label: 'predictions' });
 
 	res.status(200).send('ok');
 });
 
-app.get('/play/easter-egg', (req, res) => {
-	eventEmitter.emit('play', { label: 'easter_eggs' });
-
-	res.status(200).send('ok');
-});
+// app.get('/play/easter-egg', (req, res) => {
+// 	eventEmitter.emit('play', { label: 'easter_eggs' });
+//
+// 	res.status(200).send('ok');
+// });
 
 app.get('/cacalibrate/head', (req, res) => {
 	const {
@@ -79,7 +86,15 @@ app.get('/coconfig', (req, res) => {
 	res.status(200).send('ok');
 });
 
+const ip = require('ip');
+
+app.get('*', (req, res) => {
+	res.status(200).send('ok');
+	console.log('request');
+});
+
 app.listen(PORT, () => {
+	console.log(ip.address());
 	console.log('Server started at port: ', PORT);
 });
 

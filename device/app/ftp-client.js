@@ -32,6 +32,10 @@ const queue = {
 };
 
 function addToQueue({ filename, label }) {
+	if (!queue.hasOwnProperty(label)) {
+		return;
+	}
+
 	queue[label].push(() => {
 		createFile({ filename, label });
 	});
@@ -53,28 +57,35 @@ function createFile({ filename, label }) {
 }
 
 function copyFile({ filename, label }) {
+
+	console.log('&&& ', filename, label);
 	const client = new FtpClient();
 
 	client.on('ready', () => {
+		console.log('ftp ready');
 		client.get(filename, (err, stream) => {
+			console.log('get file');
 			if (err) {
+				console.log(err);
 				return;
 			}
 
 			stream.once('close', () => {
 				client.destroy();
-
+				console.log('close stream');
 				eventEmitter.emit('ftp-client: file copied', { filename, label });
 				eventEmitter.emit('ftp-client: ready for next', { filename, label });
 			});
 
 			stream.pipe(fs.createWriteStream(path.resolve(FILES_DIR, filename)));
 		});
+	});
 
-  	client.connect({
-  		host: FTP_HOST,
-  		port: FTP_PORT
-  	});
+	client.connect({
+		host: FTP_HOST,
+		port: FTP_PORT,
+		keepAlive: 50000,
+		connTimeout: 50000
 	});
 }
 

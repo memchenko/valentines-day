@@ -166,7 +166,7 @@ bot.onText(/\/start/, (msg) => {
   if (chatId in chatIds) {
     bot.sendMessage(chatId, commandsText);
   } else {
-    chatIds[chatId] = getUser();
+    chatIds[chatId] = createUser();
     bot.sendMessage(chatId, startText)
   }
 });

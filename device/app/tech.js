@@ -1,3 +1,8 @@
+const {
+  EYES_ON, EYES_OFF, MOUTH_ON, MOUTH_OFF,
+  SERVO_L_READY, SERVO_R_READY
+} = require('./constants.js');
+
 let eventEmitter;
 const five = require('johnny-five');
 const throttle = require('lodash').throttle;
@@ -7,9 +12,25 @@ const servoBoard = new five.Board({
   repl: false
 });
 const sensorBoard = new five.Board({
-  port: 'COM10',
+  port: 'COM11',
   repl: false
 });
+
+servoBoard.on('error', () => {
+  console.log('Can\'t connect servo board');
+
+  eventEmitter.emit('no:servo:board');
+  eventEmitter.emit(SERVO_L_READY);
+  eventEmitter.emit(SERVO_R_READY);
+});
+
+sensorBoard.on('error', () => {
+  console.log('Can\'t connect sensor board');
+
+  eventEmitter.emit('no:sensor:board');
+  eventEmitter.emit('tech:sonic:ready');
+});
+
 const PINS = {
   SENSOR_BOARD: {
     MOUTH: 5,
@@ -22,22 +43,21 @@ const PINS = {
     SERVO_2: 4
   },
 };
-//
+
 servoBoard.on('ready', () => {
-  const servo1 = new five.Servo({
-      pin: PINS.BOARD_ARMS.SERVO_1,
+  const servo_l = new five.Servo({
+      pin: PINS.BOARD_ARMS.SERVO_L,
       board: servoBoard,
       startAt: 175
   });
-  const servo2 = new five.Servo({
-      pin: PINS.BOARD_ARMS.SERVO_2,
+  const servo_r = new five.Servo({
+      pin: PINS.BOARD_ARMS.SERVO_R,
       board: servoBoard,
       startAt: 5
   });
 
- eventEmitter.emit('tech:servo1:ready', servo1);
- eventEmitter.emit('tech:servo2:ready', servo2);
-
+ eventEmitter.emit(SERVO_L_READY, servo_l);
+ eventEmitter.emit(SERVO_R_READY, servo_r);
 });
 
 sensorBoard.on('ready', () => {
@@ -68,31 +88,30 @@ sensorBoard.on('ready', () => {
   };
   const turnOffEyes = () => {
     eye1.off();
-    eye1.off();
+    eye2.off();
   };
   const turnOffMouth = () => {
     mouth.off();
   };
 
-  eventEmitter.on('tech:turn-on:eyes', turnOnEyes);
-  eventEmitter.on('tech:strobe-mouth', strobeMouth);
-  eventEmitter.on('tech:turn-off:eyes', turnOffEyes);
-  eventEmitter.on('tech:turn-off:mouth', turnOffMouth);
+  eventEmitter.on(EYES_ON, turnOnEyes);
+  eventEmitter.on(MOUTH_ON, strobeMouth);
+  eventEmitter.on(EYES_OFF, turnOffEyes);
+  eventEmitter.on(MOUTH_OFF, turnOffMouth);
+
   eventEmitter.emit('tech:sonic:ready', sonic);
 
   let doGetData = true;
   const THRESHOLD = 80;
   const getData = throttle(() => {
-      console.log(sonic.cm);
     if (!doGetData || sonic.cm === 0) return;
 
     if (sonic.cm < THRESHOLD) {
-        eventEmitter.emit('tech:sonic:crossed');
+        eventEmitter.emit(SONIC_CROSSED);
     }
-  }, 1000);
+  }, 500);
   sonic.on("data", getData);
 });
-
 
 module.exports = (_eventEmitter) => {
   eventEmitter = _eventEmitter;
