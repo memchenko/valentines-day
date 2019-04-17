@@ -28,11 +28,11 @@ const getUser = () => ({
 const chatIds = {};
 
 const commands = {
-    RECORD_WISH: '/rwish',
+    RECORD_WISH: '/rval',
     RECORD_PREDICTION: '/rpred',
     RECORD_JOKE: '/rjoke',
     GET_PREDICTION: '/pred',
-    GET_WISH: '/wish',
+    GET_WISH: '/val',
     GET_HOROSCOPE: '/horos',
     GET_JOKE: '/joke',
 
@@ -64,11 +64,10 @@ const getRandomText = (arr) => {
 
 const commandsText = `
 Список возможных свинокоманд:
-Записать пожелание: ${commands.RECORD_WISH}
+Записать Валентинку: ${commands.RECORD_WISH}
 Записать предсказание: ${commands.RECORD_PREDICTION}
 Прослушать предсказание: ${commands.GET_PREDICTION}
-Прослушать пожелание: ${commands.GET_WISH}
-Прослушать гороскоп: ${commands.GET_HOROSCOPE}
+Прослушать Валентинку: ${commands.GET_WISH}
 Список всех команд: ${commands.SERVICE.HELP}
 `;
 
@@ -92,7 +91,7 @@ const greetingTexts = ['Здравствуй, дуруг!', 'Хрюветики!
 const startText = `
 ${getRandomText(greetingTexts)} 🐷
 
-С моей помощью ты сможешь давать команды Санта Свину ☝
+С моей помощью ты сможешь давать команды Свину Валентину ☝
 
 ${commandsText}
 
@@ -161,6 +160,7 @@ ${getRandomText(waitingPhrases)}
 const text = text => new RegExp(text);
 
 bot.onText(/\/start/, (msg) => {
+console.log('start');
   const chatId = msg.chat.id;
 
   if (chatId in chatIds) {
@@ -247,7 +247,7 @@ bot.onText(/\/config .+/, (msg) => {
 bot.onText(text(commands.RECORD_WISH), (msg) => {
   const chatId = msg.chat.id;
 
-  if (chatIds[chatId] === states.IDLE || chatIds[chatId] === states.STARTED) {
+  if (chatIds[chatId].state === states.IDLE || chatIds[chatId].state === states.STARTED) {
       chatIds[chatId].state = states.WAIT_WISH;
       bot.sendMessage(chatId, getWaitingPhrase());
   } else {
@@ -258,7 +258,7 @@ bot.onText(text(commands.RECORD_WISH), (msg) => {
 bot.onText(text(commands.RECORD_PREDICTION), (msg) => {
     const chatId = msg.chat.id;
 
-    if (chatIds[chatId] === states.IDLE || chatIds[chatId] === states.STARTED) {
+    if (chatIds[chatId].state === states.IDLE || chatIds[chatId].state === states.STARTED) {
         chatIds[chatId].state = states.WAIT_PREDICTION;
         bot.sendMessage(chatId, getWaitingPhrase());
     } else {
@@ -273,9 +273,11 @@ bot.onText(text(commands.GET_WISH), (msg) => {
   if (state === states.IDLE || state === states.STARTED) {
     bot.sendMessage(chatId, getRandomText(requestPhrases));
     http.get(DEVICE_ENDPOINT + '/play/wish', (res) => {
+console.log(res);
       if (res.statusCode !== 200) throw new Error('Device is unavail');
       bot.sendMessage(chatId, getRandomText(commandSentTexts));
     }).on('error', (err) => {
+console.log(err);
       bot.sendMessage(chatId, getRandomText(deviceUnavailTexts));
       console.error(err);
     });
@@ -315,10 +317,16 @@ bot.onText(text(commands.GET_HOROSCOPE), (msg) => {
 });
 
 bot.on('text', (msg) => {
+console.log('text');
     const chatId = msg.chat.id;
     const text = msg.text;
-
+console.log('chatId', chatId);
+console.log('text', text);
+    if (text === '/start') {
+	return;
+    }
     if (!(chatId in chatIds) && text !== '/start') {
+console.log('we dont have chatid');
         chatIds[chatId] = getUser();
         bot.sendMessage(
           chatId,
@@ -354,7 +362,7 @@ ${commandsText}
     }
 
     const state = chatIds[chatId].state;
-    const label = (state === states.WAIT_WISH && 'Пожелание') ||
+    const label = (state === states.WAIT_WISH && 'Валентинка') ||
       (state === states.WAIT_PREDICTION && 'Предсказание') ||
       (state === states.WAIT_JOKE && 'Шутка') || '';
 
@@ -372,7 +380,7 @@ ${commandsText}
             const regex = new RegExp(reText);
             if (regex.test(text)) {
                 bot.sendMessage(chatId, getRandomText(requestPhrases));
-                http.get(DEVICE_ENDPOINT + '?zodiac=' + text.slice(1), (res) => {
+                http.get(DEVICE_ENDPOINT + '/play/horoscope' + '?zodiac=' + text.slice(1), (res) => {
                     if (res.statusCode !== 200) throw new Error('Device is unavail');
                     bot.sendMessage(chatId, getRandomText(commandSentTexts));
                 })

@@ -9,7 +9,7 @@ const HOSTNAME = CONSTANTS.HOST;
 const FTP_PORT = CONSTANTS.FTP_PORT;
 const FILES_DIR = CONSTANTS.SERVER_FILES_DIR
 
-const ftpServer = new FtpSvr(`ftp://${HOSTNAME}:${FTP_PORT}`, { anonymous: true, greeting: ["Hey"] });
+const ftpServer = new FtpSvr({ url: 'ftp://0.0.0.0:1111', pasv_min: 1112, pasv_max: 65535, anonymous: true, greeting: ["Hey"] });
 
 ftpServer.on('login', (data, resolve, reject) => {
 	resolve({ root: FILES_DIR });

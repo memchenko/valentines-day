@@ -14,11 +14,11 @@ const paintingPath = path.resolve(__dirname, './child-processes/painting/index.j
 const telegramPath = path.resolve(__dirname, './child-processes/telegram/index.js');
 
 module.exports = function() {
-	ttsProcess = child_process.fork(ttsPath);
+//	ttsProcess = child_process.fork(ttsPath);
 	ftpProcess = child_process.fork(ftpPath);
-	telegramProcess = child_process.fork(telegramPath);
+//	telegramProcess = child_process.fork(telegramPath);
 
-	telegramProcess.on('message', sendToTTSProcess);
+//	telegramProcess.on('message', sendToTTSProcess);
 
 //	setTimeout(() => {
 //		sendToTTSProcess({ speaker: 'Tatyana', from: 'Миша', to: 'Всем', message: 'Хэй хей! Как ваше ничего поросята?' });
@@ -31,5 +31,6 @@ module.exports = function() {
 };
 
 function sendToTTSProcess(data) {
-	ttsProcess.send(data);
+console.log(data);
+//	ttsProcess.send(data);
 }
