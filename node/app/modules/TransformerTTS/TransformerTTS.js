@@ -6,7 +6,7 @@ const urlencode = require('urlencode');
 const FILES_DIR = require('../../../../constants/constants.js').SERVER_FILES_DIR;
 
 function TransformerTTS() {
-	this.labels = ['Предсказание', 'Пожелание', 'Гороскоп', 'Секрет', 'Идея', 'Шутка'];
+	this.labels = ['Валентинка', 'Пожелание'];
 	this.speakers = ['Maxim', 'Tatyana'];
 }
 
@@ -25,7 +25,7 @@ TransformerTTS.prototype.getSpeaker = function(speaker) {
 };
 
 TransformerTTS.prototype.getCmdCommand = function({
-	to, from, label, message, speaker, filename
+	to = '', from = '', label, message, speaker, filename
 }) {
 	const normalizedFrom = from.length > 0 ? ('от ' + from) : '';
 	const text = `${this.getLabel(label)} ${to} ${normalizedFrom}. ${message}`;
