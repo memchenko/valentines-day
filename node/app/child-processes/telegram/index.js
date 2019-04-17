@@ -3,9 +3,22 @@ const { DEVICE_ENDPOINT } = require('../../../../constants/constants');
 
 const TelegramBot = require('node-telegram-bot-api');
 
+const { CHECK_NEW_ORDERS, LABELS_TO_PLAY } = require('../../constants/messageTypes');
+
 const token = '633707259:AAH7KSjTnRAUJtly1EXGwPDDwyRIHxQ6W0U';
 
 const bot = new TelegramBot(token, { polling: true });
+
+let orders = [];
+let lastAppeal = null;
+
+process.on('message', ({ type }) => {
+  if (type === CHECK_NEW_ORDERS) {
+    process.send({ type: LABELS_TO_PLAY, payload: orders });
+    orders = [];
+    lastAppeal = Date.now();
+  }
+});
 
 const states = {
     STARTED: 0,
@@ -64,10 +77,10 @@ const getRandomText = (arr) => {
 
 const commandsText = `
 Список возможных свинокоманд:
-Записать Валентинку: ${commands.RECORD_WISH}
+Записать пожелание: ${commands.RECORD_WISH}
 Записать предсказание: ${commands.RECORD_PREDICTION}
 Прослушать предсказание: ${commands.GET_PREDICTION}
-Прослушать Валентинку: ${commands.GET_WISH}
+Прослушать пожелание: ${commands.GET_WISH}
 Список всех команд: ${commands.SERVICE.HELP}
 `;
 
@@ -153,14 +166,9 @@ ${getRandomText(waitingPhrases)}
 Для отмены команды: ${commands.SERVICE.EXIT}
 `;
 
-// bot.on('audio', (msg) => {
-//
-// });
-
 const text = text => new RegExp(text);
 
 bot.onText(/\/start/, (msg) => {
-console.log('start');
   const chatId = msg.chat.id;
 
   if (chatId in chatIds) {
@@ -272,15 +280,13 @@ bot.onText(text(commands.GET_WISH), (msg) => {
 
   if (state === states.IDLE || state === states.STARTED) {
     bot.sendMessage(chatId, getRandomText(requestPhrases));
-    http.get(DEVICE_ENDPOINT + '/play/wish', (res) => {
-console.log(res);
-      if (res.statusCode !== 200) throw new Error('Device is unavail');
+    orders.push('wish');
+
+    if (lastAppeal !== null && lastAppeal < 5000) {
       bot.sendMessage(chatId, getRandomText(commandSentTexts));
-    }).on('error', (err) => {
-console.log(err);
+    } else {
       bot.sendMessage(chatId, getRandomText(deviceUnavailTexts));
-      console.error(err);
-    });
+    }
   } else {
     bot.sendMessage(chatId, getRandomText(noCommandText));
   }
@@ -292,13 +298,13 @@ bot.onText(text(commands.GET_PREDICTION), (msg) => {
 
   if (state === states.IDLE || state === states.STARTED) {
     bot.sendMessage(chatId, getRandomText(requestPhrases));
-    http.get(DEVICE_ENDPOINT + '/play/prediction', (res) => {
-      if (res.statusCode !== 200) throw new Error('Device is unavail');
+    orders.push('prediction');
+
+    if (lastAppeal !== null && lastAppeal < 5000) {
       bot.sendMessage(chatId, getRandomText(commandSentTexts));
-    }).on('error', (err) => {
+    } else {
       bot.sendMessage(chatId, getRandomText(deviceUnavailTexts));
-      console.error(err);
-    });
+    }
   } else {
     bot.sendMessage(chatId, getRandomText(noCommandText));
   }
@@ -317,16 +323,13 @@ bot.onText(text(commands.GET_HOROSCOPE), (msg) => {
 });
 
 bot.on('text', (msg) => {
-console.log('text');
     const chatId = msg.chat.id;
     const text = msg.text;
-console.log('chatId', chatId);
-console.log('text', text);
     if (text === '/start') {
-	return;
+	    return;
     }
+
     if (!(chatId in chatIds) && text !== '/start') {
-console.log('we dont have chatid');
         chatIds[chatId] = getUser();
         bot.sendMessage(
           chatId,
@@ -334,7 +337,7 @@ console.log('we dont have chatid');
 
 ${commandsText}
 `
-        );
+      );
         return;
     }
 
@@ -362,7 +365,7 @@ ${commandsText}
     }
 
     const state = chatIds[chatId].state;
-    const label = (state === states.WAIT_WISH && 'Валентинка') ||
+    const label = (state === states.WAIT_WISH && 'Пожелание') ||
       (state === states.WAIT_PREDICTION && 'Предсказание') ||
       (state === states.WAIT_JOKE && 'Шутка') || '';
 

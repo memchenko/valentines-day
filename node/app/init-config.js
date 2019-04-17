@@ -1,5 +1,6 @@
 const child_process = require('child_process');
 const path = require('path');
+const { NEW_MESSAGE } = require('./constants/messageTypes.js')
 
 let ttsProcess;
 let ftpProcess;
@@ -14,23 +15,24 @@ const paintingPath = path.resolve(__dirname, './child-processes/painting/index.j
 const telegramPath = path.resolve(__dirname, './child-processes/telegram/index.js');
 
 module.exports = function() {
-//	ttsProcess = child_process.fork(ttsPath);
-	ftpProcess = child_process.fork(ftpPath);
-//	telegramProcess = child_process.fork(telegramPath);
+	ttsProcess = child_process.fork(ttsPath);
+	// ftpProcess = child_process.fork(ftpPath);
+	telegramProcess = child_process.fork(telegramPath);
 
-//	telegramProcess.on('message', sendToTTSProcess);
-
-//	setTimeout(() => {
-//		sendToTTSProcess({ speaker: 'Tatyana', from: 'Миша', to: 'Всем', message: 'Хэй хей! Как ваше ничего поросята?' });
-//	}, 5000);
+	telegramProcess.on('message', sendToTTSProcess);
 
 	// messagesProcess = child_process.fork(messagesPath);
 	// paintingProcess = child_process.fork(paintingPath);
 
 	// messagesProcess.on('message', sendToTTSProcess);
+
+	return {
+		ttsProcess,
+		// ftpProcess,
+		telegramProcess
+	};
 };
 
-function sendToTTSProcess(data) {
-console.log(data);
-//	ttsProcess.send(data);
+function sendToTTSProcess(payload) {
+	ttsProcess.send({ type: NEW_MESSAGE, payload });
 }
