@@ -120,7 +120,9 @@ function singAndDance() {
     startAt = Date.now();
     isSmbdDetected = true;
     isPaused = true;
-    finishSweepingArms();
+    if (finishSweepingArms instanceof Function) {
+      finishSweepingArms();
+    }
 
     eventEmitter.emit('speakFile:song:pause');
     eventEmitter.on('speakFile:song:paused', onSongPaused);
@@ -148,7 +150,9 @@ function singAndDance() {
     eventEmitter.off(USER_COMMAND, smbdDetected);
     eventEmitter.off(SONIC_CROSSED, smbdDetected);
     eventEmitter.off(USER_COMMAND, onMainCommand);
-    finishSweepingArms();
+    if (finishSweepingArms instanceof Function) {
+      finishSweepingArms();
+    }
     eventEmitter.emit('manager:singNDance:finished');
   };
 

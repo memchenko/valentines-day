@@ -1,5 +1,6 @@
 const EventEmitter = require('events');
 const http = require('http');
+const fs = require('fs');
 const urlencode = require('urlencode');
 const express = require('express');
 const app = express();
@@ -7,6 +8,7 @@ const app = express();
 const got = require('got');
 
 const { DEVICE_MANAGER_ENDPOINT } = require('../../constants/constants');
+const { USER_COMMAND } = require('./constants');
 
 const PORT = 3131;
 
@@ -112,8 +114,16 @@ setInterval(async () => {
 		console.log('files', files.body);
 		console.log('orders', orders.body);
 
-		files.body.forEach(file => eventEmitter.emit('got filename', file));
 		orders.body.forEach(order => eventEmitter.emit(USER_COMMAND, order));	
+
+		files.body.forEach(({ filename, label }) => {
+			const stream = got.stream(encodeURIComponent`http://18.218.239.19:8080/file/${label}/${filename}`)
+				.pipe(fs.createWriteStream(filename));
+
+			stream.on('finish', () => {
+				eventEmitter.emit('ftp-client: file copied', { filename, label });
+			});
+		});
 	} catch(err) {
 		console.log(err);
 	}
