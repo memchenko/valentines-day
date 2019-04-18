@@ -117,7 +117,7 @@ setInterval(async () => {
 	} catch(err) {
 		console.log(err);
 	}
-}, 7000);
+}, 3000);
 
 // eventEmitter.on('speakFile:need', (label) => {
 // 	http.get(DEVICE_MANAGER_ENDPOINT + '?label=' + label, (res) => {
