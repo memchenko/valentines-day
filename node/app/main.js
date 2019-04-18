@@ -68,8 +68,8 @@ app.listen(HTTP_PORT, () => {
 
 	const { ttsProcess: _ttsProcess, telegramProcess: _telegramProcess } = init();
 
-	const ttsProcess = _ttsProcess;
-	const telegramProcess = _telegramProcess;
+	ttsProcess = _ttsProcess;
+	telegramProcess = _telegramProcess;
 
 	ttsProcess.on('message', ({ type, payload }) => {
 		if (type === AUDIO_FILES) {
