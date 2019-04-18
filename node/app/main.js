@@ -8,7 +8,7 @@ const app = express();
 
 const HTTP_PORT = require('../../constants/constants.js').HTTP_PORT;
 
-const { CHECK_NEW_FILES, AUDIO_FILES, LABELS_TO_PLAY } = require('./constants/messageTypes');
+const { CHECK_NEW_FILES, CHECK_NEW_ORDERS, AUDIO_FILES, LABELS_TO_PLAY } = require('./constants/messageTypes');
 
 const init = require('./init-config.js');
 
