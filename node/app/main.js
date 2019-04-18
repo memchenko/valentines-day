@@ -47,7 +47,7 @@ app.get('/file/:label/:file', (req, res) => {
 app.get('/orders', (req, res) => {
 	if (telegramProcess) {
 		const handleLabelsResponse = (labels) => {
-			ee.off(handleLabelsResponse);
+			ee.off(LABELS_TO_PLAY, handleLabelsResponse);
 			res.status(200).send(JSON.stringify(labels));
 		};
 	
