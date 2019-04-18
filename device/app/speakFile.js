@@ -12,11 +12,8 @@ const FILES_DIR = require('../../constants/constants.js').DEVICE_FILES_DIR;
 let eventEmitter;
 
 let songsCounter = 0;
-let greetingsCounter = 0;
-let wishesCounter = 0;
-let predictionsCounter = 0;
+let phrasesCounter = 0;
 let demonGreetsCounter = 0;
-let demonCounter = 0;
 
 let aquarC = 0;
 let pisceC = 0;
@@ -32,33 +29,53 @@ let sagitC = 0;
 let capriC = 0;
 
 const queue = [];
+
 const songsQueue = [
-    () => { playSong('./songs/4.mp3') },
-    () => { playSong('./songs/5.mp3') },
-    () => { playSong('./songs/6.mp3') },
     () => { playSong('./songs/1.mp3') },
-    () => { playSong('./songs/2.mp3') },
     () => { playSong('./songs/3.mp3') },
-    () => { playSong('./songs/7.mp3') }
+    () => { playSong('./songs/2.mp3') },
+    () => { playSong('./songs/4.mp3') },
+    () => { playSong('./songs/6.mp3') },
+    () => { playSong('./songs/5.mp3') },
+    () => { playSong('./songs/8.mp3') },
+    () => { playSong('./songs/7.mp3') },
+    () => { playSong('./songs/10.mp3') },
+    () => { playSong('./songs/9.mp3') },
+    () => { playSong('./songs/12.mp3') },
+    () => { playSong('./songs/11.mp3') },
+    () => { playSong('./songs/14.mp3') },
+    () => { playSong('./songs/13.mp3') },
+    () => { playSong('./songs/16.mp3') },
+    () => { playSong('./songs/15.mp3') },
+    () => { playSong('./songs/18.mp3') },
+    () => { playSong('./songs/17.mp3') }
 ];
-const greetQueue = [
-    () => { playGreeting('./greets/1.mp3') },
-    () => { playGreeting('./greets/16.mp3') },
-    () => { playGreeting('./greets/2.mp3') },
-    () => { playGreeting('./greets/15.mp3') },
-    () => { playGreeting('./greets/3.mp3') },
-    () => { playGreeting('./greets/14.mp3') },
-    () => { playGreeting('./greets/4.mp3') },
-    () => { playGreeting('./greets/13.mp3') },
-    () => { playGreeting('./greets/5.mp3') },
-    () => { playGreeting('./greets/12.mp3') },
-    () => { playGreeting('./greets/6.mp3') },
-    () => { playGreeting('./greets/11.mp3') },
-    () => { playGreeting('./greets/7.mp3') },
-    () => { playGreeting('./greets/10.mp3') },
-    () => { playGreeting('./greets/8.mp3') },
-    () => { playGreeting('./greets/9.mp3') },
+
+const phrasesQueue = [
+    () => { playSong('./phrases/1.mp3') },
+    () => { playSong('./phrases/2.mp3') },
+    () => { playSong('./phrases/3.mp3') },
+    () => { playSong('./phrases/4.mp3') },
+    () => { playSong('./phrases/5.mp3') },
+    () => { playSong('./phrases/6.mp3') },
+    () => { playSong('./phrases/7.mp3') },
+    () => { playSong('./phrases/8.mp3') },
+    () => { playSong('./phrases/9.mp3') },
+    () => { playSong('./phrases/10.mp3') },
+    () => { playSong('./phrases/11.mp3') },
+    () => { playSong('./phrases/12.mp3') },
+    () => { playSong('./phrases/13.mp3') },
+    () => { playSong('./phrases/14.mp3') },
+    () => { playSong('./phrases/15.mp3') },
+    () => { playSong('./phrases/16.mp3') },
+    () => { playSong('./phrases/17.mp3') },
+    () => { playSong('./phrases/18.mp3') },
+    () => { playSong('./phrases/19.mp3') },
+    () => { playSong('./phrases/20.mp3') },
+    () => { playSong('./phrases/21.mp3') },
+    () => { playSong('./phrases/22.mp3') },
 ];
+
 const demonGreetQueue = [
     () => { playDemonGreeting('./demonGreets/smeh.mp3') },
     () => { playDemonGreeting('./demonGreets/smeh1.mp3') },
@@ -67,90 +84,6 @@ const demonGreetQueue = [
     () => { playDemonGreeting('./demonGreets/krik.mp3') },
     () => { playDemonGreeting('./demonGreets/imwatchingyou.mp3') },
 ];
-const demon = [
-  () => { playFile({ filename: './demon/demon2.mp3', label: 'standart', isStandart: true }) },
-  () => { playFile({ filename: './demon/demon1.mp3', label: 'standart', isStandart: true }) },
-];
-
-const fallbacks = {
-	'wishes': [
-        () => { playFile({ filename: './wishes/wish1.mp3', label: 'standart', isStandart: true }) },
-        () => { playFile({ filename: './wishes/wish2.mp3', label: 'standart', isStandart: true }) },
-        () => { playFile({ filename: './wishes/wish3.mp3', label: 'standart', isStandart: true }) },
-        () => { playFile({ filename: './wishes/wish4.mp3', label: 'standart', isStandart: true }) },
-        () => { playFile({ filename: './wishes/wish5.mp3', label: 'standart', isStandart: true }) },
-        () => { playFile({ filename: './wishes/wish6.mp3', label: 'standart', isStandart: true }) },
-	],
-	'predictions': [
-        () => { playFile({ filename: './predictions/pred1.mp3', label: 'standart', isStandart: true }) },
-        () => { playFile({ filename: './predictions/pred2.mp3', label: 'standart', isStandart: true }) },
-        () => { playFile({ filename: './predictions/pred3.mp3', label: 'standart', isStandart: true }) },
-        () => { playFile({ filename: './predictions/pred4.mp3', label: 'standart', isStandart: true }) },
-        () => { playFile({ filename: './predictions/pred5.mp3', label: 'standart', isStandart: true }) },
-    ],
-    'horoscopes': {
-        'aquar': [
-            () => { playFile({ filename: './horoscope/vodo1.mp3', label: 'horoscopes.aquar' }) },
-            () => { playFile({ filename: './horoscope/vodo2.mp3', label: 'horoscopes.aquar' }) },
-            () => { playFile({ filename: './horoscope/vodo3.mp3', label: 'horoscopes.aquar' }) },
-        ],
-        'pisce': [
-            () => { playFile({ filename: './horoscope/ryb1.mp3', label: 'horoscopes.pisce' }) },
-            () => { playFile({ filename: './horoscope/ryb2.mp3', label: 'horoscopes.pisce' }) },
-            () => { playFile({ filename: './horoscope/ryb3.mp3', label: 'horoscopes.pisce' }) },
-        ],
-        'aries': [
-            () => { playFile({ filename: './horoscope/oven1.mp3', label: 'horoscopes.aries' }) },
-            () => { playFile({ filename: './horoscope/oven2.mp3', label: 'horoscopes.aries' }) },
-            () => { playFile({ filename: './horoscope/oven3.mp3', label: 'horoscopes.aries' }) },
-        ],
-        'tauru': [
-            () => { playFile({ filename: './horoscope/telec1.mp3', label: 'horoscopes.tauru' }) },
-            () => { playFile({ filename: './horoscope/telec2.mp3', label: 'horoscopes.tauru' }) },
-            () => { playFile({ filename: './horoscope/telec3.mp3', label: 'horoscopes.tauru' }) },
-        ],
-        'gemin': [
-            () => { playFile({ filename: './horoscope/bliz1.mp3', label: 'horoscopes.gemin' }) },
-            () => { playFile({ filename: './horoscope/bliz2.mp3', label: 'horoscopes.gemin' }) },
-            () => { playFile({ filename: './horoscope/bliz3.mp3', label: 'horoscopes.gemin' }) },
-        ],
-        'rak': [
-            () => { playFile({ filename: './horoscope/rak1.mp3', label: 'horoscopes.rak' }) },
-            () => { playFile({ filename: './horoscope/rak2.mp3', label: 'horoscopes.rak' }) },
-            () => { playFile({ filename: './horoscope/rak3.mp3', label: 'horoscopes.rak' }) },
-        ],
-        'leo': [
-            () => { playFile({ filename: './horoscope/leo1.mp3', label: 'horoscopes.leo' }) },
-            () => { playFile({ filename: './horoscope/leo2.mp3', label: 'horoscopes.leo' }) },
-            () => { playFile({ filename: './horoscope/leo3.mp3', label: 'horoscopes.leo' }) },
-        ],
-        'virgo': [
-            () => { playFile({ filename: './horoscope/dev1.mp3', label: 'horoscopes.virgo' }) },
-            () => { playFile({ filename: './horoscope/dev2.mp3', label: 'horoscopes.virgo' }) },
-            () => { playFile({ filename: './horoscope/dev3.mp3', label: 'horoscopes.virgo' }) },
-        ],
-        'libra': [
-            () => { playFile({ filename: './horoscope/ves1.mp3', label: 'horoscopes.libra' }) },
-            () => { playFile({ filename: './horoscope/ves2.mp3', label: 'horoscopes.libra' }) },
-            () => { playFile({ filename: './horoscope/ves3.mp3', label: 'horoscopes.libra' }) },
-        ],
-        'scorp': [
-            () => { playFile({ filename: './horoscope/scorp1.mp3', label: 'horoscopes.scorp' }) },
-            () => { playFile({ filename: './horoscope/scorp2.mp3', label: 'horoscopes.scorp' }) },
-            () => { playFile({ filename: './horoscope/scorp3.mp3', label: 'horoscopes.scorp' }) },
-        ],
-        'sagit': [
-            () => { playFile({ filename: './horoscope/strel1.mp3', label: 'horoscopes.sagit' }) },
-            () => { playFile({ filename: './horoscope/strel2.mp3', label: 'horoscopes.sagit' }) },
-            () => { playFile({ filename: './horoscope/strel3.mp3', label: 'horoscopes.sagit' }) },
-        ],
-        'capri': [
-            () => { playFile({ filename: './horoscope/koz1.mp3', label: 'horoscopes.capri' }) },
-            () => { playFile({ filename: './horoscope/koz2.mp3', label: 'horoscopes.capri' }) },
-            () => { playFile({ filename: './horoscope/koz3.mp3', label: 'horoscopes.capri' }) },
-        ]
-    }
-};
 
 const tracks = {
 	'horoscopes': {
@@ -168,16 +101,8 @@ const tracks = {
         'capri': []
 	},
 	'wishes': [],
-	'predictions': [],
-	'demon': [],
 	'easter_eggs': [],
-	'phrases': {
-		'jokes': [],
-		'questions': {
-			'gender': '',
-			'zodiac': ''
-		}
-	}
+	'phrases': []
 };
 
 function addTotracks({ filename, label }) {
@@ -404,16 +329,6 @@ function addFromTracksToQueue({ label, isRemove = true, index }) {
                     demonCounter = demonCounter === demon.length - 1 ? 0 : demonCounter + 1;
                     break;
                 }
-                case 'wishes': {
-                    queue.push(fallbacks.wishes[wishesCounter]);
-                    wishesCounter = wishesCounter === fallbacks.wishes.length - 1 ? 0 : wishesCounter + 1;
-                    break;
-                }
-                case 'predictions': {
-                    queue.push(fallbacks.predictions[predictionsCounter]);
-                    predictionsCounter = predictionsCounter === fallbacks.predictions.length - 1 ? 0 : predictionsCounter + 1;
-                    break;
-                }
                 case 'horoscopes.aquar': {
                     queue.push(fallbacks.horoscopes.aquar[aquarC]);
                     aquarC = aquarC === 2 ? 0 : aquarC + 1;
@@ -475,8 +390,8 @@ function addFromTracksToQueue({ label, isRemove = true, index }) {
                     break;
                 }
                 default: {
-                    queue.push(fallbacks.wishes[wishesCounter]);
-                    wishesCounter = wishesCounter === fallbacks.wishes.length - 1 ? 0 : wishesCounter + 1;
+                    queue.push(fallbacks.phrases[phrasesCounter]);
+                    phrasesCounter = phrasesCounter === fallbacks.phrases.length - 1 ? 0 : phrasesCounter + 1;
                 }
             }
 		} else {
@@ -496,8 +411,8 @@ function addFromSongsToQueue() {
     songsQueue[songsCounter]();
 }
 
-function addFromGreetsToQueue() {
-	greetQueue[greetingsCounter]();
+function addFromPhrasesToQueue() {
+	phrasesQueue[phrasesCounter]();
 }
 
 function addFromDemonGreetsToQueue() {
@@ -522,7 +437,7 @@ module.exports = function(_eventEmitter) {
 
 	eventEmitter.on('play', addFromTracksToQueue);
 	eventEmitter.on('speakFile:song:play', addFromSongsToQueue);
-	eventEmitter.on('speakFile:greet:play', addFromGreetsToQueue);
+	eventEmitter.on('speakFile:phrases:play', addFromPhrasesToQueue);
 	eventEmitter.on('speakFile:demon-greet:play', addFromDemonGreetsToQueue);
 	// eventEmitter.on('play:song', { label: 'songs', isRemove: false,  });
 };
