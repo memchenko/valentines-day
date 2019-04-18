@@ -16,7 +16,7 @@ const telegramPath = path.resolve(__dirname, './child-processes/telegram/index.j
 
 module.exports = function() {
 	ttsProcess = child_process.fork(ttsPath);
-	// ftpProcess = child_process.fork(ftpPath);
+	ftpProcess = child_process.fork(ftpPath);
 	telegramProcess = child_process.fork(telegramPath);
 
 	telegramProcess.on('message', sendToTTSProcess);
