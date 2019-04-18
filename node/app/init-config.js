@@ -34,5 +34,7 @@ module.exports = function() {
 };
 
 function sendToTTSProcess(payload) {
-	ttsProcess.send({ type: NEW_MESSAGE, payload });
+	if (payload.type === 'msg') {
+		ttsProcess.send({ type: NEW_MESSAGE, payload });
+	}
 }

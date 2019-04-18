@@ -44,7 +44,7 @@ function transformToAudio(data) {
 			const label = data.label;
 			const normLabel = label === 'Пожелание' && 'wishes' ||
 				label === 'Предсказание' && 'predictions' ||
-				label === 'Сообщение' && 'wishes';
+				'wishes';
 
 			files.push({ filename, label: normLabel });
 		} catch(err) {

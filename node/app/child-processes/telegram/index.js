@@ -280,7 +280,7 @@ bot.onText(text(commands.GET_WISH), (msg) => {
 
   if (state === states.IDLE || state === states.STARTED) {
     bot.sendMessage(chatId, getRandomText(requestPhrases));
-    orders.push('wish');
+    orders.push('wishes');
 
     if (lastAppeal !== null && lastAppeal < 5000) {
       bot.sendMessage(chatId, getRandomText(commandSentTexts));
@@ -298,7 +298,7 @@ bot.onText(text(commands.GET_PREDICTION), (msg) => {
 
   if (state === states.IDLE || state === states.STARTED) {
     bot.sendMessage(chatId, getRandomText(requestPhrases));
-    orders.push('prediction');
+    orders.push('predictions');
 
     if (lastAppeal !== null && lastAppeal < 5000) {
       bot.sendMessage(chatId, getRandomText(commandSentTexts));
@@ -373,7 +373,7 @@ ${commandsText}
         case states.WAIT_WISH:
         case states.WAIT_PREDICTION:
         case states.WAIT_JOKE: {
-            process.send({ message: text, label });
+            process.send({ type: 'msg', message: text, label });
             chatIds[chatId].state = states.IDLE;
             bot.sendMessage(chatId, getRandomText(commandSentTexts));
             break;
