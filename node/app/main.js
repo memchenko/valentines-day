@@ -17,7 +17,7 @@ let telegramProcess = null;
 
 app.use(express.static(path.resolve(__dirname, './assets')));
 
-app.use('/', (req, res) => {
+app.use('/ping', (req, res) => {
 	res.status(200).send('OK');
 });
 
