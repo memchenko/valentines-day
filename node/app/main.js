@@ -22,14 +22,19 @@ app.use('/ping', (req, res) => {
 });
 
 app.get('/new-files', (req, res) => {
-	const handleFilesResponse = (filesArr) => {
-		ee.off(AUDIO_FILES, handleFilesResponse);
-		res.status(200).send(JSON.stringify(filesArr));
-	};
-
-	ee.on(AUDIO_FILES, handleFilesResponse);
-
-	ttsProcess.send({ type: CHECK_NEW_FILES });
+	if (ttsProcess) {
+		const handleFilesResponse = (filesArr) => {
+			ee.off(AUDIO_FILES, handleFilesResponse);
+			res.status(200).send(JSON.stringify(filesArr));
+		};
+	
+		ee.on(AUDIO_FILES, handleFilesResponse);
+	
+		ttsProcess.send({ type: CHECK_NEW_FILES });
+	} else {
+		res.status(200).send(JSON.stringify([]));
+	}
+	
 });
 
 app.get('/file/:label/:file', (req, res) => {
@@ -40,14 +45,18 @@ app.get('/file/:label/:file', (req, res) => {
 });
 
 app.get('/orders', (req, res) => {
-	const handleLabelsResponse = (labels) => {
-		ee.off(handleLabelsResponse);
-		res.status(200).send(JSON.stringify(labels));
-	};
-
-	ee.on(LABELS_TO_PLAY, handleLabelsResponse);
-
-	telegramProcess.send({ type: CHECK_NEW_ORDERS });
+	if (telegramProcess) {
+		const handleLabelsResponse = (labels) => {
+			ee.off(handleLabelsResponse);
+			res.status(200).send(JSON.stringify(labels));
+		};
+	
+		ee.on(LABELS_TO_PLAY, handleLabelsResponse);
+	
+		telegramProcess.send({ type: CHECK_NEW_ORDERS });
+	} else {
+		res.status(200).send(JSON.stringify([]));
+	}
 });
 
 app.all('*', (req, res) => {
