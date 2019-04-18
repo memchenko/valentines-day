@@ -41,7 +41,7 @@ app.get('/file/:label/:file', (req, res) => {
 	const { label, file } = req.params;
 
 	res.setHeader('x-label', label);
-	res.sendFile(path.resolve(__dirname, './files', file));
+	res.sendFile(path.resolve(__dirname, './files', decodeURIComponent(file)));
 });
 
 app.get('/orders', (req, res) => {
