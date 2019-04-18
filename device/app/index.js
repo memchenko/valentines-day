@@ -105,17 +105,19 @@ setInterval(async () => {
 		// files: {filename, label}[]
 		// orders: string[]
 		const [files, orders] = await Promise.all([
-			got('http://18.218.239.19:8080/new-files'),
-			got('http://18.218.239.19:8080/orders')
+			got('http://18.218.239.19:8080/new-files', { json: true }),
+			got('http://18.218.239.19:8080/orders', { json: true })
 		]);
+		
+		console.log('files', files.body);
+		console.log('orders', orders.body);
 
-		files.forEach(file => eventEmitter.emit('got filename', file));
-		orders.forEach(order => eventEmitter.emit(USER_COMMAND, order));	
+		files.body.forEach(file => eventEmitter.emit('got filename', file));
+		orders.body.forEach(order => eventEmitter.emit(USER_COMMAND, order));	
 	} catch(err) {
 		console.log(err);
 	}
-	
-}, 3000);
+}, 7000);
 
 // eventEmitter.on('speakFile:need', (label) => {
 // 	http.get(DEVICE_MANAGER_ENDPOINT + '?label=' + label, (res) => {
