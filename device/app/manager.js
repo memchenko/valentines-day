@@ -28,22 +28,12 @@ let areEyesShine = false;
 
 let isSingAndDance = false;
 
-let prevHour = null;
+let prevMinutes = null;
 const isTimeForDemon = () => {
-    const hour = (new Date()).getHours();
-    const isEqToPrevHour = hour === prevHour;
-    const isEven = hour % 2 === 0;
+    const minutes = (new Date()).getMinutes();
+    const isGTHalfOfHour = (minutes - prevMinutes) >= 30;
 
-    if (isEqToPrevHour) {
-        return false;
-    } else {
-        if (isEven) {
-            prevHour = hour;
-            return true;
-        } else {
-            return false;
-        }
-    }
+    return isGTHalfOfHour;
 };
 
 const getRandom3 = () => {
