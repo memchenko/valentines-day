@@ -1,6 +1,6 @@
 const {
   EYES_ON, EYES_OFF, MOUTH_ON, MOUTH_OFF,
-  SERVO_L_READY, SERVO_R_READY
+  SERVO_L_READY, SERVO_R_READY, SONIC_CROSSED
 } = require('./constants.js');
 
 let eventEmitter;
@@ -12,7 +12,7 @@ const servoBoard = new five.Board({
   repl: false
 });
 const sensorBoard = new five.Board({
-  port: 'COM11',
+  port: 'COM8',
   repl: false
 });
 
