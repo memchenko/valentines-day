@@ -41,11 +41,11 @@ const getUser = () => ({
 const chatIds = {};
 
 const commands = {
-    RECORD_WISH: '/rval',
+    RECORD_WISH: '/rwish',
     RECORD_PREDICTION: '/rpred',
     RECORD_JOKE: '/rjoke',
     GET_PREDICTION: '/pred',
-    GET_WISH: '/val',
+    GET_WISH: '/wish',
     GET_HOROSCOPE: '/horos',
     GET_JOKE: '/joke',
 
@@ -282,11 +282,7 @@ bot.onText(text(commands.GET_WISH), (msg) => {
     bot.sendMessage(chatId, getRandomText(requestPhrases));
     orders.push('wishes');
 
-    if (lastAppeal !== null && lastAppeal < 5000) {
-      bot.sendMessage(chatId, getRandomText(commandSentTexts));
-    } else {
-      bot.sendMessage(chatId, getRandomText(deviceUnavailTexts));
-    }
+    bot.sendMessage(chatId, getRandomText(commandSentTexts));
   } else {
     bot.sendMessage(chatId, getRandomText(noCommandText));
   }
@@ -300,11 +296,7 @@ bot.onText(text(commands.GET_PREDICTION), (msg) => {
     bot.sendMessage(chatId, getRandomText(requestPhrases));
     orders.push('predictions');
 
-    if (lastAppeal !== null && lastAppeal < 5000) {
-      bot.sendMessage(chatId, getRandomText(commandSentTexts));
-    } else {
-      bot.sendMessage(chatId, getRandomText(deviceUnavailTexts));
-    }
+    bot.sendMessage(chatId, getRandomText(commandSentTexts));
   } else {
     bot.sendMessage(chatId, getRandomText(noCommandText));
   }
