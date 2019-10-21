@@ -35,7 +35,7 @@ class FtpLoadStrategy {
   }
 
   _releaseQueue() {
-
+    this._queue.forEach(f => f());
   }
 
   _throwConnError() {
@@ -49,7 +49,21 @@ class FtpLoadStrategy {
     }
 
     return new Promise((resolve, reject) => {
+      this._client.get(filename, (err, stream) => {
+        if (err) {
+          reject(err);
+          return;
+        }
 
+        const dest = path.resolve(this._config.destination, filename);
+
+        stream.once('close', () => {
+          resolve(dest);
+        });
+
+
+        stream.pipe(fs.createWriteStream(dest));
+      });
     });
   }
 }
