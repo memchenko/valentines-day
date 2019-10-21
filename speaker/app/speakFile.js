@@ -63,13 +63,13 @@ const demonGreetQueue = [
     () => { playDemonGreeting('./demonGreets/smeh.mp3') },
     () => { playDemonGreeting('./demonGreets/smeh1.mp3') },
     () => { playDemonGreeting('./demonGreets/vedma.mp3') },
-    () => { playDemonGreeting('./demonGreets/touchme.mp3') },
     () => { playDemonGreeting('./demonGreets/krik.mp3') },
-    () => { playDemonGreeting('./demonGreets/imwatchingyou.mp3') },
 ];
 const demon = [
   () => { playFile({ filename: './demon/demon2.mp3', label: 'standart', isStandart: true }) },
   () => { playFile({ filename: './demon/demon1.mp3', label: 'standart', isStandart: true }) },
+  () => { playFile({ filename: './demon/demon3.mp3', label: 'standart', isStandart: true }) },
+  () => { playFile({ filename: './demon/demon4.mp3', label: 'standart', isStandart: true }) },
 ];
 
 const fallbacks = {
@@ -80,6 +80,10 @@ const fallbacks = {
         () => { playFile({ filename: './wishes/wish4.mp3', label: 'standart', isStandart: true }) },
         () => { playFile({ filename: './wishes/wish5.mp3', label: 'standart', isStandart: true }) },
         () => { playFile({ filename: './wishes/wish6.mp3', label: 'standart', isStandart: true }) },
+        () => { playFile({ filename: './wishes/wish7.mp3', label: 'standart', isStandart: true }) },
+        () => { playFile({ filename: './wishes/wish8.mp3', label: 'standart', isStandart: true }) },
+        () => { playFile({ filename: './wishes/wish9.mp3', label: 'standart', isStandart: true }) },
+        () => { playFile({ filename: './wishes/wish10.mp3', label: 'standart', isStandart: true }) },
 	],
 	'predictions': [
         () => { playFile({ filename: './predictions/pred1.mp3', label: 'standart', isStandart: true }) },
@@ -87,6 +91,9 @@ const fallbacks = {
         () => { playFile({ filename: './predictions/pred3.mp3', label: 'standart', isStandart: true }) },
         () => { playFile({ filename: './predictions/pred4.mp3', label: 'standart', isStandart: true }) },
         () => { playFile({ filename: './predictions/pred5.mp3', label: 'standart', isStandart: true }) },
+        () => { playFile({ filename: './predictions/pred6.mp3', label: 'standart', isStandart: true }) },
+        () => { playFile({ filename: './predictions/pred7.mp3', label: 'standart', isStandart: true }) },
+        () => { playFile({ filename: './predictions/pred8.mp3', label: 'standart', isStandart: true }) },
     ],
     'horoscopes': {
         'aquar': [
